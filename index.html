@@ -21,9 +21,13 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
 .stat b{font-size:22px;color:#ffd700}
 .vip{color:#00ff88;font-weight:900}
-.hidden{display:none}
+.hidden{display:none !important}
 .userBox{background:#222231;padding:10px;margin:8px 0;border-radius:10px}
 .userBox button{padding:8px;font-size:13px;margin:3px 0}
+.correoBtn{position:relative;background:#fff;color:#000;font-size:18px;padding:14px}
+.circuloCorreo{position:absolute;top:-8px;right:-8px;background:#ff2222;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;border:2px solid #fff}
+.notifBox{background:#2a2a3a;padding:12px;margin:8px 0;border-radius:12px;border-left:4px solid #ff2222;text-align:left}
+.notifBox.nueva{border-left:4px solid #ffd700;background:#3a3a1a}
 </style>
 </head>
 <body>
@@ -54,18 +58,19 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <button class="btn-pink" onclick="ganar(10,'Ver video')">+10 💎 Ver Video</button>
 <button class="btn-pink" onclick="ganar(20,'Seguir en TikTok')">+20 💎 Seguir en TikTok</button>
 <button class="btn-pink" onclick="ganar(50,'Compartir')">+50 💎 Compartir</button>
-
 <h3>🎟️ Código Promocional</h3>
 <input id="codigoPromo" placeholder="Escribe tu código aquí">
 <button class="btn-gold" onclick="canjearCodigo()">Enviar Código</button>
 <p id="msgCodigo" style="color:#ffd700"></p>
-
 <button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
 
 <div id="adminBox" class="card hidden" style="background:#1a1a2e;border:1px solid #ffd700">
 <h2>🛡️ Panel Moderador</h2>
 <p style="color:#ffd700">Solo tú puedes ver esto</p>
+<h3>✉️ Correo de Reportes</h3>
+<button class="correoBtn" onclick="abrirCorreo()">✉️ Abrir Correo de Reportes <span id="circuloCorreo" class="circuloCorreo hidden">0</span></button>
+<div id="listaCorreo"></div>
 <button class="btn-gold" onclick="verTodo()">👁️ VER TODO - Estadísticas</button>
 <div id="estadisticas"></div>
 <button class="btn-white" onclick="cargarUsuarios()">👥 Ver quién creó cuenta</button>
@@ -114,7 +119,6 @@ function esVipActivo(){
   return true;
 }
 function esModerador(){ return datos.admin === true; }
-function esReportero(){ return datos.puedeReportar === true || datos.admin === true; }
 
 async function registrar(){
   const e=document.getElementById('email').value;
@@ -137,29 +141,40 @@ async function salir(){ await auth.signOut(); location.reload(); }
 auth.onAuthStateChanged(async (user)=>{
   if(user){
     userActual=user;
+    document.getElementById('adminBox').classList.add('hidden');
+    document.getElementById('reporteroBox').classList.add('hidden');
     document.getElementById('loginBox').classList.add('hidden');
     document.getElementById('perfilBox').classList.remove('hidden');
     document.getElementById('userEmail').innerText=user.email;
     const doc = await db.collection('usuarios').doc(user.uid).get();
-    if(doc.exists){ datos=doc.data(); if(datos.vipHasta===undefined) datos.vipHasta=0; if(datos.admin===undefined) datos.admin=false; if(datos.baneadoVisual===undefined) datos.baneadoVisual=false; if(datos.puedeReportar===undefined) datos.puedeReportar=false; if(datos.reportes===undefined) datos.reportes=0; if(datos.reportado===undefined) datos.reportado=false; } else {
+    if(doc.exists){
+      datos=doc.data();
+      if(datos.vipHasta===undefined) datos.vipHasta=0;
+      if(datos.admin===undefined) datos.admin=false;
+      if(datos.baneadoVisual===undefined) datos.baneadoVisual=false;
+      if(datos.puedeReportar===undefined) datos.puedeReportar=false;
+      if(datos.reportes===undefined) datos.reportes=0;
+      if(datos.reportado===undefined) datos.reportado=false;
+    } else {
       await db.collection('usuarios').doc(user.uid).set(datos);
     }
     esVipActivo();
     actualizarUI();
+    if(esModerador()) actualizarCirculoCorreo();
   }
 });
 
 function actualizarUI(){
   let activo = esVipActivo();
   let mod = esModerador();
-  let rep = esReportero();
   document.getElementById('diamantes').innerText=datos.diamantes;
   document.getElementById('txt').innerText=datos.txt;
   document.getElementById('nivel').innerText=datos.nivel;
   document.getElementById('userVip').innerText=activo?"✅ VIP ACTIVO":"NO VIP";
-  if(datos.puedeReportar && !mod){
-    document.getElementById('rolTexto').innerText="👁️ Eres REPORTERO - Puedes reportar personas";
+  if(datos.puedeReportar === true){
     document.getElementById('reporteroBox').classList.remove('hidden');
+    if(mod){ document.getElementById('rolTexto').innerText="🛡️👁️ Eres MODERADOR + REPORTERO"; }
+    else { document.getElementById('rolTexto').innerText="👁️ Eres REPORTERO - Puedes reportar personas"; }
   } else {
     document.getElementById('rolTexto').innerText="";
     document.getElementById('reporteroBox').classList.add('hidden');
@@ -168,6 +183,7 @@ function actualizarUI(){
     document.getElementById('tituloPerfil').innerText="🛡️ Bienvenido Moderador";
     document.getElementById('adminBox').classList.remove('hidden');
     document.getElementById('vipTiempo').innerText="👑 Moderador Permanente - Sin acortadores";
+    actualizarCirculoCorreo();
   } else {
     document.getElementById('tituloPerfil').innerText="👤 Mi Perfil";
     document.getElementById('adminBox').classList.add('hidden');
@@ -215,8 +231,13 @@ async function canjearCodigo(){
   if(codigo === "AKIM-PROJECT-2011" || codigo === "AKIM PROJECT 2011" || codigo === "AKIM-PROJECT-2" || codigo === "AKIM PROJECT 2"){
     datos.puedeReportar = true;
     await guardar();
-    document.getElementById('msgCodigo').innerText="👁️ ¡Ahora eres REPORTERO! Puedes reportar personas";
-    alert("👁️ ¡Ahora eres REPORTERO! Ya puedes reportar personas");
+    if(esModerador()){
+      document.getElementById('msgCodigo').innerText="🛡️👁️ ¡Ahora eres MODERADOR + REPORTERO!";
+      alert("🛡️👁️ ¡Ahora eres MODERADOR + REPORTERO! Puedes reportar y también te llegan los reportes");
+    } else {
+      document.getElementById('msgCodigo').innerText="👁️ ¡Ahora eres REPORTERO! Puedes reportar personas";
+      alert("👁️ ¡Ahora eres REPORTERO! Ya puedes reportar personas");
+    }
     return;
   }
   document.getElementById('msgCodigo').innerText="Código incorrecto ❌";
@@ -235,6 +256,43 @@ function descargarMOD2(){
   } else {
     window.open('https://alpharede.com/byO8bJ2rcJt','_blank');
   }
+}
+async function actualizarCirculoCorreo(){
+  if(!esModerador()) return;
+  let snap = await db.collection('correos_reportes').where('leido','==',false).get();
+  let cant = snap.size;
+  let circulo = document.getElementById('circuloCorreo');
+  if(cant > 0){ circulo.classList.remove('hidden'); circulo.innerText = cant; }
+  else { circulo.classList.add('hidden'); }
+}
+async function abrirCorreo(){
+  let lista = document.getElementById('listaCorreo');
+  lista.innerHTML="Cargando correos...";
+  let snap = await db.collection('correos_reportes').orderBy('fecha','desc').get();
+  if(snap.empty){ lista.innerHTML="<p>No hay reportes aún</p>"; return; }
+  let html="";
+  snap.forEach(doc=>{
+    let n = doc.data();
+    let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : "";
+    html += `<div class="notifBox ${n.leido?'':'nueva'}">
+    <b>✉️ NUEVO REPORTE</b> ${n.leido?'':'<span style="color:#ffd700">● NUEVO</span>'}<br>
+    👁️ <b>Reportero:</b> ${n.reporteroEmail}<br>
+    🚨 <b>Reportado ID:</b> ${n.reportadoId}<br>
+    📝 <b>Motivo:</b> ${n.motivo}<br>
+    🕒 ${fecha}<br>
+    <button class="btn-gold" onclick="marcarLeido('${doc.id}')">✅ Marcar como leído</button>
+    <button class="btn-red" onclick="borrarCorreo('${doc.id}')">🗑️ Borrar</button>
+    </div>`;
+  });
+  html += `<button class="btn-dark" onclick="marcarTodoLeido()">✅ Marcar todo como leído</button>`;
+  lista.innerHTML=html;
+}
+async function marcarLeido(id){ await db.collection('correos_reportes').doc(id).update({leido:true}); abrirCorreo(); actualizarCirculoCorreo(); }
+async function borrarCorreo(id){ await db.collection('correos_reportes').doc(id).delete(); abrirCorreo(); actualizarCirculoCorreo(); }
+async function marcarTodoLeido(){
+  let snap = await db.collection('correos_reportes').where('leido','==',false).get();
+  snap.forEach(async doc=>{ await db.collection('correos_reportes').doc(doc.id).update({leido:true}); });
+  setTimeout(()=>{ abrirCorreo(); actualizarCirculoCorreo(); },500);
 }
 async function verTodo(){
   let snap = await db.collection('usuarios').get();
@@ -276,6 +334,7 @@ async function cargarUsuarios(){
   lista.innerHTML=html || "Nadie ha creado cuenta aún";
 }
 async function cargarUsuariosReporte(){
+  if(datos.puedeReportar !== true && datos.admin !== true){ alert("No tienes permiso"); return; }
   let lista = document.getElementById('listaReporte');
   lista.innerHTML="Cargando...";
   let snap = await db.collection('usuarios').get();
@@ -305,17 +364,28 @@ async function banear(id, estaBaneado){
   alert(estaBaneado?"Usuario desbaneado ✅":"Usuario baneado 🚫 - Solo se ve en tu panel, a él no le pasa nada"); cargarUsuarios();
 }
 async function reportar(id){
+  let motivo = prompt("¿Por qué reportas a esta persona? Escribe qué hizo mal:");
+  if(!motivo || motivo.trim()===""){ alert("Tienes que escribir el motivo"); return; }
   let doc = await db.collection('usuarios').doc(id).get();
   let d = doc.data(); let nuevo = (d.reportes||0)+1;
   await db.collection('usuarios').doc(id).update({reportado:true, reportes:nuevo});
-  alert("Persona reportada ⚠️ - Ya tiene "+nuevo+" reportes. A él no le pasa nada, solo tú lo ves");
+  await db.collection('correos_reportes').add({
+    reporteroEmail: userActual ? userActual.email : "Desconocido",
+    reporteroId: userActual ? userActual.uid : "",
+    reportadoId: id,
+    motivo: motivo,
+    fecha: Date.now(),
+    leido: false
+  });
+  alert("Reporte enviado ✉️ - Ya le llegó al Moderador con tu motivo. Tiene "+nuevo+" reportes");
   cargarUsuarios(); cargarUsuariosReporte();
+  if(esModerador()) actualizarCirculoCorreo();
 }
 async function quitarReporte(id){
   await db.collection('usuarios').doc(id).update({reportado:false, reportes:0});
   alert("Reporte quitado ✅"); cargarUsuarios(); cargarUsuariosReporte();
 }
-setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); } }, 60000);
+setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); if(esModerador()) actualizarCirculoCorreo(); } }, 30000);
 </script>
 </body>
-</html>
+  </html>
