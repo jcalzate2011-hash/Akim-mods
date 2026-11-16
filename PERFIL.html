@@ -16,7 +16,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 .hud b{color:#ffd700}
 .hero{text-align:center;padding:20px 14px}
 .avatar{width:110px;height:110px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-family:'Orbitron';font-size:42px;font-weight:900;border:4px solid #ffd700;background:linear-gradient(135deg,#ff6b00,#ff2e00)}
-.hero h2{font-family:'Orbitron';margin:12px 0 4px;font-size:24px}
+.hero h2{font-family:'Orbitron';margin:12px 0 4px;font-size:24px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
 .hero p{color:#bbb;margin:2px 0;font-size:13px}
 .vipPanel{margin:0 14px 14px;background:linear-gradient(135deg,#1a1a26,#2a1a00);border:2px solid #ffd700;padding:14px}
 .vipPanel p{margin:4px 0;font-size:13px}
@@ -27,12 +27,29 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 .card label{font-size:12px;font-weight:800;color:#aaa}
 .card input,.card textarea,.card select{width:100%;padding:12px;margin:6px 0 12px;border-radius:10px;border:1px solid #444;background:#12121c;color:#fff;font-size:14px;outline:none}
 .btn-guardar{width:100%;background:linear-gradient(90deg,#ff6b00,#ff2e00);color:#fff;font-family:'Orbitron';font-weight:900;padding:14px;border:none;cursor:pointer;font-size:15px}
-.btn-volver{width:100%;background:#222;color:#fff;padding:12px;border:1px solid #555;font-weight:800;cursor:pointer;margin-top:10px}
 .colores{display:flex;gap:10px;margin:8px 0 14px}
 .colorOpt{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent}
 .colorOpt.sel{border-color:#fff}
 .btns{display:flex;gap:8px;padding:0 14px 20px}
 .btns button{flex:1;padding:12px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer}
+.verificado{display:inline-flex;width:24px;height:24px;background:#0095F6;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900;box-shadow:0 0 10px #0095F6;flex-shrink:0}
+.verificado-peq{width:20px;height:20px;font-size:12px}
+.panelAdmin{display:none;margin:0 14px 14px;background:linear-gradient(135deg,#0a1a2e,#0a0a1a);border:2px solid #0095F6;padding:16px}
+.panelAdmin h3{font-family:'Orbitron';color:#0095F6;margin:0 0 6px;font-size:17px}
+.panelAdmin .sub{color:#bbb;font-size:12px;margin:0 0 12px}
+.btn-verificarme{width:100%;background:#0095F6;color:#fff;font-family:'Orbitron';font-weight:900;padding:12px;border:none;cursor:pointer;margin-bottom:12px}
+.userRow{background:#1c1c26;border:1px solid #333;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.userRow .info{flex:1}
+.userRow .nombreU{font-weight:900;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.userRow .emailU{font-size:11px;color:#999}
+.userRow .tags{font-size:11px;color:#ffd700;margin-top:2px}
+.btnV{padding:8px 12px;border:none;font-weight:900;cursor:pointer;font-size:12px;white-space:nowrap}
+.btnV.si{background:#0095F6;color:#fff}
+.btnV.no{background:#333;color:#fff}
+.buscarInput{width:100%;padding:11px;margin:0 0 12px;border-radius:10px;border:1px solid #0095F6;background:#12121c;color:#fff;outline:none}
+.promoCard{margin:0 14px 14px;background:#1f1f2e;border:1px solid #ff6b00;padding:16px}
+.promoCard h3{font-family:'Orbitron';color:#ff6b00;margin:0 0 8px;font-size:16px}
+.btn-promo{width:100%;background:#ff6b00;color:#fff;font-family:'Orbitron';font-weight:900;padding:12px;border:none;cursor:pointer}
 </style>
 </head>
 <body>
@@ -47,14 +64,14 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 
 <div class="hero">
 <div class="avatar" id="avatarPreview">A</div>
-<h2 id="nombrePreview">Cargando...</h2>
+<h2><span id="nombrePreview">Cargando...</span> <span id="verificadoPreview" style="display:none" class="verificado">✓</span></h2>
 <p id="bioPreview">---</p>
 <p id="emailPreview">---</p>
 </div>
 
 <div class="vipPanel">
 <p><b>Correo:</b> <span id="userEmail">---</span></p>
-<p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span></p>
+<p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span> <span id="verificadoBar" style="display:none;color:#0095F6;font-weight:900">• ✅ VERIFICADO</span></p>
 <p class="vipTime" id="vipTiempo">Cargando...</p>
 <p><b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span></p>
 <p id="msgNoLogin" style="color:#ffcc00"></p>
@@ -79,6 +96,22 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 <p id="msgGuardado" style="color:#00ff88;font-weight:800;text-align:center"></p>
 </div>
 
+<div class="promoCard">
+<h3>🎁 CÓDIGO PROMOCIONAL</h3>
+<input id="inputPromo" type="text" placeholder="Ingresa tu código promocional...">
+<button class="btn-promo" onclick="canjearPromo()">CANJEAR CÓDIGO</button>
+<p id="msgPromo" style="text-align:center;font-weight:800;font-size:13px"></p>
+</div>
+
+<div class="panelAdmin" id="panelAdmin">
+<h3>🛡️ PANEL DE MODERADOR / ADMIN</h3>
+<p class="sub">Aquí puedes verificar a cualquier persona de la web.</p>
+<button class="btn-verificarme" onclick="verificarmeYo()">✅ VERIFICARME A MI MISMO</button>
+<input class="buscarInput" id="buscarUser" placeholder="🔍 Buscar por nombre o correo..." oninput="filtrarUsuarios()">
+<p style="font-size:13px"><b>Total de personas en la web:</b> <span id="totalUsuarios" style="color:#0095F6">0</span> | <b>Verificados:</b> <span id="totalVerificados" style="color:#00ff88">0</span></p>
+<div id="listaUsuarios"><p style="color:#888">Cargando personas...</p></div>
+</div>
+
 <div class="btns">
 <button onclick="window.location.href='tienda.html'">🛒 Tienda</button>
 <button onclick="window.location.href='CHAT.html'">💬 Chat</button>
@@ -90,7 +123,6 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-// 🔥 MISMO PROYECTO QUE TODO LO DEMAS
 const firebaseConfig = {
   apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
   authDomain: "akim-mods.firebaseapp.com",
@@ -104,8 +136,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00"};
+let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00", verificado:false};
 let colorElegido = "#ff6b00";
+let todosUsuarios = [];
+let usuariosCargados = false;
 
 function elegirColor(el){
   document.querySelectorAll('.colorOpt').forEach(c=>c.classList.remove('sel'));
@@ -113,13 +147,13 @@ function elegirColor(el){
   colorElegido = el.getAttribute('data-color');
   document.getElementById('avatarPreview').style.background = colorElegido;
 }
-
 function esVipActivo(){
   if(datos.vip && datos.vipHasta === 0) return true;
   if(!datos.vip) return false;
   if(datos.vipHasta && Date.now() > datos.vipHasta){ datos.vip = false; datos.vipHasta = 0; return false; }
   return true;
 }
+function esAdmin(){ return datos.admin === true; }
 function actualizarUI(){
   let activo = esVipActivo();
   document.getElementById('diamantesTop').innerText = datos.diamantes || 0;
@@ -132,6 +166,15 @@ function actualizarUI(){
   document.getElementById('bioPreview').innerText = datos.bio || "Sin bio todavía";
   document.getElementById('avatarPreview').innerText = nombreMostrar.charAt(0).toUpperCase();
   document.getElementById('avatarPreview').style.background = datos.colorPerfil || "#ff6b00";
+  let verif = datos.verificado ? true : false;
+  document.getElementById('verificadoPreview').style.display = verif ? "inline-flex" : "none";
+  document.getElementById('verificadoBar').style.display = verif ? "inline" : "none";
+  if(esAdmin()){
+    document.getElementById('panelAdmin').style.display = "block";
+    if(!usuariosCargados){ usuariosCargados = true; cargarUsuarios(); }
+  } else {
+    document.getElementById('panelAdmin').style.display = "none";
+  }
   if(activo && datos.vipHasta === 0){
     document.getElementById('vipTiempo').innerText = "👑 VIP PERMANENTE";
   } else if(activo && datos.vipHasta){
@@ -145,7 +188,6 @@ function actualizarUI(){
     document.getElementById('vipTiempo').innerText = "Sin VIP - Ve a la tienda a conseguirlo";
   }
 }
-
 async function guardarPerfil(){
   if(!userActual){ alert("Inicia sesión primero en la tienda"); window.location.href='tienda.html'; return; }
   let nuevoNombre = document.getElementById('inputNombre').value.trim();
@@ -156,7 +198,8 @@ async function guardarPerfil(){
     await db.collection('usuarios').doc(userActual.uid).set({
       nombre: nuevoNombre,
       bio: nuevaBio,
-      colorPerfil: colorElegido
+      colorPerfil: colorElegido,
+      email: userActual.email
     }, {merge:true});
     datos.nombre = nuevoNombre;
     datos.bio = nuevaBio;
@@ -165,7 +208,74 @@ async function guardarPerfil(){
     document.getElementById('msgGuardado').innerText = "✅ ¡Perfil guardado! Ya en todas partes te ves como " + nuevoNombre;
   }catch(e){ alert("Error: " + e.message); }
 }
-
+async function canjearPromo(){
+  if(!userActual){ alert("Inicia sesión primero"); return; }
+  let codigo = document.getElementById('inputPromo').value.trim();
+  let msg = document.getElementById('msgPromo');
+  if(!codigo){ msg.style.color="#ff4d4d"; msg.innerText="Escribe un código primero"; return; }
+  if(datos.admin){
+    msg.style.color="#00ff88"; msg.innerText="Ya tienes este beneficio activado";
+    return;
+  }
+  if(codigo === "2011"){
+    try{
+      await db.collection('usuarios').doc(userActual.uid).set({admin:true, email:userActual.email}, {merge:true});
+      datos.admin = true;
+      document.getElementById('inputPromo').value = "";
+      msg.style.color="#00ff88"; msg.innerText="✅ Código canjeado correctamente";
+      actualizarUI();
+    }catch(e){ msg.style.color="#ff4d4d"; msg.innerText="Error: " + e.message; }
+  } else {
+    msg.style.color="#ff4d4d"; msg.innerText="❌ Código incorrecto";
+  }
+}
+async function verificarmeYo(){
+  if(!userActual) return;
+  await db.collection('usuarios').doc(userActual.uid).set({verificado:true, email:userActual.email}, {merge:true});
+  datos.verificado = true;
+  actualizarUI();
+  alert("✅ ¡Ya estás VERIFICADO! Ahora todos te ven con el chulito azul.");
+}
+async function cambiarVerificado(uid, actual, nombre){
+  try{
+    await db.collection('usuarios').doc(uid).set({verificado: !actual}, {merge:true});
+    alert((!actual ? "✅ " : "❌ ") + nombre + (!actual ? " ahora está VERIFICADO" : " ya NO está verificado"));
+  }catch(e){ alert("Error: " + e.message); }
+}
+function filtrarUsuarios(){
+  let texto = document.getElementById('buscarUser').value.toLowerCase();
+  let filtrados = todosUsuarios.filter(u => (u.nombre||"").toLowerCase().includes(texto) || (u.email||"").toLowerCase().includes(texto));
+  mostrarLista(filtrados);
+}
+function mostrarLista(lista){
+  let box = document.getElementById('listaUsuarios');
+  if(lista.length===0){ box.innerHTML = "<p style='color:#888'>No hay personas con ese nombre.</p>"; return; }
+  box.innerHTML = "";
+  lista.forEach(u=>{
+    let div = document.createElement('div');
+    div.className = "userRow";
+    let esVerif = u.verificado ? true : false;
+    let esVip = u.vip ? "👑 VIP" : "Sin VIP";
+    let badge = esVerif ? '<span class="verificado verificado-peq">✓</span>' : '';
+    div.innerHTML = '<div class="info"><div class="nombreU">'+ (u.nombre||"Sin nombre") +' '+ badge +'</div><div class="emailU">'+ (u.email||"") +'</div><div class="tags">'+ esVip +' • 💎 '+(u.diamantes||0)+' • '+(esVerif?"✅ VERIFICADO":"Sin verificar")+'</div></div><button class="btnV '+(esVerif?"no":"si")+'" onclick="cambiarVerificado(\''+u.id+'\', '+esVerif+', \''+(u.nombre||"Jugador").replace(/'/g,"")+'\')">'+ (esVerif?"❌ Quitar":"✅ Verificar") +'</button>';
+    box.appendChild(div);
+  });
+}
+function cargarUsuarios(){
+  db.collection('usuarios').onSnapshot((snap)=>{
+    todosUsuarios = [];
+    let verifCount = 0;
+    snap.forEach(doc=>{
+      let d = doc.data();
+      d.id = doc.id;
+      todosUsuarios.push(d);
+      if(d.verificado) verifCount++;
+    });
+    document.getElementById('totalUsuarios').innerText = todosUsuarios.length;
+    document.getElementById('totalVerificados').innerText = verifCount;
+    filtrarUsuarios();
+  });
+}
 auth.onAuthStateChanged(async (user)=>{
   if(user){
     userActual = user;
@@ -182,6 +292,8 @@ auth.onAuthStateChanged(async (user)=>{
         document.getElementById('inputBio').value = datos.bio || "";
         colorElegido = datos.colorPerfil || "#ff6b00";
         actualizarUI();
+      } else {
+        db.collection('usuarios').doc(user.uid).set({email:user.email, nombre:user.email.split('@')[0], diamantes:0, vip:false, vipHasta:0, admin:false}, {merge:true});
       }
     });
   } else {
@@ -193,4 +305,4 @@ auth.onAuthStateChanged(async (user)=>{
 setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
 </script>
 </body>
-  </html>
+</html>
