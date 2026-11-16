@@ -15,6 +15,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .btn-white{background:#fff;color:#000}
 .btn-dark{background:#2a2a3a;color:#fff}
 .btn-gold{background:#ffd700;color:#000}
+.btn-green{background:#00c853;color:#fff}
 .stats{display:flex;gap:10px}
 .stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
 .stat b{font-size:22px;color:#ffd700}
@@ -23,6 +24,14 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .userBox{background:#222231;padding:10px;margin:8px 0;border-radius:10px}
 .userBox button{padding:8px;font-size:13px;margin:3px 0}
 .vipBox{background:linear-gradient(135deg,#3a2a00,#1a1a2e);border:2px solid #ffd700;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
+.adBox{background:linear-gradient(135deg,#003a1a,#1a1a2e);border:2px solid #00ff88;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
+#anuncioModal{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;color:#000;z-index:9999;display:none;flex-direction:column;box-sizing:border-box}
+.adTop{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #ddd}
+.adTop b{color:#555;font-size:14px}
+#btnX{width:40px;height:40px;border-radius:50%;background:#eee;border:none;font-size:20px;cursor:pointer;display:none}
+.adContent{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;text-align:center;background:linear-gradient(180deg,#f8f9fa,#e8f0fe)}
+.adContent h2{color:#1a73e8;margin:10px 0}
+#reclamarBtn{display:none;background:#00c853;color:#fff;padding:16px 30px;border:none;border-radius:12px;font-size:18px;font-weight:900;cursor:pointer;margin-top:15px}
 </style>
 </head>
 <body>
@@ -54,20 +63,54 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <button class="btn-gold" onclick="canjearCodigo()">Canjear Código</button>
 <p id="msgCodigo" style="color:#ffd700"></p>
 
+<div class="adBox">
+<h2>🎬 VIP GRATIS 4 HORAS</h2>
+<p>Ve 1 anuncio de 15 segundos y te damos 4 horas de VIP</p>
+<p style="color:#00ff88;font-weight:800">Solo 1 anuncio al día</p>
+<p id="msgAnuncio" style="color:#ffd700;font-weight:800"></p>
+<button class="btn-green" id="btnAnuncio" onclick="verAnuncio()">🎬 Ver Anuncio de 15s - Ganar 4h VIP GRATIS</button>
+</div>
+
 <div class="vipBox">
 <h2>👑 VIP 1 DÍA</h2>
 <p>Sin anuncios - Descargas directas - Todo desbloqueado</p>
 <h2 style="color:#ffd700">💎 1000 Diamantes</h2>
-<button class="btn-gold" onclick="comprarVip(1,1000)">👑 Comprar VIP 1 DÍA con 1000 Diamantes</button>
-<p id="msgCompra" style="color:#ffd700"></p>
+<button class="btn-gold" onclick="comprarVip(1,1000)">👑 Comprar VIP 1 DÍA</button>
 </div>
 
 <div class="vipBox">
 <h2>👑 VIP 2 DÍAS - 48 HORAS</h2>
 <p>Sin anuncios - Descargas directas - Todo desbloqueado</p>
 <h2 style="color:#ffd700">💎 2000 Diamantes</h2>
-<button class="btn-gold" onclick="comprarVip(2,2000)">👑 Comprar VIP 2 DÍAS con 2000 Diamantes</button>
-<p id="msgCompra2" style="color:#ffd700"></p>
+<button class="btn-gold" onclick="comprarVip(2,2000)">👑 Comprar VIP 2 DÍAS</button>
+</div>
+
+<div class="vipBox">
+<h2>👑 VIP 3 DÍAS - 72 HORAS</h2>
+<p>Sin anuncios - Descargas directas - Todo desbloqueado</p>
+<h2 style="color:#ffd700">💎 3000 Diamantes</h2>
+<button class="btn-gold" onclick="comprarVip(3,3000)">👑 Comprar VIP 3 DÍAS</button>
+</div>
+
+<div class="vipBox">
+<h2>👑 VIP 4 DÍAS</h2>
+<p>Sin anuncios - Descargas directas - Todo desbloqueado</p>
+<h2 style="color:#ffd700">💎 3500 Diamantes</h2>
+<button class="btn-gold" onclick="comprarVip(4,3500)">👑 Comprar VIP 4 DÍAS</button>
+</div>
+
+<div class="vipBox">
+<h2>👑 VIP 5 DÍAS</h2>
+<p>Sin anuncios - Descargas directas - Todo desbloqueado</p>
+<h2 style="color:#ffd700">💎 4000 Diamantes</h2>
+<button class="btn-gold" onclick="comprarVip(5,4000)">👑 Comprar VIP 5 DÍAS</button>
+</div>
+
+<div class="vipBox" style="border-color:#ff0055">
+<h2>👑🔥 VIP 1 MES - 30 DÍAS</h2>
+<p>Sin anuncios - Descargas directas - Todo desbloqueado - EL MEJOR</p>
+<h2 style="color:#ffd700">💎 20000 Diamantes</h2>
+<button class="btn-gold" onclick="comprarVip(30,20000)">👑🔥 Comprar VIP 1 MES</button>
 </div>
 
 <button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
@@ -78,6 +121,26 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <p style="color:#ffd700">Solo dar diamantes y ver cuántos tienen</p>
 <button class="btn-white" onclick="cargarUsuarios()">👥 Ver Usuarios y sus Diamantes</button>
 <div id="listaUsuarios"></div>
+</div>
+
+<!-- ANUNCIO ESTILO GOOGLE - COMO CUANDO ENTRAS A UN LINK -->
+<div id="anuncioModal">
+<div class="adTop">
+<b>ⓘ Anuncio • Google</b>
+<span id="contadorTop" style="font-weight:900;color:#000">Espera 15s...</span>
+<button id="btnX" onclick="reclamarVip()">❌</button>
+</div>
+<div class="adContent">
+<p style="color:#888;font-size:12px">ANUNCIO PATROCINADO</p>
+<div style="font-size:70px">🎮</div>
+<h2>AKIM MODS 🔥</h2>
+<p style="color:#333;max-width:320px">Los mejores MODS, VIP, Diamantes y descargas directas sin anuncios. ¡Únete a miles de jugadores!</p>
+<p style="color:#1a73e8;font-weight:800">akim-mods.github.io</p>
+<h1 id="contadorAnuncio" style="font-size:60px;margin:10px;color:#000">15</h1>
+<p id="textoAnuncio" style="color:#555">Espera a que termine el anuncio para reclamar tu premio</p>
+<button id="reclamarBtn" onclick="reclamarVip()">🎁 Reclamar 4 Horas VIP</button>
+<p style="font-size:11px;color:#999;margin-top:15px">Este anuncio es de AKIM. Al reclamar aceptas ganar 4h VIP.</p>
+</div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -97,7 +160,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0, admin:false, baneadoVisual:false, puedeReportar:false, reportes:0, reportado:false};
+let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0, admin:false, baneadoVisual:false, puedeReportar:false, reportes:0, reportado:false, ultimoAnuncio:0};
+let anuncioListo = false;
 
 function esVipActivo(){
   if(datos.vip && datos.vipHasta === 0) return true;
@@ -140,11 +204,13 @@ auth.onAuthStateChanged(async (user)=>{
       if(datos.vipHasta===undefined) datos.vipHasta=0;
       if(datos.admin===undefined) datos.admin=false;
       if(datos.diamantes===undefined) datos.diamantes=0;
+      if(datos.ultimoAnuncio===undefined) datos.ultimoAnuncio=0;
     } else {
       await db.collection('usuarios').doc(user.uid).set(datos);
     }
     esVipActivo();
     actualizarUI();
+    actualizarAnuncio();
   }
 });
 
@@ -181,6 +247,7 @@ async function guardar(){
   if(!userActual) return;
   await db.collection('usuarios').doc(userActual.uid).set(datos);
   actualizarUI();
+  actualizarAnuncio();
 }
 
 async function canjearCodigo(){
@@ -224,6 +291,76 @@ async function comprarVip(dias, precio){
   alert("✅ ¡Compraste VIP! Ahora tienes " + totalHoras + "h de VIP en total 💎\nCuando se acabe ese tiempo, se te quita el VIP solo.");
 }
 
+function actualizarAnuncio(){
+  let btn = document.getElementById('btnAnuncio');
+  let msg = document.getElementById('msgAnuncio');
+  if(!btn || !msg) return;
+  let ahora = Date.now();
+  let falta = (datos.ultimoAnuncio + 24*60*60*1000) - ahora;
+  if(datos.ultimoAnuncio && falta > 0){
+    let h = Math.floor(falta / (60*60*1000));
+    let m = Math.floor((falta % (60*60*1000)) / (60*1000));
+    msg.innerText = "⏳ Ya ganaste tu VIP de hoy. Vuelve en " + h + "h " + m + "m para ver otro anuncio";
+    btn.innerText = "⏳ Ya viste tu anuncio de hoy - Vuelve en " + h + "h " + m + "m";
+    btn.style.opacity = "0.5";
+  } else {
+    msg.innerText = "✅ Puedes ver tu anuncio de hoy y ganar 4h VIP";
+    btn.innerText = "🎬 Ver Anuncio de 15s - Ganar 4h VIP GRATIS";
+    btn.style.opacity = "1";
+  }
+}
+
+function verAnuncio(){
+  if(!userActual){ alert("Primero inicia sesión"); return; }
+  let ahora = Date.now();
+  let falta = (datos.ultimoAnuncio + 24*60*60*1000) - ahora;
+  if(datos.ultimoAnuncio && falta > 0){
+    let h = Math.floor(falta / (60*60*1000));
+    let m = Math.floor((falta % (60*60*1000)) / (60*1000));
+    alert("⏳ Ya viste tu anuncio de hoy.\nVuelve en " + h + "h " + m + "m para ganar otras 4h VIP");
+    return;
+  }
+  anuncioListo = false;
+  let modal = document.getElementById('anuncioModal');
+  modal.style.display = "flex";
+  document.getElementById('btnX').style.display = "none";
+  document.getElementById('reclamarBtn').style.display = "none";
+  let seg = 15;
+  document.getElementById('contadorAnuncio').innerText = seg;
+  document.getElementById('contadorTop').innerText = "Espera " + seg + "s...";
+  document.getElementById('textoAnuncio').innerText = "Espera a que termine el anuncio para reclamar tu premio";
+  let timer = setInterval(()=>{
+    seg--;
+    document.getElementById('contadorAnuncio').innerText = seg;
+    document.getElementById('contadorTop').innerText = "Espera " + seg + "s...";
+    if(seg <= 0){
+      clearInterval(timer);
+      anuncioListo = true;
+      document.getElementById('contadorAnuncio').innerText = "✅";
+      document.getElementById('contadorTop').innerText = "¡Listo!";
+      document.getElementById('textoAnuncio').innerText = "¡Ya puedes reclamar tus 4 horas VIP!";
+      document.getElementById('btnX').style.display = "block";
+      document.getElementById('reclamarBtn').style.display = "block";
+    }
+  }, 1000);
+}
+
+async function reclamarVip(){
+  if(!anuncioListo){
+    alert("⏳ Espera a que terminen los 15 segundos");
+    return;
+  }
+  document.getElementById('anuncioModal').style.display = "none";
+  let ahora2 = Date.now();
+  datos.vip = true;
+  let base = (datos.vipHasta && datos.vipHasta > ahora2) ? datos.vipHasta : ahora2;
+  datos.vipHasta = base + (4 * 60 * 60 * 1000);
+  datos.ultimoAnuncio = ahora2;
+  await guardar();
+  let totalHoras = Math.floor((datos.vipHasta - Date.now()) / (60*60*1000));
+  alert("✅ ¡Felicidades! Viste el anuncio completo.\nTe ganaste 4 HORAS de VIP 🎬\nAhora tienes " + totalHoras + "h de VIP en total.\n\nVuelve en 24 horas para ver otro anuncio.");
+}
+
 async function cargarUsuarios(){
   if(!esAdmin()){ alert("Solo el Admin puede ver esto"); return; }
   let lista = document.getElementById('listaUsuarios');
@@ -256,7 +393,7 @@ async function darDiamantes(id){
   alert("✅ Le diste +" + cantidad + " diamantes.\nAhora tiene " + nuevo + " diamantes 💎");
   cargarUsuarios();
 }
-setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); } }, 30000);
+setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); actualizarAnuncio(); } }, 30000);
 </script>
 </body>
-</html>
+  </html>
