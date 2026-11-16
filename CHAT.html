@@ -23,8 +23,8 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 #chatBox{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:#0f0f18}
 .msg{background:#1f1f2e;padding:10px 12px;border-radius:14px;border-left:4px solid #ff6b00;max-width:85%;word-break:break-word}
 .msg.mio{background:#2a1a00;border-left-color:#ffd700;align-self:flex-end}
-.msg .nombre{font-size:12px;font-weight:900;color:#ffd700}
-.msg .nombre span{color:#fff;background:#ff6b00;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:5px}
+.msg .nombre{font-size:12px;font-weight:900;color:#ffd700;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.msg .nombre span{color:#fff;background:#ff6b00;font-size:10px;padding:2px 6px;border-radius:10px}
 .msg .texto{font-size:14px;margin:4px 0 0}
 .msg .hora{font-size:10px;color:#888;text-align:right;margin-top:4px}
 .inputBar{background:#000;padding:10px;display:flex;gap:8px;border-top:2px solid #ff6b00}
@@ -32,6 +32,8 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 .inputBar button{background:linear-gradient(90deg,#ff6b00,#ff2e00);color:#fff;border:none;padding:12px 18px;border-radius:20px;font-family:'Orbitron';font-weight:900;cursor:pointer}
 .btns{display:flex;gap:8px;padding:10px;background:#111}
 .btns button{flex:1;padding:10px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer;border-radius:10px}
+/* VERIFICADO - CIRCULITO AZUL CON CHULITO */
+.verificado{display:inline-flex;width:18px;height:18px;background:#0095F6;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:900;box-shadow:0 0 8px #0095F6;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -45,7 +47,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 </div>
 
 <div class="vipBar">
-<p><b>Nombre:</b> <span id="nombreBar" style="color:#ffd700">Cargando...</span> | <b>Correo:</b> <span id="userEmail">---</span></p>
+<p><b>Nombre:</b> <span id="nombreBar" style="color:#ffd700">Cargando...</span> <span id="verificadoBar" style="display:none" class="verificado">✓</span> | <b>Correo:</b> <span id="userEmail">---</span></p>
 <p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span> | <b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span></p>
 <p class="vipTime" id="vipTiempo">Cargando...</p>
 <p id="msgNoLogin" style="color:#ffcc00"></p>
@@ -73,7 +75,6 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-// 🔥 MISMO PROYECTO QUE TIENDA, TXT, PAREDES Y PERFIL - NO CAMBIAR
 const firebaseConfig = {
   apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
   authDomain: "akim-mods.firebaseapp.com",
@@ -87,8 +88,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-// 🔥 MISMA COLECCION usuarios QUE LA TIENDA - AQUÍ ESTÁ TU NOMBRE, BIO, COLOR, VIP Y DIAMANTES
-let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00"};
+let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00", verificado:false};
 let miNombre = "Invitado";
 
 function esVipActivo(){
@@ -99,7 +99,6 @@ function esVipActivo(){
 }
 function actualizarUI(){
   let activo = esVipActivo();
-  // Actualiza mi nombre desde PERFIL.html
   miNombre = datos.nombre || (userActual ? userActual.email.split('@')[0] : "Invitado");
   document.getElementById('nombreBar').innerText = miNombre;
   document.getElementById('diamantesTop').innerText = datos.diamantes || 0;
@@ -107,6 +106,8 @@ function actualizarUI(){
   document.getElementById('vipTop').innerText = activo ? "VIP ✅" : "NO VIP";
   document.getElementById('userVip').innerText = activo ? "✅ VIP ACTIVO" : "NO VIP";
   document.getElementById('userVip').className = activo ? "vipTime" : "vipNo";
+  // VERIFICADO ARRIBA AL LADO DE TU NOMBRE
+  document.getElementById('verificadoBar').style.display = datos.verificado ? "inline-flex" : "none";
   if(activo && datos.vipHasta === 0){
     document.getElementById('vipTiempo').innerText = "👑 VIP PERMANENTE";
   } else if(activo && datos.vipHasta){
@@ -138,9 +139,11 @@ function mostrarMensaje(doc){
   let esMio = userActual && data.uid === userActual.uid;
   div.className = 'msg' + (esMio ? ' mio' : '');
   let badge = "";
-  if(data.vip) badge = "<span>VIP 👑</span>";
-  if(data.admin) badge = "<span>ADMIN 👑</span>";
-  div.innerHTML = '<div class="nombre">' + (data.nombre || "Jugador") + ' ' + badge + '</div><div class="texto"></div><div class="hora">' + formatearHora(data.fecha) + '</div>';
+  if(data.vip) badge += "<span>VIP 👑</span>";
+  if(data.admin) badge += "<span>ADMIN 👑</span>";
+  // 🔥 CHULITO VERIFICADO AL LADO DEL NOMBRE EN EL CHAT
+  let checkVerificado = data.verificado ? '<span class="verificado">✓</span>' : '';
+  div.innerHTML = '<div class="nombre"><span style="background:none;padding:0;color:#ffd700;font-size:12px">' + (data.nombre || "Jugador") + '</span> ' + checkVerificado + ' ' + badge + '</div><div class="texto"></div><div class="hora">' + formatearHora(data.fecha) + '</div>';
   div.querySelector('.texto').textContent = data.texto;
   box.appendChild(div);
   box.scrollTop = box.scrollHeight;
@@ -155,13 +158,14 @@ function enviarMensaje(){
     window.location.href = 'tienda.html';
     return;
   }
-  // 🔥 AQUÍ YA MANDA TU NOMBRE DE PERFIL, NO EL CORREO
+  // 🔥 MANDA TU NOMBRE + TU VERIFICADO + TU VIP
   db.collection('chat_global').add({
     texto: texto,
     nombre: miNombre,
     uid: userActual.uid,
     vip: esVipActivo(),
     admin: datos.admin || false,
+    verificado: datos.verificado || false,
     fecha: firebase.firestore.FieldValue.serverTimestamp()
   }).then(()=>{ input.value = ""; }).catch((e)=>{ alert("Error al enviar: " + e.message); });
 }
@@ -175,7 +179,6 @@ auth.onAuthStateChanged(async (user)=>{
     userActual = user;
     document.getElementById('userEmail').innerText = user.email;
     document.getElementById('msgNoLogin').innerText = "";
-    // 🔥 ESCUCHA EN VIVO TU CUENTA: si te cambias el nombre, VIP o diamantes en PERFIL o TIENDA, aquí se actualiza solo
     db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
       if(doc.exists){
         datos = doc.data();
@@ -192,7 +195,6 @@ auth.onAuthStateChanged(async (user)=>{
     document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda con el mismo correo para chatear y ver tu VIP.";
     actualizarUI();
   }
-  // 🔥 CHAT GLOBAL EN VIVO - Todos ven lo que escriben los demás
   db.collection('chat_global').orderBy('fecha','asc').limitToLast(100).onSnapshot((snap)=>{
     snap.docChanges().forEach((change)=>{
       if(change.type === 'added'){ mostrarMensaje(change.doc); }
@@ -202,4 +204,4 @@ auth.onAuthStateChanged(async (user)=>{
 setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
 </script>
 </body>
-  </html>
+</html>
