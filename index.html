@@ -34,12 +34,10 @@ small{color:#999}
 </style>
 </head>
 <body>
-
 <header>
 <h1>AKIM MODS 👑</h1>
 <p>Mods Premium • VIP • Diamantes</p>
 </header>
-
 <div id="authBox" class="card">
 <h2>🔐 Iniciar Sesión / Registrarse</h2>
 <input type="email" id="email" placeholder="Tu correo">
@@ -48,7 +46,6 @@ small{color:#999}
 <button class="btn-blue" onclick="login()">Entrar</button>
 <button class="btn-gray" onclick="registrar()">Crear Cuenta Nueva</button>
 </div>
-
 <div id="userBox" class="card hidden">
 <h2 id="saludo">Hola 👋</h2>
 <p id="miInfo"></p>
@@ -58,7 +55,6 @@ small{color:#999}
 <button class="btn-red" onclick="salir()">Salir</button>
 <div id="zonaDescarga" style="margin-top:15px"></div>
 </div>
-
 <div id="adminBox" class="card hidden">
 <h2>🛡️ Panel Moderador</h2>
 <div class="stats">
@@ -69,31 +65,28 @@ small{color:#999}
 <button class="btn-blue" onclick="cargarUsuarios()">🔄 Cargar Usuarios</button>
 <div id="listaUsuarios"></div>
 </div>
-
 <div class="card">
 <h2>🎮 Mods Disponibles</h2>
 <div id="listaMods"></div>
 </div>
-
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
 const firebaseConfig = {
-  apiKey: "TU_APIKEY_VIEJA",
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
   authDomain: "akim-mods.firebaseapp.com",
   projectId: "akim-mods",
-  storageBucket: "akim-mods.appspot.com",
-  messagingSenderId: "TU_ID_VIEJO",
-  appId: "TU_APPID_VIEJO"
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
 let userActual = null;
 let datosActual = null;
-
 async function registrar(){
   let email = document.getElementById('email').value;
   let pass = document.getElementById('password').value;
@@ -121,7 +114,6 @@ function actualizarUI(){
   if(!datosActual) return;
   document.getElementById('misDiamantes').textContent = datosActual.diamantes || 0;
   document.getElementById('saludo').textContent = "Hola " + (datosActual.nombre || "👋");
-  // OJO: AQUI NO MOSTRAMOS BANEADO AL USUARIO, PARA EL SIEMPRE ES NORMAL O VIP
   let estado = esVipActivo() ? "👑 VIP" : "Normal";
   document.getElementById('miEstado').textContent = estado;
   document.getElementById('miInfo').textContent = datosActual.email;
@@ -156,7 +148,6 @@ async function cargarUsuarios(){
 }
 async function darVip(id){ try{ await db.collection('usuarios').doc(id).update({vip:true, vipHasta:0}); alert("VIP dado 👑"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
 async function quitarVip(id){ try{ await db.collection('usuarios').doc(id).update({vip:false, vipHasta:0, admin:false}); alert("VIP quitado ✅"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
-// ESTE BANEAR ES DE MENTIRAS, SOLO CAMBIA EL LETRERO PARA TI, NO BLOQUEA NADA
 async function banear(id, estaBaneado){ try{ await db.collection('usuarios').doc(id).update({baneadoVisual:!estaBaneado}); alert(estaBaneado?"Usuario desbaneado ✅":"Usuario baneado 🚫 - Solo se ve en tu panel, a él no le pasa nada"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
 async function darDiamantes(id){ try{ let doc = await db.collection('usuarios').doc(id).get(); let d = doc.data(); let nuevo = (d.diamantes||0)+100; await db.collection('usuarios').doc(id).update({diamantes:nuevo}); alert("+100 diamantes dados 💎"); cargarUsuarios(); }catch(e){ alert("Error: "+e.message); } }
 async function hacerAdmin(id, esAdmin){ try{ await db.collection('usuarios').doc(id).update({admin:!esAdmin}); alert(esAdmin?"Admin quitado":"Ahora es Admin 🛡️"); cargarUsuarios(); }catch(e){ alert("Error: "+e.message); } }
