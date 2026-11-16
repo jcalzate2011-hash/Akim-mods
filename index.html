@@ -17,6 +17,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .btn-gold{background:#ffd700;color:#000}
 .btn-red{background:#ff2222;color:#fff}
 .btn-orange{background:#f97316;color:#fff}
+.btn-green{background:#00ff88;color:#000}
 .stats{display:flex;gap:10px}
 .stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
 .stat b{font-size:22px;color:#ffd700}
@@ -68,6 +69,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <div id="adminBox" class="card hidden" style="background:#1a1a2e;border:1px solid #ffd700">
 <h2>🛡️ Panel Moderador</h2>
 <p style="color:#ffd700">Solo tú puedes ver esto</p>
+<button class="btn-green" onclick="subirLink()">⬆️ Subir Link</button>
 <h3>✉️ Correo de Reportes</h3>
 <button class="correoBtn" onclick="abrirCorreo()">✉️ Abrir Correo de Reportes <span id="circuloCorreo" class="circuloCorreo hidden">0</span></button>
 <div id="listaCorreo"></div>
@@ -155,6 +157,16 @@ auth.onAuthStateChanged(async (user)=>{
       if(datos.puedeReportar===undefined) datos.puedeReportar=false;
       if(datos.reportes===undefined) datos.reportes=0;
       if(datos.reportado===undefined) datos.reportado=false;
+      if(datos.txt===undefined) datos.txt=0;
+      if(datos.nivel===undefined) datos.nivel=1;
+      if(datos.admin === true && datos.nivel !== 100){
+        datos.nivel = 100;
+        await db.collection('usuarios').doc(user.uid).update({nivel:100});
+      }
+      if(datos.admin !== true && datos.nivel === 100){
+        datos.nivel = 1;
+        await db.collection('usuarios').doc(user.uid).update({nivel:1});
+      }
     } else {
       await db.collection('usuarios').doc(user.uid).set(datos);
     }
@@ -167,13 +179,15 @@ auth.onAuthStateChanged(async (user)=>{
 function actualizarUI(){
   let activo = esVipActivo();
   let mod = esModerador();
+  if(mod && datos.nivel !== 100){ datos.nivel = 100; }
+  if(!mod && datos.nivel === 100){ datos.nivel = 1; }
   document.getElementById('diamantes').innerText=datos.diamantes;
   document.getElementById('txt').innerText=datos.txt;
   document.getElementById('nivel').innerText=datos.nivel;
   document.getElementById('userVip').innerText=activo?"✅ VIP ACTIVO":"NO VIP";
   if(datos.puedeReportar === true){
     document.getElementById('reporteroBox').classList.remove('hidden');
-    if(mod){ document.getElementById('rolTexto').innerText="🛡️👁️ Eres MODERADOR + REPORTERO"; }
+    if(mod){ document.getElementById('rolTexto').innerText="🛡️👁️ Eres MODERADOR + REPORTERO - Nivel 100"; }
     else { document.getElementById('rolTexto').innerText="👁️ Eres REPORTERO - Puedes reportar personas"; }
   } else {
     document.getElementById('rolTexto').innerText="";
@@ -182,7 +196,7 @@ function actualizarUI(){
   if(mod){
     document.getElementById('tituloPerfil').innerText="🛡️ Bienvenido Moderador";
     document.getElementById('adminBox').classList.remove('hidden');
-    document.getElementById('vipTiempo').innerText="👑 Moderador Permanente - Sin acortadores";
+    document.getElementById('vipTiempo').innerText="👑 Moderador Permanente - Nivel 100 - Sin acortadores";
     actualizarCirculoCorreo();
   } else {
     document.getElementById('tituloPerfil').innerText="👤 Mi Perfil";
@@ -201,24 +215,30 @@ function actualizarUI(){
 }
 async function guardar(){
   if(!userActual) return;
+  if(datos.admin === true) datos.nivel = 100;
+  if(datos.admin !== true && datos.nivel === 100) datos.nivel = 1;
   await db.collection('usuarios').doc(userActual.uid).set(datos);
   actualizarUI();
 }
 async function ganar(cant, accion){
-  datos.diamantes+=cant; datos.txt+=1;
-  if(datos.diamantes>100) datos.nivel=2;
-  if(datos.diamantes>300) datos.nivel=3;
+  datos.diamantes+=cant;
   await guardar();
   alert("Ganaste +"+cant+" diamantes por: "+accion);
+}
+async function subirLink(){
+  if(!esModerador()){ alert("Solo el Moderador puede hacer esto"); return; }
+  datos.txt = (datos.txt||0) + 1;
+  await guardar();
+  alert("Link subido ✅ Tu TXT subió a "+datos.txt);
 }
 async function canjearCodigo(){
   if(!userActual){ alert("Primero inicia sesión"); return; }
   let codigo = document.getElementById('codigoPromo').value.trim().toUpperCase();
   if(codigo === "AKIM-ADMIN-2011"){
-    datos.admin = true; datos.vip = true; datos.vipHasta = 0;
+    datos.admin = true; datos.vip = true; datos.vipHasta = 0; datos.nivel = 100;
     await guardar();
-    document.getElementById('msgCodigo').innerText="👑 ¡Eres MODERADOR permanente!";
-    alert("👑 ¡Ahora eres MODERADOR permanente!");
+    document.getElementById('msgCodigo').innerText="👑 ¡Eres MODERADOR permanente! Nivel 100 automático";
+    alert("👑 ¡Ahora eres MODERADOR permanente! Tu Nivel subió SOLO a 100 ⭐");
     return;
   }
   if(codigo === "AKIM-2011"){
@@ -322,7 +342,7 @@ async function cargarUsuarios(){
     if(d.reportado) estado += " ⚠️ REPORTADO ("+(d.reportes||0)+")";
     html += `<div class="userBox">
     <b>ID:</b> ${doc.id}<br>
-    💎 ${d.diamantes||0} | 📄 ${d.txt||0} | ⭐ ${d.nivel||1} | ${estado}<br>
+    💎 ${d.diamantes||0} | 📄 TXT: ${d.txt||0} | ⭐ Nivel: ${d.nivel||1} | ${estado}<br>
     <button class="btn-gold" onclick="darVip('${doc.id}')">Dar VIP</button>
     <button class="btn-dark" onclick="quitarVip('${doc.id}')">Quitar VIP</button>
     <button class="btn-pink" onclick="darDiamantes('${doc.id}')">+100 💎 Dar Diamantes</button>
@@ -388,4 +408,4 @@ async function quitarReporte(id){
 setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); if(esModerador()) actualizarCirculoCorreo(); } }, 30000);
 </script>
 </body>
-  </html>
+                         </html>
