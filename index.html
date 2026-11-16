@@ -79,7 +79,6 @@ small{color:#999}
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
-// ===== CONFIG - PEGA TU CONFIG VIEJA AQUI, SOLO ESTA PARTE =====
 const firebaseConfig = {
   apiKey: "TU_APIKEY_VIEJA",
   authDomain: "akim-mods.firebaseapp.com",
@@ -88,7 +87,6 @@ const firebaseConfig = {
   messagingSenderId: "TU_ID_VIEJO",
   appId: "TU_APPID_VIEJO"
 };
-// ===== NO TOCAR ABAJO - AQUI YA QUEDO ARREGLADO EL ERROR DE AUTH =====
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -200,4 +198,4 @@ setInterval(async ()=>{
 cargarMods();
 </script>
 </body>
-</html>
+  </html>
