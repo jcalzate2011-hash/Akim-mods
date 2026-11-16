@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM MODS - Mi Perfil | Free Fire</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
+.topbar{background:#000;border-bottom:3px solid #ff6b00;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.topbar .logo{font-family:'Orbitron';font-weight:900;font-size:18px}
+.topbar .logo span{color:#ff6b00}
+.hud{display:flex;gap:6px}
+.hud div{background:#1c1c26;border:1px solid #ff6b00;border-radius:20px;padding:5px 10px;font-size:12px;font-weight:800}
+.hud b{color:#ffd700}
+.hero{text-align:center;padding:20px 14px}
+.avatar{width:110px;height:110px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-family:'Orbitron';font-size:42px;font-weight:900;border:4px solid #ffd700;background:linear-gradient(135deg,#ff6b00,#ff2e00)}
+.hero h2{font-family:'Orbitron';margin:12px 0 4px;font-size:24px}
+.hero p{color:#bbb;margin:2px 0;font-size:13px}
+.vipPanel{margin:0 14px 14px;background:linear-gradient(135deg,#1a1a26,#2a1a00);border:2px solid #ffd700;padding:14px}
+.vipPanel p{margin:4px 0;font-size:13px}
+.vipTime{font-size:18px;font-weight:900;color:#00ff88}
+.vipNo{color:#ff4d4d;font-weight:900}
+.card{margin:0 14px 14px;background:#1f1f2e;border:1px solid #333;padding:16px}
+.card h3{font-family:'Orbitron';margin:0 0 12px;font-size:16px;color:#ffd700}
+.card label{font-size:12px;font-weight:800;color:#aaa}
+.card input,.card textarea,.card select{width:100%;padding:12px;margin:6px 0 12px;border-radius:10px;border:1px solid #444;background:#12121c;color:#fff;font-size:14px;outline:none}
+.btn-guardar{width:100%;background:linear-gradient(90deg,#ff6b00,#ff2e00);color:#fff;font-family:'Orbitron';font-weight:900;padding:14px;border:none;cursor:pointer;font-size:15px}
+.btn-volver{width:100%;background:#222;color:#fff;padding:12px;border:1px solid #555;font-weight:800;cursor:pointer;margin-top:10px}
+.colores{display:flex;gap:10px;margin:8px 0 14px}
+.colorOpt{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent}
+.colorOpt.sel{border-color:#fff}
+.btns{display:flex;gap:8px;padding:0 14px 20px}
+.btns button{flex:1;padding:12px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+<div class="logo">AKIM<span> MODS</span> - PERFIL</div>
+<div class="hud">
+<div>💎 <b id="diamantesTop">0</b></div>
+<div>👑 <b id="vipTop">NO VIP</b></div>
+</div>
+</div>
+
+<div class="hero">
+<div class="avatar" id="avatarPreview">A</div>
+<h2 id="nombrePreview">Cargando...</h2>
+<p id="bioPreview">---</p>
+<p id="emailPreview">---</p>
+</div>
+
+<div class="vipPanel">
+<p><b>Correo:</b> <span id="userEmail">---</span></p>
+<p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span></p>
+<p class="vipTime" id="vipTiempo">Cargando...</p>
+<p><b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span></p>
+<p id="msgNoLogin" style="color:#ffcc00"></p>
+</div>
+
+<div class="card">
+<h3>✏️ PERSONALIZAR MI PERFIL</h3>
+<label>Tu Nombre / Apodo - Así te van a ver en todas partes</label>
+<input id="inputNombre" type="text" placeholder="Ej: AKIM PRO, Panelero, Klk Jente..." maxlength="20">
+<label>Tu Bio / Frase</label>
+<textarea id="inputBio" placeholder="Ej: El mejor en PVP 🔥, Rompo paredes..." maxlength="80" rows="2"></textarea>
+<label>Color de tu perfil</label>
+<div class="colores" id="coloresBox">
+<div class="colorOpt sel" data-color="#ff6b00" style="background:#ff6b00" onclick="elegirColor(this)"></div>
+<div class="colorOpt" data-color="#00e5ff" style="background:#00e5ff" onclick="elegirColor(this)"></div>
+<div class="colorOpt" data-color="#00ff44" style="background:#00ff44" onclick="elegirColor(this)"></div>
+<div class="colorOpt" data-color="#ff2e7e" style="background:#ff2e7e" onclick="elegirColor(this)"></div>
+<div class="colorOpt" data-color="#ffd700" style="background:#ffd700" onclick="elegirColor(this)"></div>
+<div class="colorOpt" data-color="#7b00ff" style="background:#7b00ff" onclick="elegirColor(this)"></div>
+</div>
+<button class="btn-guardar" onclick="guardarPerfil()">💾 GUARDAR MI PERFIL</button>
+<p id="msgGuardado" style="color:#00ff88;font-weight:800;text-align:center"></p>
+</div>
+
+<div class="btns">
+<button onclick="window.location.href='tienda.html'">🛒 Tienda</button>
+<button onclick="window.location.href='CHAT.html'">💬 Chat</button>
+<button onclick="window.location.href='TXT.html'">📂 Texturas</button>
+<button onclick="window.location.href='PAREDES.html'">🧱 Paredes</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+// 🔥 MISMO PROYECTO QUE TODO LO DEMAS
+const firebaseConfig = {
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let userActual = null;
+let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00"};
+let colorElegido = "#ff6b00";
+
+function elegirColor(el){
+  document.querySelectorAll('.colorOpt').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  colorElegido = el.getAttribute('data-color');
+  document.getElementById('avatarPreview').style.background = colorElegido;
+}
+
+function esVipActivo(){
+  if(datos.vip && datos.vipHasta === 0) return true;
+  if(!datos.vip) return false;
+  if(datos.vipHasta && Date.now() > datos.vipHasta){ datos.vip = false; datos.vipHasta = 0; return false; }
+  return true;
+}
+function actualizarUI(){
+  let activo = esVipActivo();
+  document.getElementById('diamantesTop').innerText = datos.diamantes || 0;
+  document.getElementById('diamantesBar').innerText = datos.diamantes || 0;
+  document.getElementById('vipTop').innerText = activo ? "VIP ✅" : "NO VIP";
+  document.getElementById('userVip').innerText = activo ? "✅ VIP ACTIVO" : "NO VIP";
+  document.getElementById('userVip').className = activo ? "vipTime" : "vipNo";
+  let nombreMostrar = datos.nombre || (userActual ? userActual.email.split('@')[0] : "Jugador");
+  document.getElementById('nombrePreview').innerText = nombreMostrar + (activo ? " 👑" : "");
+  document.getElementById('bioPreview').innerText = datos.bio || "Sin bio todavía";
+  document.getElementById('avatarPreview').innerText = nombreMostrar.charAt(0).toUpperCase();
+  document.getElementById('avatarPreview').style.background = datos.colorPerfil || "#ff6b00";
+  if(activo && datos.vipHasta === 0){
+    document.getElementById('vipTiempo').innerText = "👑 VIP PERMANENTE";
+  } else if(activo && datos.vipHasta){
+    let falta = datos.vipHasta - Date.now();
+    let dias = Math.floor(falta / (24*60*60*1000));
+    let horas = Math.floor((falta % (24*60*60*1000)) / (60*60*1000));
+    let minutos = Math.floor((falta % (60*60*1000)) / (60*1000));
+    if(dias > 0) document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + dias + "d " + horas + "h " + minutos + "m de VIP";
+    else document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
+  } else {
+    document.getElementById('vipTiempo').innerText = "Sin VIP - Ve a la tienda a conseguirlo";
+  }
+}
+
+async function guardarPerfil(){
+  if(!userActual){ alert("Inicia sesión primero en la tienda"); window.location.href='tienda.html'; return; }
+  let nuevoNombre = document.getElementById('inputNombre').value.trim();
+  let nuevaBio = document.getElementById('inputBio').value.trim();
+  if(!nuevoNombre){ alert("Pon tu nombre / apodo primero"); return; }
+  document.getElementById('msgGuardado').innerText = "Guardando...";
+  try{
+    await db.collection('usuarios').doc(userActual.uid).set({
+      nombre: nuevoNombre,
+      bio: nuevaBio,
+      colorPerfil: colorElegido
+    }, {merge:true});
+    datos.nombre = nuevoNombre;
+    datos.bio = nuevaBio;
+    datos.colorPerfil = colorElegido;
+    actualizarUI();
+    document.getElementById('msgGuardado').innerText = "✅ ¡Perfil guardado! Ya en todas partes te ves como " + nuevoNombre;
+  }catch(e){ alert("Error: " + e.message); }
+}
+
+auth.onAuthStateChanged(async (user)=>{
+  if(user){
+    userActual = user;
+    document.getElementById('userEmail').innerText = user.email;
+    document.getElementById('emailPreview').innerText = user.email;
+    document.getElementById('msgNoLogin').innerText = "";
+    db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
+      if(doc.exists){
+        datos = doc.data();
+        if(datos.vipHasta===undefined) datos.vipHasta=0;
+        if(datos.diamantes===undefined) datos.diamantes=0;
+        if(!datos.nombre) datos.nombre = user.email.split('@')[0];
+        document.getElementById('inputNombre').value = datos.nombre;
+        document.getElementById('inputBio').value = datos.bio || "";
+        colorElegido = datos.colorPerfil || "#ff6b00";
+        actualizarUI();
+      }
+    });
+  } else {
+    document.getElementById('userEmail').innerText = "No has iniciado sesión";
+    document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda con el mismo correo para editar tu perfil.";
+    actualizarUI();
+  }
+});
+setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
+</script>
+</body>
+  </html>
