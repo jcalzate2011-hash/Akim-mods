@@ -45,12 +45,12 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 </div>
 
 <div class="vipBar">
-<p><b>Correo:</b> <span id="userEmail">---</span> | <b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span></p>
+<p><b>Correo:</b> <span id="userEmail">---</span> | <b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span> | <b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span></p>
 <p class="vipTime" id="vipTiempo">Cargando...</p>
 <p id="msgNoLogin" style="color:#ffcc00"></p>
 </div>
 
-<div class="online">🟢 EN LÍNEA: <b id="onlineCount">1</b> jugadores en el chat • Todos ven lo que escribes</div>
+<div class="online">🟢 EN LÍNEA: <b id="onlineCount">Todos los que estén en la web</b> • Todos ven lo que escribes en vivo</div>
 
 <div id="chatBox">
 <div style="text-align:center;color:#888;font-size:13px;padding:20px">🔥 Bienvenido al Chat Global de AKIM MODS<br>Escribe algo y todos lo van a ver en vivo</div>
@@ -71,6 +71,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
+// 🔥 MISMO PROYECTO QUE TIENDA, TXT Y PAREDES - NO CAMBIAR
 const firebaseConfig = {
   apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
   authDomain: "akim-mods.firebaseapp.com",
@@ -84,6 +85,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
+// 🔥 MISMA COLECCION usuarios QUE LA TIENDA
 let datos = {diamantes:0, vip:false, vipHasta:0, admin:false};
 let miNombre = "Invitado";
 
@@ -96,6 +98,7 @@ function esVipActivo(){
 function actualizarUI(){
   let activo = esVipActivo();
   document.getElementById('diamantesTop').innerText = datos.diamantes || 0;
+  document.getElementById('diamantesBar').innerText = datos.diamantes || 0;
   document.getElementById('vipTop').innerText = activo ? "VIP ✅" : "NO VIP";
   document.getElementById('userVip').innerText = activo ? "✅ VIP ACTIVO" : "NO VIP";
   document.getElementById('userVip').className = activo ? "vipTime" : "vipNo";
@@ -124,7 +127,6 @@ function formatearHora(ts){
 function mostrarMensaje(doc){
   let data = doc.data();
   let box = document.getElementById('chatBox');
-  // Evitar duplicados
   if(document.getElementById('msg-'+doc.id)) return;
   let div = document.createElement('div');
   div.id = 'msg-'+doc.id;
@@ -142,10 +144,7 @@ function mostrarMensaje(doc){
 function enviarMensaje(){
   let input = document.getElementById('inputMsg');
   let texto = input.value.trim();
-  if(!texto){
-    alert("Escribe algo primero");
-    return;
-  }
+  if(!texto){ alert("Escribe algo primero"); return; }
   if(!userActual){
     alert("⚠️ Tienes que iniciar sesión en la tienda con el mismo correo para chatear.");
     window.location.href = 'tienda.html';
@@ -158,11 +157,7 @@ function enviarMensaje(){
     vip: esVipActivo(),
     admin: datos.admin || false,
     fecha: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{
-    input.value = "";
-  }).catch((e)=>{
-    alert("Error al enviar: " + e.message);
-  });
+  }).then(()=>{ input.value = ""; }).catch((e)=>{ alert("Error al enviar: " + e.message); });
 }
 
 document.getElementById('inputMsg').addEventListener('keydown', function(e){
@@ -175,28 +170,29 @@ auth.onAuthStateChanged(async (user)=>{
     miNombre = user.email.split('@')[0];
     document.getElementById('userEmail').innerText = user.email;
     document.getElementById('msgNoLogin').innerText = "";
-    const doc = await db.collection('usuarios').doc(user.uid).get();
-    if(doc.exists){
-      datos = doc.data();
-      if(datos.vipHasta===undefined) datos.vipHasta=0;
-      if(datos.diamantes===undefined) datos.diamantes=0;
-    }
+    // 🔥 ESCUCHA EN VIVO TU CUENTA: si te dan VIP o diamantes en la tienda, aquí se actualiza solo
+    db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
+      if(doc.exists){
+        datos = doc.data();
+        if(datos.vipHasta===undefined) datos.vipHasta=0;
+        if(datos.diamantes===undefined) datos.diamantes=0;
+        actualizarUI();
+      }
+    });
     actualizarUI();
   } else {
     document.getElementById('userEmail').innerText = "No has iniciado sesión";
     document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda con el mismo correo para chatear y ver tu VIP.";
     actualizarUI();
   }
-  // Escuchar mensajes en vivo
+  // 🔥 CHAT GLOBAL EN VIVO - Todos ven lo que escriben los demás
   db.collection('chat_global').orderBy('fecha','asc').limitToLast(100).onSnapshot((snap)=>{
     snap.docChanges().forEach((change)=>{
-      if(change.type === 'added'){
-        mostrarMensaje(change.doc);
-      }
+      if(change.type === 'added'){ mostrarMensaje(change.doc); }
     });
   });
 });
 setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
 </script>
 </body>
-  </html>
+</html>
