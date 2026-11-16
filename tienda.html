@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM TIENDA VIP</title>
+<style>
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center}
+header{padding:20px;background:linear-gradient(90deg,#ff0055,#7b00ff)}
+.logo{font-size:28px;font-weight:900;letter-spacing:2px}
+.card{background:#15151f;margin:15px;border-radius:16px;padding:18px;text-align:left}
+input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;background:#222231;color:#fff;box-sizing:border-box}
+button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
+.btn-pink{background:#ff0055;color:#fff}
+.btn-white{background:#fff;color:#000}
+.btn-dark{background:#2a2a3a;color:#fff}
+.btn-gold{background:#ffd700;color:#000}
+.stats{display:flex;gap:10px}
+.stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
+.stat b{font-size:22px;color:#ffd700}
+.vip{color:#00ff88;font-weight:900}
+.hidden{display:none !important}
+.userBox{background:#222231;padding:10px;margin:8px 0;border-radius:10px}
+.userBox button{padding:8px;font-size:13px;margin:3px 0}
+.vipBox{background:linear-gradient(135deg,#3a2a00,#1a1a2e);border:2px solid #ffd700;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
+</style>
+</head>
+<body>
+<header><div class="logo">🛒 AKIM TIENDA VIP 🛒</div><div>Compra VIP con diamantes</div></header>
+
+<div id="loginBox" class="card">
+<h2>👤 Entra a la Tienda</h2>
+<input id="email" type="email" placeholder="Tu correo">
+<input id="pass" type="password" placeholder="Contraseña">
+<button class="btn-pink" onclick="registrar()">Crear Cuenta</button>
+<button class="btn-white" onclick="entrar()">Iniciar Sesión</button>
+<button class="btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button>
+<p id="msg" style="color:#ffcc00"></p>
+</div>
+
+<div id="perfilBox" class="card hidden">
+<h2>👤 Mi Cuenta</h2>
+<p><b>Correo:</b> <span id="userEmail"></span></p>
+<p><b>VIP:</b> <span id="userVip" class="vip">NO VIP</span></p>
+<p><b>ADMIN:</b> <span id="userAdmin" style="color:#ffd700;font-weight:900">NO</span></p>
+<p id="vipTiempo" style="color:#ffd700;font-weight:800"></p>
+<div class="stats">
+<div class="stat">💎<br><b id="diamantes">0</b><br>Diamantes</div>
+<div class="stat">👑<br><b id="diasVip">0</b><br>VIP</div>
+</div>
+
+<h3>🎟️ Código Promocional</h3>
+<p style="font-size:13px;color:#aaa">Código AKIM 2026 - Da ADMIN PERMANENTE</p>
+<input id="codigoPromo" placeholder="Escribe AKIM-2026">
+<button class="btn-gold" onclick="canjearCodigo()">Canjear Código</button>
+<p id="msgCodigo" style="color:#ffd700"></p>
+
+<div class="vipBox">
+<h2>👑 VIP 1 DÍA</h2>
+<p>Sin anuncios - Descargas directas - Todo desbloqueado</p>
+<h2 style="color:#ffd700">💎 1000 Diamantes</h2>
+<button class="btn-gold" onclick="comprarVip()">👑 Comprar VIP con 1000 Diamantes</button>
+<p id="msgCompra" style="color:#ffd700"></p>
+</div>
+
+<button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
+</div>
+
+<div id="adminBox" class="card hidden" style="background:#1a1a2e;border:1px solid #ffd700">
+<h2>🛡️ Menú Admin - PERMANENTE</h2>
+<p style="color:#ffd700">Solo dar diamantes y ver cuántos tienen</p>
+<button class="btn-white" onclick="cargarUsuarios()">👥 Ver Usuarios y sus Diamantes</button>
+<div id="listaUsuarios"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let userActual = null;
+let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0, admin:false, baneadoVisual:false, puedeReportar:false, reportes:0, reportado:false};
+
+function esVipActivo(){
+  if(datos.vip && datos.vipHasta === 0) return true;
+  if(!datos.vip) return false;
+  if(datos.vipHasta && Date.now() > datos.vipHasta){
+    datos.vip = false; datos.vipHasta = 0; guardar(); return false;
+  }
+  return true;
+}
+function esAdmin(){ return datos.admin === true; }
+
+async function registrar(){
+  const e=document.getElementById('email').value;
+  const p=document.getElementById('pass').value;
+  try{ await auth.createUserWithEmailAndPassword(e,p); document.getElementById('msg').innerText="Cuenta creada!"; }
+  catch(err){ document.getElementById('msg').innerText=err.message; }
+}
+async function entrar(){
+  const e=document.getElementById('email').value;
+  const p=document.getElementById('pass').value;
+  try{ await auth.signInWithEmailAndPassword(e,p); }
+  catch(err){ document.getElementById('msg').innerText=err.message; }
+}
+async function loginGoogle(){
+  const prov = new firebase.auth.GoogleAuthProvider();
+  try{ await auth.signInWithPopup(prov); }catch(err){ document.getElementById('msg').innerText=err.message; }
+}
+async function salir(){ await auth.signOut(); location.reload(); }
+
+auth.onAuthStateChanged(async (user)=>{
+  if(user){
+    userActual=user;
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('perfilBox').classList.remove('hidden');
+    document.getElementById('adminBox').classList.add('hidden');
+    document.getElementById('userEmail').innerText=user.email;
+    const doc = await db.collection('usuarios').doc(user.uid).get();
+    if(doc.exists){
+      datos=doc.data();
+      if(datos.vipHasta===undefined) datos.vipHasta=0;
+      if(datos.admin===undefined) datos.admin=false;
+      if(datos.diamantes===undefined) datos.diamantes=0;
+    } else {
+      await db.collection('usuarios').doc(user.uid).set(datos);
+    }
+    esVipActivo();
+    actualizarUI();
+  }
+});
+
+function actualizarUI(){
+  let activo = esVipActivo();
+  document.getElementById('diamantes').innerText = datos.diamantes;
+  document.getElementById('userVip').innerText = activo ? "✅ VIP ACTIVO" : "NO VIP";
+  document.getElementById('userAdmin').innerText = esAdmin() ? "✅ ADMIN PERMANENTE" : "NO";
+  if(activo && datos.vipHasta === 0){
+    document.getElementById('vipTiempo').innerText = "👑 VIP PERMANENTE";
+    document.getElementById('diasVip').innerText = "∞";
+  } else if(activo && datos.vipHasta){
+    let falta = datos.vipHasta - Date.now();
+    let horas = Math.floor(falta/1000/60/60);
+    let minutos = Math.floor((falta/1000/60)%60);
+    document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
+    document.getElementById('diasVip').innerText = "1";
+  } else {
+    document.getElementById('vipTiempo').innerText = "";
+    document.getElementById('diasVip').innerText = "0";
+  }
+  if(esAdmin()){
+    document.getElementById('adminBox').classList.remove('hidden');
+  } else {
+    document.getElementById('adminBox').classList.add('hidden');
+  }
+}
+async function guardar(){
+  if(!userActual) return;
+  await db.collection('usuarios').doc(userActual.uid).set(datos);
+  actualizarUI();
+}
+
+// AKIM-2026 DA ADMIN PERMANENTE - NO DA VIP
+async function canjearCodigo(){
+  if(!userActual){ alert("Primero inicia sesión"); return; }
+  let codigo = document.getElementById('codigoPromo').value.trim().toUpperCase();
+  if(codigo === "AKIM-2026" || codigo === "AKIM 2026" || codigo === "AKIM-ADMIN-2026"){
+    datos.admin = true; // ADMIN PERMANENTE - NUNCA SE QUITA
+    await guardar();
+    document.getElementById('msgCodigo').innerText = "🛡️ ¡Código correcto! Ahora eres ADMIN PERMANENTE";
+    alert("🛡️ ¡Código correcto! Ahora eres ADMIN PERMANENTE AKIM 2026, para siempre. Ya te sale el menú para dar diamantes.");
+    return;
+  }
+  document.getElementById('msgCodigo').innerText = "Código incorrecto ❌";
+  alert("Código incorrecto ❌");
+}
+
+// COMPRAR VIP 1 DIA CON 1000 DIAMANTES - UNICA FORMA DE TENER VIP
+async function comprarVip(){
+  if(!userActual){ alert("Primero inicia sesión"); return; }
+  if(datos.diamantes < 1000){
+    document.getElementById('msgCompra').innerText = "❌ Diamantes insuficientes. Tienes " + datos.diamantes + " y necesitas 1000";
+    alert("❌ Diamantes insuficientes. Tienes " + datos.diamantes + " diamantes y el VIP vale 1000");
+    return;
+  }
+  if(!confirm("¿Quieres comprar VIP 1 DÍA por 1000 diamantes? Te van a quedar " + (datos.diamantes - 1000) + " diamantes")) return;
+  datos.diamantes -= 1000;
+  datos.vip = true;
+  datos.vipHasta = Date.now() + (24*60*60*1000);
+  await guardar();
+  document.getElementById('msgCompra').innerText = "✅ ¡Compraste VIP! Ya está activo";
+  alert("✅ ¡Compraste VIP 1 DÍA! Ya está activo y te descontaron los 1000 diamantes 💎");
+}
+
+// MENU ADMIN - SOLO VER DIAMANTES Y DAR DIAMANTES
+async function cargarUsuarios(){
+  if(!esAdmin()){ alert("Solo el Admin puede ver esto"); return; }
+  let lista = document.getElementById('listaUsuarios');
+  lista.innerHTML = "Cargando...";
+  let snap = await db.collection('usuarios').get();
+  let html = "";
+  snap.forEach(doc=>{
+    let d = doc.data();
+    html += `<div class="userBox">
+    <b>ID:</b> ${doc.id}<br>
+    💎 Diamantes: <b style="color:#ffd700;font-size:18px">${d.diamantes||0}</b><br>
+    👑 VIP: ${d.vip ? "✅ SÍ" : "❌ NO"}<br>
+    🛡️ ADMIN: ${d.admin ? "✅ SÍ" : "❌ NO"}<br>
+    <button class="btn-gold" onclick="darDiamantes('${doc.id}')">+ Dar Diamantes</button>
+    </div>`;
+  });
+  lista.innerHTML = html || "Nadie ha creado cuenta aún";
+}
+async function darDiamantes(id){
+  if(!esAdmin()){ alert("Solo el Admin puede hacer esto"); return; }
+  let doc = await db.collection('usuarios').doc(id).get();
+  let d = doc.data();
+  let actual = d.diamantes || 0;
+  let texto = prompt("💎 Esta persona tiene " + actual + " diamantes.\n\n¿Cuántos diamantes quieres DARLE?\nEscribe el número, por ejemplo 100, 500, 1000:");
+  if(texto === null || texto.trim() === "") return;
+  let cantidad = parseInt(texto.trim());
+  if(isNaN(cantidad) || cantidad <= 0){ alert("❌ Tienes que escribir un número mayor a 0"); return; }
+  let nuevo = actual + cantidad;
+  await db.collection('usuarios').doc(id).update({diamantes:nuevo});
+  alert("✅ Le diste +" + cantidad + " diamantes.\nAhora tiene " + nuevo + " diamantes 💎");
+  cargarUsuarios();
+}
+setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); } }, 30000);
+</script>
+</body>
+  </html>
