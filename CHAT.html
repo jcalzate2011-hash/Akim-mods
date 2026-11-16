@@ -45,7 +45,8 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 </div>
 
 <div class="vipBar">
-<p><b>Correo:</b> <span id="userEmail">---</span> | <b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span> | <b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span></p>
+<p><b>Nombre:</b> <span id="nombreBar" style="color:#ffd700">Cargando...</span> | <b>Correo:</b> <span id="userEmail">---</span></p>
+<p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span> | <b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span></p>
 <p class="vipTime" id="vipTiempo">Cargando...</p>
 <p id="msgNoLogin" style="color:#ffcc00"></p>
 </div>
@@ -63,6 +64,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 
 <div class="btns">
 <button onclick="window.location.href='tienda.html'">🛒 Tienda</button>
+<button onclick="window.location.href='PERFIL.html'">👤 Mi Perfil</button>
 <button onclick="window.location.href='TXT.html'">📂 Texturas</button>
 <button onclick="window.location.href='PAREDES.html'">🧱 Paredes</button>
 </div>
@@ -71,7 +73,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-// 🔥 MISMO PROYECTO QUE TIENDA, TXT Y PAREDES - NO CAMBIAR
+// 🔥 MISMO PROYECTO QUE TIENDA, TXT, PAREDES Y PERFIL - NO CAMBIAR
 const firebaseConfig = {
   apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
   authDomain: "akim-mods.firebaseapp.com",
@@ -85,8 +87,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-// 🔥 MISMA COLECCION usuarios QUE LA TIENDA
-let datos = {diamantes:0, vip:false, vipHasta:0, admin:false};
+// 🔥 MISMA COLECCION usuarios QUE LA TIENDA - AQUÍ ESTÁ TU NOMBRE, BIO, COLOR, VIP Y DIAMANTES
+let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00"};
 let miNombre = "Invitado";
 
 function esVipActivo(){
@@ -97,6 +99,9 @@ function esVipActivo(){
 }
 function actualizarUI(){
   let activo = esVipActivo();
+  // Actualiza mi nombre desde PERFIL.html
+  miNombre = datos.nombre || (userActual ? userActual.email.split('@')[0] : "Invitado");
+  document.getElementById('nombreBar').innerText = miNombre;
   document.getElementById('diamantesTop').innerText = datos.diamantes || 0;
   document.getElementById('diamantesBar').innerText = datos.diamantes || 0;
   document.getElementById('vipTop').innerText = activo ? "VIP ✅" : "NO VIP";
@@ -150,6 +155,7 @@ function enviarMensaje(){
     window.location.href = 'tienda.html';
     return;
   }
+  // 🔥 AQUÍ YA MANDA TU NOMBRE DE PERFIL, NO EL CORREO
   db.collection('chat_global').add({
     texto: texto,
     nombre: miNombre,
@@ -167,21 +173,22 @@ document.getElementById('inputMsg').addEventListener('keydown', function(e){
 auth.onAuthStateChanged(async (user)=>{
   if(user){
     userActual = user;
-    miNombre = user.email.split('@')[0];
     document.getElementById('userEmail').innerText = user.email;
     document.getElementById('msgNoLogin').innerText = "";
-    // 🔥 ESCUCHA EN VIVO TU CUENTA: si te dan VIP o diamantes en la tienda, aquí se actualiza solo
+    // 🔥 ESCUCHA EN VIVO TU CUENTA: si te cambias el nombre, VIP o diamantes en PERFIL o TIENDA, aquí se actualiza solo
     db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
       if(doc.exists){
         datos = doc.data();
         if(datos.vipHasta===undefined) datos.vipHasta=0;
         if(datos.diamantes===undefined) datos.diamantes=0;
+        if(!datos.nombre) datos.nombre = user.email.split('@')[0];
         actualizarUI();
       }
     });
     actualizarUI();
   } else {
     document.getElementById('userEmail').innerText = "No has iniciado sesión";
+    document.getElementById('nombreBar').innerText = "Invitado";
     document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda con el mismo correo para chatear y ver tu VIP.";
     actualizarUI();
   }
@@ -195,4 +202,4 @@ auth.onAuthStateChanged(async (user)=>{
 setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
 </script>
 </body>
-</html>
+  </html>
