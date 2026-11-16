@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM MODS - Texturas</title>
+<style>
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center}
+header{padding:20px;background:linear-gradient(90deg,#ff0055,#7b00ff)}
+.logo{font-size:28px;font-weight:900;letter-spacing:1px}
+.sub{color:#ccc;font-size:14px}
+.card{background:#15151f;margin:15px;border-radius:16px;padding:18px;text-align:left}
+.modCard{background:#1c1c2b;margin:15px;border-radius:16px;padding:16px;text-align:center;border:2px solid #2a2a3a}
+.modCard h2{margin:5px 0}
+.modCard p{color:#bbb;font-size:14px}
+button{width:100%;padding:14px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
+.btn-descargar{background:#00c853;color:#fff;font-size:16px}
+.btn-volver{background:#2a2a3a;color:#fff}
+.badge{display:inline-block;background:#ffd700;color:#000;font-size:12px;font-weight:900;padding:4px 10px;border-radius:20px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🎮 AKIM MODS 🎮</div>
+<div style="font-size:20px;font-weight:900;margin-top:5px">📂 TEXTURAS - MEDIAFIRE</div>
+<div class="sub">Descarga tus texturas favoritas</div>
+</header>
+
+<div class="card" style="text-align:center">
+<p>👇 Elige tu textura y dale a <b>Descargar</b>. Te va a llevar al acortador y después a Mediafire.</p>
+<a href="tienda.html" style="color:#ffd700">⬅️ Volver a la Tienda VIP</a>
+</div>
+
+<!-- MOD 1 SAKURA -->
+<div class="modCard" style="border-color:#ff66b2">
+<span class="badge">MOD 1</span>
+<div style="font-size:50px">🌸</div>
+<h2>SAKURA</h2>
+<p>Textura Sakura - Rosa, suave y limpia. La favorita de todos.</p>
+<p>📦 Mediafire • 📱 Para Free Fire</p>
+<button class="btn-descargar" onclick="descargar(1)">⬇️ Descargar MOD 1 - SAKURA</button>
+</div>
+
+<!-- MOD 2 HIP HOP -->
+<div class="modCard" style="border-color:#00e5ff">
+<span class="badge">MOD 2</span>
+<div style="font-size:50px">🎧</div>
+<h2>HIP HOP</h2>
+<p>Textura Hip Hop - Estilo callejero, colores fuertes y con flow.</p>
+<p>📦 Mediafire • 📱 Para Free Fire</p>
+<button class="btn-descargar" onclick="descargar(2)">⬇️ Descargar MOD 2 - HIP HOP</button>
+</div>
+
+<!-- MOD 3 TITAN -->
+<div class="modCard" style="border-color:#ff9800">
+<span class="badge">MOD 3</span>
+<div style="font-size:50px">💪</div>
+<h2>TITAN</h2>
+<p>Textura Titan - Poderosa, oscura y agresiva. Para los que juegan serio.</p>
+<p>📦 Mediafire • 📱 Para Free Fire</p>
+<button class="btn-descargar" onclick="descargar(3)">⬇️ Descargar MOD 3 - TITAN</button>
+</div>
+
+<!-- MOD 4 ANGELICAL ROJO -->
+<div class="modCard" style="border-color:#ff0000">
+<span class="badge">MOD 4</span>
+<div style="font-size:50px">😇🔴</div>
+<h2>ANGELICAL ROJO</h2>
+<p>Textura Angelical Rojo - Blanca con rojo, elegante y angelical.</p>
+<p>📦 Mediafire • 📱 Para Free Fire</p>
+<button class="btn-descargar" onclick="descargar(4)">⬇️ Descargar MOD 4 - ANGELICAL ROJO</button>
+</div>
+
+<!-- MOD 5 FREESTYLE -->
+<div class="modCard" style="border-color:#ffd700">
+<span class="badge">MOD 5</span>
+<div style="font-size:50px">🔥</div>
+<h2>FREESTYLE</h2>
+<p>Textura Freestyle - Libre, colorida, para jugar con estilo.</p>
+<p>📦 Mediafire • 📱 Para Free Fire</p>
+<button class="btn-descargar" onclick="descargar(5)">⬇️ Descargar MOD 5 - FREESTYLE</button>
+</div>
+
+<div class="card" style="text-align:center">
+<button class="btn-volver" onclick="window.location.href='tienda.html'">⬅️ Volver a la Tienda</button>
+<p style="color:#888;font-size:12px">© AKIM MODS 2026 - Todos los derechos reservados</p>
+</div>
+
+<script>
+// LINKS DE ALPHAREDE - YA PUESTOS POR AKIM
+let LINK_MOD1_SAKURA = "https://alpharede.com/yl8RgCKFLMg";
+let LINK_MOD2_HIPHOP = "https://alpharede.com/1Q6khDQ36V7";
+let LINK_MOD3_TITAN = "https://alpharede.com/iOVosUYywNZ";
+let LINK_MOD4_ANGELICAL = "https://alpharede.com/wXg10TUZnho";
+let LINK_MOD5_FREESTYLE = "https://alpharede.com/TVj2VC9zoiW";
+
+function descargar(num){
+  let link = "";
+  let nombre = "";
+  if(num==1){ link = LINK_MOD1_SAKURA; nombre = "SAKURA"; }
+  if(num==2){ link = LINK_MOD2_HIPHOP; nombre = "HIP HOP"; }
+  if(num==3){ link = LINK_MOD3_TITAN; nombre = "TITAN"; }
+  if(num==4){ link = LINK_MOD4_ANGELICAL; nombre = "ANGELICAL ROJO"; }
+  if(num==5){ link = LINK_MOD5_FREESTYLE; nombre = "FREESTYLE"; }
+  if(!link || link === ""){
+    alert("⏳ El link de " + nombre + " todavía no está puesto.");
+    return;
+  }
+  window.open(link, "_blank");
+}
+</script>
+</body>
+  </html>
