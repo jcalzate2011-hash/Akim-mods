@@ -3,75 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AKIM MODS 👑</title>
+<title>AKIM MODS - Perfil</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#0a0a0f;color:#fff;min-height:100vh;padding:15px}
-header{text-align:center;padding:20px 0}
-header h1{font-size:32px;color:#ffd700}
-header p{color:#aaa;margin-top:5px}
-.card{background:#1a1a25;border-radius:15px;padding:20px;margin:15px 0;border:1px solid #333}
-input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #333;background:#222;color:#fff;font-size:15px}
-button{width:100%;padding:12px;margin:5px 0;border:none;border-radius:10px;font-weight:bold;cursor:pointer;font-size:15px}
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center}
+header{padding:20px;background:linear-gradient(90deg,#ff0055,#7b00ff)}
+.logo{font-size:28px;font-weight:900;letter-spacing:2px}
+.card{background:#15151f;margin:15px;border-radius:16px;padding:18px;text-align:left}
+input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;background:#222231;color:#fff;box-sizing:border-box}
+button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
+.btn-pink{background:#ff0055;color:#fff}
+.btn-white{background:#fff;color:#000}
+.btn-dark{background:#2a2a3a;color:#fff}
 .btn-gold{background:#ffd700;color:#000}
-.btn-blue{background:#2563eb;color:#fff}
-.btn-red{background:#dc2626;color:#fff}
-.btn-green{background:#16a34a;color:#fff}
-.btn-gray{background:#333;color:#fff}
-.user-card{background:#222;border:1px solid #333;border-radius:12px;padding:15px;margin:10px 0}
-.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold;margin:2px}
-.badge-vip{background:#ffd700;color:#000}
-.badge-baneado{background:#dc2626;color:#fff}
-.badge-normal{background:#444;color:#fff}
-.badge-admin{background:#a855f7;color:#fff}
-.stats{display:flex;gap:10px;text-align:center}
-.stats div{flex:1;background:#222;padding:15px;border-radius:12px}
-.stats b{font-size:22px;display:block;color:#ffd700}
+.btn-red{background:#ff2222;color:#fff}
+.stats{display:flex;gap:10px}
+.stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
+.stat b{font-size:22px;color:#ffd700}
+.vip{color:#00ff88;font-weight:900}
 .hidden{display:none}
-.flex{display:flex;gap:8px}
-.flex button{flex:1}
-small{color:#999}
+.userBox{background:#222231;padding:10px;margin:8px 0;border-radius:10px}
+.userBox button{padding:8px;font-size:13px;margin:3px 0}
 </style>
 </head>
 <body>
-<header>
-<h1>AKIM MODS 👑</h1>
-<p>Mods Premium • VIP • Diamantes</p>
-</header>
-<div id="authBox" class="card">
-<h2>🔐 Iniciar Sesión / Registrarse</h2>
-<input type="email" id="email" placeholder="Tu correo">
-<input type="password" id="password" placeholder="Tu contraseña">
-<input type="text" id="nombreReg" placeholder="Tu nombre (solo para registrarse)">
-<button class="btn-blue" onclick="login()">Entrar</button>
-<button class="btn-gray" onclick="registrar()">Crear Cuenta Nueva</button>
+<header><div class="logo">🔥 AKIM MODS 🔥</div><div>Tu progreso se guarda en la nube</div></header>
+
+<div id="loginBox" class="card">
+<h2>👤 Crear Perfil / Entrar</h2>
+<input id="email" type="email" placeholder="Tu correo">
+<input id="pass" type="password" placeholder="Contraseña">
+<button class="btn-pink" onclick="registrar()">Crear Perfil</button>
+<button class="btn-white" onclick="entrar()">Iniciar Sesión</button>
+<button class="btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button>
+<p id="msg" style="color:#ffcc00"></p>
 </div>
-<div id="userBox" class="card hidden">
-<h2 id="saludo">Hola 👋</h2>
-<p id="miInfo"></p>
-<p>💎 Diamantes: <b id="misDiamantes">0</b></p>
-<p>Estado: <span id="miEstado"></span></p>
-<button class="btn-gold" onclick="verTodo()">🔄 Actualizar</button>
-<button class="btn-red" onclick="salir()">Salir</button>
-<div id="zonaDescarga" style="margin-top:15px"></div>
-</div>
-<div id="adminBox" class="card hidden">
-<h2>🛡️ Panel Moderador</h2>
+
+<div id="perfilBox" class="card hidden">
+<h2 id="tituloPerfil">👤 Mi Perfil</h2>
+<p><b>Correo:</b> <span id="userEmail"></span></p>
+<p><b>VIP:</b> <span id="userVip" class="vip">NO VIP</span></p>
+<p id="vipTiempo" style="color:#ffd700;font-weight:800"></p>
 <div class="stats">
-<div><b id="totalUsuarios">0</b><small>Usuarios</small></div>
-<div><b id="totalVip">0</b><small>Total VIP</small></div>
-<div><b id="totalBaneados">0</b><small>Baneados</small></div>
+<div class="stat">💎<br><b id="diamantes">0</b><br>Diamantes</div>
+<div class="stat">📄<br><b id="txt">0</b><br>TXT</div>
+<div class="stat">⭐<br><b id="nivel">1</b><br>Nivel</div>
 </div>
-<button class="btn-blue" onclick="cargarUsuarios()">🔄 Cargar Usuarios</button>
+<h3>🎁 Gana Diamantes</h3>
+<button class="btn-pink" onclick="ganar(10,'Ver video')">+10 💎 Ver Video</button>
+<button class="btn-pink" onclick="ganar(20,'Seguir en TikTok')">+20 💎 Seguir en TikTok</button>
+<button class="btn-pink" onclick="ganar(50,'Compartir')">+50 💎 Compartir</button>
+
+<h3>🎟️ Código Promocional</h3>
+<input id="codigoPromo" placeholder="Escribe tu código aquí">
+<button class="btn-gold" onclick="canjearCodigo()">Enviar Código</button>
+<p id="msgCodigo" style="color:#ffd700"></p>
+
+<button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
+</div>
+
+<div id="adminBox" class="card hidden" style="background:#1a1a2e;border:1px solid #ffd700">
+<h2>🛡️ Panel Moderador</h2>
+<p style="color:#ffd700">Solo tú puedes ver esto</p>
+<button class="btn-gold" onclick="verTodo()">👁️ VER TODO - Estadísticas</button>
+<div id="estadisticas"></div>
+<button class="btn-white" onclick="cargarUsuarios()">👥 Ver quién creó cuenta</button>
 <div id="listaUsuarios"></div>
 </div>
+
 <div class="card">
-<h2>🎮 Mods Disponibles</h2>
-<div id="listaMods"></div>
+<h3>📦 Tus MODS</h3>
+<p>✅ Si eres VIP o Moderador puedes descargar todo sin anuncios</p>
+<button class="btn-pink" onclick="descargarMOD1()">Descargar MOD 1 - VEGETA</button>
+<button class="btn-pink" onclick="descargarMOD2()">Descargar MOD 2 - EL HOMBRE ARAÑA</button>
 </div>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
@@ -86,95 +94,176 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-let datosActual = null;
-async function registrar(){
-  let email = document.getElementById('email').value;
-  let pass = document.getElementById('password').value;
-  let nombre = document.getElementById('nombreReg').value || email.split('@')[0];
-  if(!email || !pass) return alert("Pon correo y contraseña");
-  try{
-    let cred = await auth.createUserWithEmailAndPassword(email, pass);
-    await db.collection('usuarios').doc(cred.user.uid).set({nombre:nombre,email:email,vip:false,vipHasta:0,admin:false,baneadoVisual:false,diamantes:0,fecha:Date.now()});
-    alert("Cuenta creada ✅");
-  }catch(e){ alert(e.message); }
-}
-async function login(){
-  let email = document.getElementById('email').value;
-  let pass = document.getElementById('password').value;
-  try{ await auth.signInWithEmailAndPassword(email, pass); }catch(e){ alert(e.message); }
-}
-async function salir(){ await auth.signOut(); location.reload(); }
+let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0, admin:false, baneado:false};
+
 function esVipActivo(){
-  if(!datosActual) return false;
-  if(!datosActual.vip) return false;
-  if(datosActual.vipHasta && datosActual.vipHasta !== 0 && Date.now() > datosActual.vipHasta) return false;
+  if(datos.admin) return true;
+  if(!datos.vip) return false;
+  if(datos.vipHasta && Date.now() > datos.vipHasta){
+    datos.vip = false; datos.vipHasta = 0; guardar(); return false;
+  }
   return true;
 }
-function actualizarUI(){
-  if(!datosActual) return;
-  document.getElementById('misDiamantes').textContent = datosActual.diamantes || 0;
-  document.getElementById('saludo').textContent = "Hola " + (datosActual.nombre || "👋");
-  let estado = esVipActivo() ? "👑 VIP" : "Normal";
-  document.getElementById('miEstado').textContent = estado;
-  document.getElementById('miInfo').textContent = datosActual.email;
-  let zona = document.getElementById('zonaDescarga');
-  if(esVipActivo()){ zona.innerHTML = "<h3>👑 Descarga VIP Directa</h3><button class='btn-gold' onclick='descargarVip()'>⬇️ Descargar Sin Anuncios</button>"; }
-  else { zona.innerHTML = "<h3>Descarga Gratis</h3><p>Tienes que ver un anuncio para descargar</p><button class='btn-blue' onclick='descargarGratis()'>⬇️ Descargar Con Acortador</button><br><br><button class='btn-gold' onclick='alert(\"Pide VIP al admin para descarga directa\")'>👑 Quiero ser VIP</button>"; }
-  if(datosActual.admin){ document.getElementById('adminBox').classList.remove('hidden'); cargarUsuarios(); }
+function esModerador(){ return datos.admin === true; }
+
+async function registrar(){
+  const e=document.getElementById('email').value;
+  const p=document.getElementById('pass').value;
+  try{ await auth.createUserWithEmailAndPassword(e,p); document.getElementById('msg').innerText="Perfil creado!"; }
+  catch(err){ document.getElementById('msg').innerText=err.message; }
 }
-function descargarVip(){ alert("Descargando VIP 👑 - Link directo"); }
-function descargarGratis(){ alert("Te lleva al acortador..."); window.open("https://tu-acortador.com","_blank"); }
-async function cargarUsuarios(){
-  try{
-    let snap = await db.collection('usuarios').get();
-    let lista = document.getElementById('listaUsuarios');
-    lista.innerHTML = "";
-    let totalVip = 0, totalBaneados = 0, total = 0;
-    snap.forEach(doc=>{
-      let u = doc.data(); let id = doc.id; total++;
-      if(u.vip) totalVip++;
-      if(u.baneadoVisual) totalBaneados++;
-      let estadoBadge = "";
-      if(u.baneadoVisual) estadoBadge = "<span class='badge badge-baneado'>🚫 BANEADO</span>";
-      else if(u.vip) estadoBadge = "<span class='badge badge-vip'>👑 VIP</span>";
-      else estadoBadge = "<span class='badge badge-normal'>Normal</span>";
-      if(u.admin) estadoBadge += "<span class='badge badge-admin'>ADMIN</span>";
-      lista.innerHTML += `<div class="user-card"><b>${u.nombre || "Sin nombre"}</b><br><small>${u.email || ""}</small><br>${estadoBadge}<br>💎 Diamantes: <b>${u.diamantes || 0}</b><br><br><div class="flex"><button class="btn-gold" onclick="darVip('${id}')">Dar VIP</button><button class="btn-gray" onclick="quitarVip('${id}')">Quitar VIP</button></div><div class="flex"><button class="btn-green" onclick="darDiamantes('${id}')">+100 💎</button><button class="btn-red" onclick="banear('${id}', ${u.baneadoVisual ? true : false})">${u.baneadoVisual ? "Desbanear ✅" : "Banear 🚫"}</button></div><div class="flex"><button class="btn-blue" onclick="hacerAdmin('${id}', ${u.admin ? true : false})">${u.admin ? "Quitar Admin" : "Hacer Admin"}</button></div></div>`;
-    });
-    document.getElementById('totalUsuarios').textContent = total;
-    document.getElementById('totalVip').textContent = totalVip;
-    document.getElementById('totalBaneados').textContent = totalBaneados;
-  }catch(e){ console.log(e); }
+async function entrar(){
+  const e=document.getElementById('email').value;
+  const p=document.getElementById('pass').value;
+  try{ await auth.signInWithEmailAndPassword(e,p); }
+  catch(err){ document.getElementById('msg').innerText=err.message; }
 }
-async function darVip(id){ try{ await db.collection('usuarios').doc(id).update({vip:true, vipHasta:0}); alert("VIP dado 👑"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
-async function quitarVip(id){ try{ await db.collection('usuarios').doc(id).update({vip:false, vipHasta:0, admin:false}); alert("VIP quitado ✅"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
-async function banear(id, estaBaneado){ try{ await db.collection('usuarios').doc(id).update({baneadoVisual:!estaBaneado}); alert(estaBaneado?"Usuario desbaneado ✅":"Usuario baneado 🚫 - Solo se ve en tu panel, a él no le pasa nada"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
-async function darDiamantes(id){ try{ let doc = await db.collection('usuarios').doc(id).get(); let d = doc.data(); let nuevo = (d.diamantes||0)+100; await db.collection('usuarios').doc(id).update({diamantes:nuevo}); alert("+100 diamantes dados 💎"); cargarUsuarios(); }catch(e){ alert("Error: "+e.message); } }
-async function hacerAdmin(id, esAdmin){ try{ await db.collection('usuarios').doc(id).update({admin:!esAdmin}); alert(esAdmin?"Admin quitado":"Ahora es Admin 🛡️"); cargarUsuarios(); }catch(e){ alert("Error: "+e.message); } }
-async function verTodo(){ if(!userActual) return; let doc = await db.collection('usuarios').doc(userActual.uid).get(); if(doc.exists){ datosActual = doc.data(); actualizarUI(); } cargarMods(); }
-function cargarMods(){ document.getElementById('listaMods').innerHTML = `<div class="user-card"><b>🔥 AKIM MOD MENU</b><br><small>Última versión</small><br><br><button class="btn-blue" onclick="descargarGratis()">Descargar</button></div><div class="user-card"><b>💎 AKIM VIP PACK</b><br><small>Solo VIP</small><br><br><button class="btn-gold" onclick="descargarVip()">Descargar VIP</button></div>`; }
+async function loginGoogle(){
+  const prov = new firebase.auth.GoogleAuthProvider();
+  try{ await auth.signInWithPopup(prov); }catch(err){ document.getElementById('msg').innerText=err.message; }
+}
+async function salir(){ await auth.signOut(); location.reload(); }
+
 auth.onAuthStateChanged(async (user)=>{
   if(user){
-    userActual = user;
-    let doc = await db.collection('usuarios').doc(user.uid).get();
-    if(doc.exists){
-      datosActual = doc.data();
-      document.getElementById('authBox').classList.add('hidden');
-      document.getElementById('userBox').classList.remove('hidden');
-      actualizarUI(); cargarMods();
-    } else {
-      await db.collection('usuarios').doc(user.uid).set({nombre:user.email.split('@')[0], email:user.email, vip:false, vipHasta:0, admin:false, baneadoVisual:false, diamantes:0, fecha:Date.now()});
-      location.reload();
+    userActual=user;
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('perfilBox').classList.remove('hidden');
+    document.getElementById('userEmail').innerText=user.email;
+    const doc = await db.collection('usuarios').doc(user.uid).get();
+    if(doc.exists){ datos=doc.data(); if(datos.vipHasta===undefined) datos.vipHasta=0; if(datos.admin===undefined) datos.admin=false; if(datos.baneado===undefined) datos.baneado=false; } else {
+      await db.collection('usuarios').doc(user.uid).set(datos);
     }
-  } else {
-    userActual = null;
-    document.getElementById('authBox').classList.remove('hidden');
-    document.getElementById('userBox').classList.add('hidden');
-    document.getElementById('adminBox').classList.add('hidden');
-    cargarMods();
+    if(datos.baneado){
+      alert("🚫 Tu cuenta está baneada por el moderador");
+      await auth.signOut(); location.reload(); return;
+    }
+    esVipActivo();
+    actualizarUI();
   }
 });
-cargarMods();
+
+function actualizarUI(){
+  let activo = esVipActivo();
+  let mod = esModerador();
+  document.getElementById('diamantes').innerText=datos.diamantes;
+  document.getElementById('txt').innerText=datos.txt;
+  document.getElementById('nivel').innerText=datos.nivel;
+  document.getElementById('userVip').innerText=activo?"✅ VIP ACTIVO":"NO VIP";
+  if(mod){
+    document.getElementById('tituloPerfil').innerText="🛡️ Bienvenido Moderador";
+    document.getElementById('adminBox').classList.remove('hidden');
+    document.getElementById('vipTiempo').innerText="👑 Moderador Permanente - Sin acortadores";
+  } else {
+    document.getElementById('tituloPerfil').innerText="👤 Mi Perfil";
+    document.getElementById('adminBox').classList.add('hidden');
+    if(activo && datos.vipHasta){
+      let falta = datos.vipHasta - Date.now();
+      let horas = Math.floor(falta/1000/60/60);
+      let minutos = Math.floor((falta/1000/60)%60);
+      document.getElementById('vipTiempo').innerText="⏳ Te quedan "+horas+"h "+minutos+"m de VIP";
+    } else if(activo){
+      document.getElementById('vipTiempo').innerText="👑 VIP Permanente";
+    } else {
+      document.getElementById('vipTiempo').innerText="";
+    }
+  }
+}
+async function guardar(){
+  if(!userActual) return;
+  await db.collection('usuarios').doc(userActual.uid).set(datos);
+  actualizarUI();
+}
+async function ganar(cant, accion){
+  datos.diamantes+=cant; datos.txt+=1;
+  if(datos.diamantes>100) datos.nivel=2;
+  if(datos.diamantes>300) datos.nivel=3;
+  await guardar();
+  alert("Ganaste +"+cant+" diamantes por: "+accion);
+}
+async function canjearCodigo(){
+  if(!userActual){ alert("Primero inicia sesión"); return; }
+  let codigo = document.getElementById('codigoPromo').value.trim().toUpperCase();
+  if(codigo === "AKIM-ADMIN-2011"){
+    datos.admin = true; datos.vip = true; datos.vipHasta = 0;
+    await guardar();
+    document.getElementById('msgCodigo').innerText="👑 ¡Eres MODERADOR permanente!";
+    alert("👑 ¡Ahora eres MODERADOR permanente!");
+    return;
+  }
+  if(codigo === "AKIM-2011"){
+    datos.vip = true; datos.vipHasta = Date.now() + (24*60*60*1000);
+    await guardar();
+    document.getElementById('msgCodigo').innerText="¡Código correcto! Tienes 24 horas de VIP 👑";
+    alert("¡Código correcto! VIP activado por 24 horas 👑");
+  } else {
+    document.getElementById('msgCodigo').innerText="Código incorrecto ❌";
+    alert("Código incorrecto ❌");
+  }
+}
+function descargarMOD1(){
+  if(esVipActivo() || esModerador()){
+    window.open('https://www.mediafire.com/file/pv7r3ykyso6fyvj/VEGETA.zip/file','_blank');
+  } else {
+    window.open('https://alpharede.com/bzIE9NLYw2d','_blank');
+  }
+}
+function descargarMOD2(){
+  if(esVipActivo() || esModerador()){
+    window.open('https://www.mediafire.com/file/m2xobrd0f5qvmys/EL_HOMBRE_ARA%25C3%2591A.zip/file','_blank');
+  } else {
+    window.open('https://alpharede.com/byO8bJ2rcJt','_blank');
+  }
+}
+
+// --- PANEL MODERADOR - 5 OPCIONES ---
+async function verTodo(){
+  let snap = await db.collection('usuarios').get();
+  let total=0, totalVip=0, totalMod=0, totalDiam=0, totalBaneados=0;
+  snap.forEach(doc=>{
+    let d=doc.data(); total++; totalDiam+=d.diamantes||0;
+    if(d.vip) totalVip++; if(d.admin) totalMod++; if(d.baneado) totalBaneados++;
+  });
+  document.getElementById('estadisticas').innerHTML=`<div class="userBox">
+  👥 Total usuarios: <b>${total}</b><br>
+  👑 Total VIP: <b>${totalVip}</b><br>
+  🛡️ Total Moderadores: <b>${totalMod}</b><br>
+  💎 Total Diamantes: <b>${totalDiam}</b><br>
+  🚫 Total Baneados: <b>${totalBaneados}</b>
+  </div>`;
+}
+async function cargarUsuarios(){
+  let lista = document.getElementById('listaUsuarios');
+  lista.innerHTML="Cargando...";
+  let snap = await db.collection('usuarios').get();
+  let html="";
+  snap.forEach(doc=>{
+    let d=doc.data();
+    let estado = d.baneado ? "🚫 BANEADO" : (d.admin ? "🛡️ MODERADOR" : (d.vip ? "👑 VIP" : "NO VIP"));
+    html += `<div class="userBox">
+    <b>ID:</b> ${doc.id}<br>
+    💎 ${d.diamantes||0} | 📄 ${d.txt||0} | ⭐ ${d.nivel||1} | ${estado}<br>
+    <button class="btn-gold" onclick="darVip('${doc.id}')">Dar VIP</button>
+    <button class="btn-dark" onclick="quitarVip('${doc.id}')">Quitar VIP</button>
+    <button class="btn-pink" onclick="darDiamantes('${doc.id}')">+100 💎 Dar Diamantes</button>
+    <button class="btn-red" onclick="banear('${doc.id}',${d.baneado?true:false})">${d.baneado?'✅ Desbanear':'🚫 Banear'}</button>
+    </div>`;
+  });
+  lista.innerHTML=html || "Nadie ha creado cuenta aún";
+}
+async function darVip(id){ await db.collection('usuarios').doc(id).update({vip:true, vipHasta:0}); alert("VIP dado 👑"); cargarUsuarios(); }
+async function quitarVip(id){ await db.collection('usuarios').doc(id).update({vip:false, vipHasta:0}); alert("VIP quitado"); cargarUsuarios(); }
+async function darDiamantes(id){
+  let doc = await db.collection('usuarios').doc(id).get();
+  let d = doc.data(); let nuevo = (d.diamantes||0)+100;
+  await db.collection('usuarios').doc(id).update({diamantes:nuevo});
+  alert("+100 diamantes dados 💎"); cargarUsuarios();
+}
+async function banear(id, estaBaneado){
+  await db.collection('usuarios').doc(id).update({baneado:!estaBaneado});
+  alert(estaBaneado?"Usuario desbaneado ✅":"Usuario baneado 🚫"); cargarUsuarios();
+}
+setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); } }, 60000);
 </script>
 </body>
 </html>
