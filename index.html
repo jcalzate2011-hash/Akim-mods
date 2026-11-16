@@ -15,11 +15,14 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .btn-white{background:#fff;color:#000}
 .btn-dark{background:#2a2a3a;color:#fff}
 .btn-gold{background:#ffd700;color:#000}
+.btn-red{background:#ff2222;color:#fff}
 .stats{display:flex;gap:10px}
 .stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
 .stat b{font-size:22px;color:#ffd700}
 .vip{color:#00ff88;font-weight:900}
 .hidden{display:none}
+.userBox{background:#222231;padding:10px;margin:8px 0;border-radius:10px}
+.userBox button{padding:8px;font-size:13px;margin:3px 0}
 </style>
 </head>
 <body>
@@ -36,7 +39,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 </div>
 
 <div id="perfilBox" class="card hidden">
-<h2>👤 Mi Perfil</h2>
+<h2 id="tituloPerfil">👤 Mi Perfil</h2>
 <p><b>Correo:</b> <span id="userEmail"></span></p>
 <p><b>VIP:</b> <span id="userVip" class="vip">NO VIP</span></p>
 <p id="vipTiempo" style="color:#ffd700;font-weight:800"></p>
@@ -58,9 +61,18 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
 
+<div id="adminBox" class="card hidden" style="background:#1a1a2e;border:1px solid #ffd700">
+<h2>🛡️ Panel Moderador</h2>
+<p style="color:#ffd700">Solo tú puedes ver esto</p>
+<button class="btn-gold" onclick="verTodo()">👁️ VER TODO - Estadísticas</button>
+<div id="estadisticas"></div>
+<button class="btn-white" onclick="cargarUsuarios()">👥 Ver quién creó cuenta</button>
+<div id="listaUsuarios"></div>
+</div>
+
 <div class="card">
 <h3>📦 Tus MODS</h3>
-<p>✅ Si eres VIP puedes descargar todo sin anuncios</p>
+<p>✅ Si eres VIP o Moderador puedes descargar todo sin anuncios</p>
 <button class="btn-pink" onclick="descargarMOD1()">Descargar MOD 1 - VEGETA</button>
 <button class="btn-pink" onclick="descargarMOD2()">Descargar MOD 2 - EL HOMBRE ARAÑA</button>
 </div>
@@ -82,18 +94,18 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0};
+let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0, admin:false, baneado:false};
 
 function esVipActivo(){
+  if(datos.admin) return true;
   if(!datos.vip) return false;
   if(datos.vipHasta && Date.now() > datos.vipHasta){
-    datos.vip = false;
-    datos.vipHasta = 0;
-    guardar();
-    return false;
+    datos.vip = false; datos.vipHasta = 0; guardar(); return false;
   }
   return true;
 }
+function esModerador(){ return datos.admin === true; }
+
 async function registrar(){
   const e=document.getElementById('email').value;
   const p=document.getElementById('pass').value;
@@ -119,8 +131,12 @@ auth.onAuthStateChanged(async (user)=>{
     document.getElementById('perfilBox').classList.remove('hidden');
     document.getElementById('userEmail').innerText=user.email;
     const doc = await db.collection('usuarios').doc(user.uid).get();
-    if(doc.exists){ datos=doc.data(); if(datos.vipHasta===undefined) datos.vipHasta=0; } else {
+    if(doc.exists){ datos=doc.data(); if(datos.vipHasta===undefined) datos.vipHasta=0; if(datos.admin===undefined) datos.admin=false; if(datos.baneado===undefined) datos.baneado=false; } else {
       await db.collection('usuarios').doc(user.uid).set(datos);
+    }
+    if(datos.baneado){
+      alert("🚫 Tu cuenta está baneada por el moderador");
+      await auth.signOut(); location.reload(); return;
     }
     esVipActivo();
     actualizarUI();
@@ -129,19 +145,28 @@ auth.onAuthStateChanged(async (user)=>{
 
 function actualizarUI(){
   let activo = esVipActivo();
+  let mod = esModerador();
   document.getElementById('diamantes').innerText=datos.diamantes;
   document.getElementById('txt').innerText=datos.txt;
   document.getElementById('nivel').innerText=datos.nivel;
   document.getElementById('userVip').innerText=activo?"✅ VIP ACTIVO":"NO VIP";
-  if(activo && datos.vipHasta){
-    let falta = datos.vipHasta - Date.now();
-    let horas = Math.floor(falta/1000/60/60);
-    let minutos = Math.floor((falta/1000/60)%60);
-    document.getElementById('vipTiempo').innerText="⏳ Te quedan "+horas+"h "+minutos+"m de VIP";
-  } else if(activo){
-    document.getElementById('vipTiempo').innerText="👑 VIP Permanente";
+  if(mod){
+    document.getElementById('tituloPerfil').innerText="🛡️ Bienvenido Moderador";
+    document.getElementById('adminBox').classList.remove('hidden');
+    document.getElementById('vipTiempo').innerText="👑 Moderador Permanente - Sin acortadores";
   } else {
-    document.getElementById('vipTiempo').innerText="";
+    document.getElementById('tituloPerfil').innerText="👤 Mi Perfil";
+    document.getElementById('adminBox').classList.add('hidden');
+    if(activo && datos.vipHasta){
+      let falta = datos.vipHasta - Date.now();
+      let horas = Math.floor(falta/1000/60/60);
+      let minutos = Math.floor((falta/1000/60)%60);
+      document.getElementById('vipTiempo').innerText="⏳ Te quedan "+horas+"h "+minutos+"m de VIP";
+    } else if(activo){
+      document.getElementById('vipTiempo').innerText="👑 VIP Permanente";
+    } else {
+      document.getElementById('vipTiempo').innerText="";
+    }
   }
 }
 async function guardar(){
@@ -150,8 +175,7 @@ async function guardar(){
   actualizarUI();
 }
 async function ganar(cant, accion){
-  datos.diamantes+=cant;
-  datos.txt+=1;
+  datos.diamantes+=cant; datos.txt+=1;
   if(datos.diamantes>100) datos.nivel=2;
   if(datos.diamantes>300) datos.nivel=3;
   await guardar();
@@ -160,9 +184,15 @@ async function ganar(cant, accion){
 async function canjearCodigo(){
   if(!userActual){ alert("Primero inicia sesión"); return; }
   let codigo = document.getElementById('codigoPromo').value.trim().toUpperCase();
+  if(codigo === "AKIM-ADMIN-2011"){
+    datos.admin = true; datos.vip = true; datos.vipHasta = 0;
+    await guardar();
+    document.getElementById('msgCodigo').innerText="👑 ¡Eres MODERADOR permanente!";
+    alert("👑 ¡Ahora eres MODERADOR permanente!");
+    return;
+  }
   if(codigo === "AKIM-2011"){
-    datos.vip = true;
-    datos.vipHasta = Date.now() + (24*60*60*1000);
+    datos.vip = true; datos.vipHasta = Date.now() + (24*60*60*1000);
     await guardar();
     document.getElementById('msgCodigo').innerText="¡Código correcto! Tienes 24 horas de VIP 👑";
     alert("¡Código correcto! VIP activado por 24 horas 👑");
@@ -172,20 +202,68 @@ async function canjearCodigo(){
   }
 }
 function descargarMOD1(){
-  if(esVipActivo()){
+  if(esVipActivo() || esModerador()){
     window.open('https://www.mediafire.com/file/pv7r3ykyso6fyvj/VEGETA.zip/file','_blank');
   } else {
     window.open('https://alpharede.com/bzIE9NLYw2d','_blank');
   }
 }
 function descargarMOD2(){
-  if(esVipActivo()){
+  if(esVipActivo() || esModerador()){
     window.open('https://www.mediafire.com/file/m2xobrd0f5qvmys/EL_HOMBRE_ARA%25C3%2591A.zip/file','_blank');
   } else {
     window.open('https://alpharede.com/byO8bJ2rcJt','_blank');
   }
 }
+
+// --- PANEL MODERADOR - 5 OPCIONES ---
+async function verTodo(){
+  let snap = await db.collection('usuarios').get();
+  let total=0, totalVip=0, totalMod=0, totalDiam=0, totalBaneados=0;
+  snap.forEach(doc=>{
+    let d=doc.data(); total++; totalDiam+=d.diamantes||0;
+    if(d.vip) totalVip++; if(d.admin) totalMod++; if(d.baneado) totalBaneados++;
+  });
+  document.getElementById('estadisticas').innerHTML=`<div class="userBox">
+  👥 Total usuarios: <b>${total}</b><br>
+  👑 Total VIP: <b>${totalVip}</b><br>
+  🛡️ Total Moderadores: <b>${totalMod}</b><br>
+  💎 Total Diamantes: <b>${totalDiam}</b><br>
+  🚫 Total Baneados: <b>${totalBaneados}</b>
+  </div>`;
+}
+async function cargarUsuarios(){
+  let lista = document.getElementById('listaUsuarios');
+  lista.innerHTML="Cargando...";
+  let snap = await db.collection('usuarios').get();
+  let html="";
+  snap.forEach(doc=>{
+    let d=doc.data();
+    let estado = d.baneado ? "🚫 BANEADO" : (d.admin ? "🛡️ MODERADOR" : (d.vip ? "👑 VIP" : "NO VIP"));
+    html += `<div class="userBox">
+    <b>ID:</b> ${doc.id}<br>
+    💎 ${d.diamantes||0} | 📄 ${d.txt||0} | ⭐ ${d.nivel||1} | ${estado}<br>
+    <button class="btn-gold" onclick="darVip('${doc.id}')">Dar VIP</button>
+    <button class="btn-dark" onclick="quitarVip('${doc.id}')">Quitar VIP</button>
+    <button class="btn-pink" onclick="darDiamantes('${doc.id}')">+100 💎 Dar Diamantes</button>
+    <button class="btn-red" onclick="banear('${doc.id}',${d.baneado?true:false})">${d.baneado?'✅ Desbanear':'🚫 Banear'}</button>
+    </div>`;
+  });
+  lista.innerHTML=html || "Nadie ha creado cuenta aún";
+}
+async function darVip(id){ await db.collection('usuarios').doc(id).update({vip:true, vipHasta:0}); alert("VIP dado 👑"); cargarUsuarios(); }
+async function quitarVip(id){ await db.collection('usuarios').doc(id).update({vip:false, vipHasta:0}); alert("VIP quitado"); cargarUsuarios(); }
+async function darDiamantes(id){
+  let doc = await db.collection('usuarios').doc(id).get();
+  let d = doc.data(); let nuevo = (d.diamantes||0)+100;
+  await db.collection('usuarios').doc(id).update({diamantes:nuevo});
+  alert("+100 diamantes dados 💎"); cargarUsuarios();
+}
+async function banear(id, estaBaneado){
+  await db.collection('usuarios').doc(id).update({baneado:!estaBaneado});
+  alert(estaBaneado?"Usuario desbaneado ✅":"Usuario baneado 🚫"); cargarUsuarios();
+}
 setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); } }, 60000);
 </script>
 </body>
-</html>
+  </html>
