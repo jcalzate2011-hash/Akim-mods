@@ -79,17 +79,16 @@ small{color:#999}
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
-// ===== TU CONFIG COMO ESTABA ANTES - SOLO PEGA LA TUYA AQUI, NO CAMBIES NADA MAS =====
+// ===== CONFIG - PEGA TU CONFIG VIEJA AQUI, SOLO ESTA PARTE =====
 const firebaseConfig = {
-  // 👇👇 AQUI PEGA TU CONFIG VIEJA TAL CUAL, LA QUE TENIA TU apiKey, authDomain, projectId, etc 👇👇
-  // Ejemplo de como se ve (NO USES ESTE, USA EL TUYO):
-  // apiKey: "AIza...",
-  // authDomain: "akim-mods.firebaseapp.com",
-  // projectId: "akim-mods",
-  // storageBucket: "akim-mods.appspot.com",
-  // messagingSenderId: "...",
-  // appId: "..."
+  apiKey: "TU_APIKEY_VIEJA",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.appspot.com",
+  messagingSenderId: "TU_ID_VIEJO",
+  appId: "TU_APPID_VIEJO"
 };
+// ===== NO TOCAR ABAJO - AQUI YA QUEDO ARREGLADO EL ERROR DE AUTH =====
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -161,7 +160,6 @@ async function cargarUsuarios(){
     document.getElementById('totalBaneados').textContent = totalBaneados;
   }catch(e){ console.log(e); }
 }
-// ===== FUNCIONES CORREGIDAS - AHORA SI FUNCIONAN =====
 async function darVip(id){ try{ await db.collection('usuarios').doc(id).update({vip:true, vipHasta:0, baneado:false}); alert("VIP dado 👑"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
 async function quitarVip(id){ try{ await db.collection('usuarios').doc(id).update({vip:false, vipHasta:0, admin:false}); alert("VIP quitado ✅"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
 async function banear(id, estaBaneado){ try{ await db.collection('usuarios').doc(id).update({baneado:!estaBaneado, vip: estaBaneado ? true : false, vipHasta:0}); alert(estaBaneado?"Usuario desbaneado ✅":"Usuario baneado 🚫 y sin VIP"); cargarUsuarios(); verTodo(); }catch(e){ alert("Error: "+e.message); } }
