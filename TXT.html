@@ -16,7 +16,12 @@ header{padding:20px;background:linear-gradient(90deg,#ff0055,#7b00ff)}
 button{width:100%;padding:14px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
 .btn-descargar{background:#00c853;color:#fff;font-size:16px}
 .btn-volver{background:#2a2a3a;color:#fff}
+.btn-gold{background:#ffd700;color:#000}
 .badge{display:inline-block;background:#ffd700;color:#000;font-size:12px;font-weight:900;padding:4px 10px;border-radius:20px;margin-bottom:8px}
+.vipBox{background:linear-gradient(135deg,#3a2a00,#1a1a2e);border:2px solid #ffd700;border-radius:16px;padding:16px;text-align:center;margin:15px}
+.stats{display:flex;gap:10px}
+.stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
+.stat b{font-size:22px;color:#ffd700}
 </style>
 </head>
 <body>
@@ -26,9 +31,24 @@ button{width:100%;padding:14px;margin:6px 0;border:none;border-radius:12px;font-
 <div class="sub">Descarga tus texturas favoritas</div>
 </header>
 
+<!-- CAJA DE CUENTA - CONECTADA CON LA TIENDA -->
+<div id="cuentaBox" class="vipBox">
+<h2 style="margin:0">👤 Mi Cuenta</h2>
+<p id="textoCuenta" style="color:#ccc">Cargando tu cuenta...</p>
+<p><b>Correo:</b> <span id="userEmail">---</span></p>
+<div class="stats">
+<div class="stat">💎<br><b id="diamantes">0</b><br>Diamantes</div>
+<div class="stat">👑<br><b id="diasVip">0</b><br>VIP</div>
+</div>
+<p style="font-size:18px;font-weight:900;color:#00ff88" id="userVip">NO VIP</p>
+<p style="color:#ffd700;font-weight:800" id="vipTiempo"></p>
+<p id="msgNoLogin" style="color:#ffcc00"></p>
+<button class="btn-gold" id="btnIrTienda" onclick="window.location.href='tienda.html'" style="display:none">🛒 Ir a la Tienda a Conseguir VIP</button>
+<button class="btn-volver" onclick="window.location.href='tienda.html'">⬅️ Volver a la Tienda</button>
+</div>
+
 <div class="card" style="text-align:center">
 <p>👇 Elige tu textura y dale a <b>Descargar</b>. Te va a llevar al acortador y después a Mediafire.</p>
-<a href="tienda.html" style="color:#ffd700">⬅️ Volver a la Tienda VIP</a>
 </div>
 
 <!-- MOD 1 SAKURA -->
@@ -86,8 +106,27 @@ button{width:100%;padding:14px;margin:6px 0;border:none;border-radius:12px;font-
 <p style="color:#888;font-size:12px">© AKIM MODS 2026 - Todos los derechos reservados</p>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-// LINKS DE ALPHAREDE - YA PUESTOS POR AKIM
+// MISMO PROYECTO QUE LA TIENDA - NO CAMBIAR
+const firebaseConfig = {
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let userActual = null;
+let datos = {diamantes:0, vip:false, vipHasta:0, admin:false};
+
+// LINKS DE ALPHAREDE - YA PUESTOS
 let LINK_MOD1_SAKURA = "https://alpharede.com/yl8RgCKFLMg";
 let LINK_MOD2_HIPHOP = "https://alpharede.com/1Q6khDQ36V7";
 let LINK_MOD3_TITAN = "https://alpharede.com/iOVosUYywNZ";
@@ -102,12 +141,62 @@ function descargar(num){
   if(num==3){ link = LINK_MOD3_TITAN; nombre = "TITAN"; }
   if(num==4){ link = LINK_MOD4_ANGELICAL; nombre = "ANGELICAL ROJO"; }
   if(num==5){ link = LINK_MOD5_FREESTYLE; nombre = "FREESTYLE"; }
-  if(!link || link === ""){
-    alert("⏳ El link de " + nombre + " todavía no está puesto.");
-    return;
-  }
+  if(!link){ alert("⏳ El link de " + nombre + " todavía no está puesto."); return; }
   window.open(link, "_blank");
 }
+
+function esVipActivo(){
+  if(datos.vip && datos.vipHasta === 0) return true;
+  if(!datos.vip) return false;
+  if(datos.vipHasta && Date.now() > datos.vipHasta){
+    datos.vip = false; datos.vipHasta = 0; return false;
+  }
+  return true;
+}
+
+function actualizarUI(){
+  let activo = esVipActivo();
+  document.getElementById('diamantes').innerText = datos.diamantes || 0;
+  document.getElementById('userVip').innerText = activo ? "✅ VIP ACTIVO" : "NO VIP";
+  if(activo && datos.vipHasta === 0){
+    document.getElementById('vipTiempo').innerText = "👑 VIP PERMANENTE";
+    document.getElementById('diasVip').innerText = "∞";
+  } else if(activo && datos.vipHasta){
+    let falta = datos.vipHasta - Date.now();
+    let dias = Math.floor(falta / (24*60*60*1000));
+    let horas = Math.floor((falta % (24*60*60*1000)) / (60*60*1000));
+    let minutos = Math.floor((falta % (60*60*1000)) / (60*1000));
+    if(dias > 0){
+      document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + dias + "d " + horas + "h " + minutos + "m de VIP";
+    } else {
+      document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
+    }
+    document.getElementById('diasVip').innerText = Math.ceil(falta / (24*60*60*1000));
+  } else {
+    document.getElementById('vipTiempo').innerText = "";
+    document.getElementById('diasVip').innerText = "0";
+  }
+}
+
+auth.onAuthStateChanged(async (user)=>{
+  if(user){
+    userActual = user;
+    document.getElementById('userEmail').innerText = user.email;
+    document.getElementById('textoCuenta').innerText = "Conectado con la tienda ✅";
+    const doc = await db.collection('usuarios').doc(user.uid).get();
+    if(doc.exists){
+      datos = doc.data();
+      if(datos.vipHasta===undefined) datos.vipHasta=0;
+      if(datos.diamantes===undefined) datos.diamantes=0;
+    }
+    actualizarUI();
+  } else {
+    document.getElementById('textoCuenta').innerText = "No has iniciado sesión";
+    document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda con el mismo correo para ver tu VIP aquí.";
+    document.getElementById('btnIrTienda').style.display = "block";
+  }
+});
+setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
 </script>
 </body>
   </html>
