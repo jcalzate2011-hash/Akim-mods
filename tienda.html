@@ -50,8 +50,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 </div>
 
 <h3>🎟️ Código Promocional</h3>
-<p style="font-size:13px;color:#aaa">Código AKIM 2026 - Da ADMIN PERMANENTE</p>
-<input id="codigoPromo" placeholder="Escribe AKIM-2026">
+<input id="codigoPromo" placeholder="Escribe tu código">
 <button class="btn-gold" onclick="canjearCodigo()">Canjear Código</button>
 <p id="msgCodigo" style="color:#ffd700"></p>
 
@@ -59,8 +58,16 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <h2>👑 VIP 1 DÍA</h2>
 <p>Sin anuncios - Descargas directas - Todo desbloqueado</p>
 <h2 style="color:#ffd700">💎 1000 Diamantes</h2>
-<button class="btn-gold" onclick="comprarVip()">👑 Comprar VIP con 1000 Diamantes</button>
+<button class="btn-gold" onclick="comprarVip(1,1000)">👑 Comprar VIP 1 DÍA con 1000 Diamantes</button>
 <p id="msgCompra" style="color:#ffd700"></p>
+</div>
+
+<div class="vipBox">
+<h2>👑 VIP 2 DÍAS - 48 HORAS</h2>
+<p>Sin anuncios - Descargas directas - Todo desbloqueado</p>
+<h2 style="color:#ffd700">💎 2000 Diamantes</h2>
+<button class="btn-gold" onclick="comprarVip(2,2000)">👑 Comprar VIP 2 DÍAS con 2000 Diamantes</button>
+<p id="msgCompra2" style="color:#ffd700"></p>
 </div>
 
 <button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
@@ -151,10 +158,15 @@ function actualizarUI(){
     document.getElementById('diasVip').innerText = "∞";
   } else if(activo && datos.vipHasta){
     let falta = datos.vipHasta - Date.now();
-    let horas = Math.floor(falta/1000/60/60);
-    let minutos = Math.floor((falta/1000/60)%60);
-    document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
-    document.getElementById('diasVip').innerText = "1";
+    let dias = Math.floor(falta / (24*60*60*1000));
+    let horas = Math.floor((falta % (24*60*60*1000)) / (60*60*1000));
+    let minutos = Math.floor((falta % (60*60*1000)) / (60*1000));
+    if(dias > 0){
+      document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + dias + "d " + horas + "h " + minutos + "m de VIP";
+    } else {
+      document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
+    }
+    document.getElementById('diasVip').innerText = Math.ceil(falta / (24*60*60*1000));
   } else {
     document.getElementById('vipTiempo').innerText = "";
     document.getElementById('diasVip').innerText = "0";
@@ -171,39 +183,47 @@ async function guardar(){
   actualizarUI();
 }
 
-// AKIM-2026 DA ADMIN PERMANENTE - NO DA VIP
 async function canjearCodigo(){
   if(!userActual){ alert("Primero inicia sesión"); return; }
   let codigo = document.getElementById('codigoPromo').value.trim().toUpperCase();
   if(codigo === "AKIM-2026" || codigo === "AKIM 2026" || codigo === "AKIM-ADMIN-2026"){
-    datos.admin = true; // ADMIN PERMANENTE - NUNCA SE QUITA
+    datos.admin = true;
     await guardar();
     document.getElementById('msgCodigo').innerText = "🛡️ ¡Código correcto! Ahora eres ADMIN PERMANENTE";
-    alert("🛡️ ¡Código correcto! Ahora eres ADMIN PERMANENTE AKIM 2026, para siempre. Ya te sale el menú para dar diamantes.");
+    alert("🛡️ ¡Código correcto! Ahora eres ADMIN PERMANENTE AKIM 2026, para siempre.");
     return;
   }
   document.getElementById('msgCodigo').innerText = "Código incorrecto ❌";
   alert("Código incorrecto ❌");
 }
 
-// COMPRAR VIP 1 DIA CON 1000 DIAMANTES - UNICA FORMA DE TENER VIP
-async function comprarVip(){
+async function comprarVip(dias, precio){
   if(!userActual){ alert("Primero inicia sesión"); return; }
-  if(datos.diamantes < 1000){
-    document.getElementById('msgCompra').innerText = "❌ Diamantes insuficientes. Tienes " + datos.diamantes + " y necesitas 1000";
-    alert("❌ Diamantes insuficientes. Tienes " + datos.diamantes + " diamantes y el VIP vale 1000");
+  if(datos.diamantes < precio){
+    alert("❌ Diamantes insuficientes. Tienes " + datos.diamantes + " y el VIP vale " + precio);
     return;
   }
-  if(!confirm("¿Quieres comprar VIP 1 DÍA por 1000 diamantes? Te van a quedar " + (datos.diamantes - 1000) + " diamantes")) return;
-  datos.diamantes -= 1000;
+  let ahora = Date.now();
+  let tiempoQueTenia = 0;
+  if(datos.vip && datos.vipHasta && datos.vipHasta > ahora){
+    tiempoQueTenia = datos.vipHasta - ahora;
+  }
+  let horasQueTenia = Math.floor(tiempoQueTenia / (60*60*1000));
+  let textoConfirm = "¿Quieres comprar VIP " + dias + " DÍA(S) por " + precio + " diamantes?";
+  if(tiempoQueTenia > 0){
+    textoConfirm += "\n\nYa tienes " + horasQueTenia + "h de VIP.\nSe te van a SUMAR y te van a quedar " + (horasQueTenia + dias*24) + "h en total.";
+  }
+  textoConfirm += "\nTe van a quedar " + (datos.diamantes - precio) + " diamantes";
+  if(!confirm(textoConfirm)) return;
+  datos.diamantes -= precio;
   datos.vip = true;
-  datos.vipHasta = Date.now() + (24*60*60*1000);
+  let base = (datos.vipHasta && datos.vipHasta > ahora) ? datos.vipHasta : ahora;
+  datos.vipHasta = base + (dias * 24 * 60 * 60 * 1000);
   await guardar();
-  document.getElementById('msgCompra').innerText = "✅ ¡Compraste VIP! Ya está activo";
-  alert("✅ ¡Compraste VIP 1 DÍA! Ya está activo y te descontaron los 1000 diamantes 💎");
+  let totalHoras = Math.floor((datos.vipHasta - Date.now()) / (60*60*1000));
+  alert("✅ ¡Compraste VIP! Ahora tienes " + totalHoras + "h de VIP en total 💎\nCuando se acabe ese tiempo, se te quita el VIP solo.");
 }
 
-// MENU ADMIN - SOLO VER DIAMANTES Y DAR DIAMANTES
 async function cargarUsuarios(){
   if(!esAdmin()){ alert("Solo el Admin puede ver esto"); return; }
   let lista = document.getElementById('listaUsuarios');
@@ -239,4 +259,4 @@ async function darDiamantes(id){
 setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); } }, 30000);
 </script>
 </body>
-  </html>
+</html>
