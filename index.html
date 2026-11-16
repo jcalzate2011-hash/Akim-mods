@@ -14,6 +14,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .btn-pink{background:#ff0055;color:#fff}
 .btn-white{background:#fff;color:#000}
 .btn-dark{background:#2a2a3a;color:#fff}
+.btn-gold{background:#ffd700;color:#000}
 .stats{display:flex;gap:10px}
 .stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
 .stat b{font-size:22px;color:#ffd700}
@@ -38,6 +39,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <h2>👤 Mi Perfil</h2>
 <p><b>Correo:</b> <span id="userEmail"></span></p>
 <p><b>VIP:</b> <span id="userVip" class="vip">NO VIP</span></p>
+<p id="vipTiempo" style="color:#ffd700;font-weight:800"></p>
 <div class="stats">
 <div class="stat">💎<br><b id="diamantes">0</b><br>Diamantes</div>
 <div class="stat">📄<br><b id="txt">0</b><br>TXT</div>
@@ -47,16 +49,23 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <button class="btn-pink" onclick="ganar(10,'Ver video')">+10 💎 Ver Video</button>
 <button class="btn-pink" onclick="ganar(20,'Seguir en TikTok')">+20 💎 Seguir en TikTok</button>
 <button class="btn-pink" onclick="ganar(50,'Compartir')">+50 💎 Compartir</button>
+
 <h3>👑 VIP</h3>
 <button class="btn-white" onclick="comprarVip()">Comprar VIP - Desbloquear todo</button>
+
+<h3>🎟️ Código Promocional</h3>
+<input id="codigoPromo" placeholder="Escribe tu código aquí">
+<button class="btn-gold" onclick="canjearCodigo()">Enviar Código</button>
+<p id="msgCodigo" style="color:#ffd700"></p>
+
 <button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
 
 <div class="card">
 <h3>📦 Tus MODS</h3>
 <p>✅ Si eres VIP puedes descargar todo sin anuncios</p>
-<button class="btn-pink" onclick="window.open('https://alpharede.com/bzIE9NLYw2d','_blank')">Descargar MOD 1 - VEGETA</button>
-<button class="btn-pink" onclick="window.open('https://alpharede.com/byO8bJ2rcJt','_blank')">Descargar MOD 2 - EL HOMBRE ARAÑA</button>
+<button class="btn-pink" onclick="descargarMOD1()">Descargar MOD 1 - VEGETA</button>
+<button class="btn-pink" onclick="descargarMOD2()">Descargar MOD 2 - EL HOMBRE ARAÑA</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -76,7 +85,18 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-let datos = {diamantes:0, txt:0, nivel:1, vip:false};
+let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0};
+
+function esVipActivo(){
+  if(!datos.vip) return false;
+  if(datos.vipHasta && Date.now() > datos.vipHasta){
+    datos.vip = false;
+    datos.vipHasta = 0;
+    guardar();
+    return false;
+  }
+  return true;
+}
 
 async function registrar(){
   const e=document.getElementById('email').value;
@@ -103,18 +123,30 @@ auth.onAuthStateChanged(async (user)=>{
     document.getElementById('perfilBox').classList.remove('hidden');
     document.getElementById('userEmail').innerText=user.email;
     const doc = await db.collection('usuarios').doc(user.uid).get();
-    if(doc.exists){ datos=doc.data(); } else {
+    if(doc.exists){ datos=doc.data(); if(datos.vipHasta===undefined) datos.vipHasta=0; } else {
       await db.collection('usuarios').doc(user.uid).set(datos);
     }
+    esVipActivo();
     actualizarUI();
   }
 });
 
 function actualizarUI(){
+  let activo = esVipActivo();
   document.getElementById('diamantes').innerText=datos.diamantes;
   document.getElementById('txt').innerText=datos.txt;
   document.getElementById('nivel').innerText=datos.nivel;
-  document.getElementById('userVip').innerText=datos.vip?"✅ VIP ACTIVO":"NO VIP";
+  document.getElementById('userVip').innerText=activo?"✅ VIP ACTIVO":"NO VIP";
+  if(activo && datos.vipHasta){
+    let falta = datos.vipHasta - Date.now();
+    let horas = Math.floor(falta/1000/60/60);
+    let minutos = Math.floor((falta/1000/60)%60);
+    document.getElementById('vipTiempo').innerText="⏳ Te quedan "+horas+"h "+minutos+"m de VIP";
+  } else if(activo){
+    document.getElementById('vipTiempo').innerText="👑 VIP Permanente";
+  } else {
+    document.getElementById('vipTiempo').innerText="";
+  }
 }
 async function guardar(){
   if(!userActual) return;
@@ -130,13 +162,37 @@ async function ganar(cant, accion){
   alert("Ganaste +"+cant+" diamantes por: "+accion);
 }
 async function comprarVip(){
-  if(datos.diamantes>=500){
-    datos.diamantes-=500; datos.vip=true; await guardar();
-    alert("¡VIP ACTIVADO! 👑");
+  window.open('https://chat.whatsapp.com/LtNXj5FthkC61Samr10Boa?s=cl&p=a&iam=2','_blank');
+}
+async function canjearCodigo(){
+  if(!userActual){ alert("Primero inicia sesión"); return; }
+  let codigo = document.getElementById('codigoPromo').value.trim().toUpperCase();
+  if(codigo === "AKIM-2011"){
+    datos.vip = true;
+    datos.vipHasta = Date.now() + (24*60*60*1000);
+    await guardar();
+    document.getElementById('msgCodigo').innerText="¡Código correcto! Tienes 24 horas de VIP 👑";
+    alert("¡Código correcto! VIP activado por 24 horas 👑");
   } else {
-    alert("Te faltan diamantes. Necesitas 500. Tienes: "+datos.diamantes+" - Habla con AKIM por WhatsApp para comprar VIP");
+    document.getElementById('msgCodigo').innerText="Código incorrecto ❌";
+    alert("Código incorrecto ❌");
   }
 }
+function descargarMOD1(){
+  if(esVipActivo()){
+    window.open('https://www.mediafire.com/file/pv7r3ykyso6fyvj/VEGETA.zip/file','_blank');
+  } else {
+    window.open('https://alpharede.com/bzIE9NLYw2d','_blank');
+  }
+}
+function descargarMOD2(){
+  if(esVipActivo()){
+    window.open('https://www.mediafire.com/file/m2xobrd0f5qvmys/EL_HOMBRE_ARA%25C3%2591A.zip/file','_blank');
+  } else {
+    window.open('https://alpharede.com/byO8bJ2rcJt','_blank');
+  }
+}
+setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); } }, 60000);
 </script>
 </body>
-  </html>
+</html>
