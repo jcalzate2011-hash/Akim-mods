@@ -3,114 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AKIM MODS - Texturas</title>
+<title>AKIM MODS - Texturas | Free Fire</title>
 <style>
-body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center}
-header{padding:20px;background:linear-gradient(90deg,#ff0055,#7b00ff)}
-.logo{font-size:28px;font-weight:900;letter-spacing:1px}
-.sub{color:#ccc;font-size:14px}
-.card{background:#15151f;margin:15px;border-radius:16px;padding:18px;text-align:left}
-.modCard{background:#1c1c2b;margin:15px;border-radius:16px;padding:16px;text-align:center;border:2px solid #2a2a3a}
-.modCard h2{margin:5px 0}
-.modCard p{color:#bbb;font-size:14px}
-button{width:100%;padding:14px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
-.btn-descargar{background:#00c853;color:#fff;font-size:16px}
-.btn-volver{background:#2a2a3a;color:#fff}
-.btn-gold{background:#ffd700;color:#000}
-.badge{display:inline-block;background:#ffd700;color:#000;font-size:12px;font-weight:900;padding:4px 10px;border-radius:20px;margin-bottom:8px}
-.vipBox{background:linear-gradient(135deg,#3a2a00,#1a1a2e);border:2px solid #ffd700;border-radius:16px;padding:16px;text-align:center;margin:15px}
-.stats{display:flex;gap:10px}
-.stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
-.stat b{font-size:22px;color:#ffd700}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;background-image:radial-gradient(circle at 20% 10%,#2a1500 0%,transparent 40%),radial-gradient(circle at 90% 20%,#1a0a2e 0%,transparent 40%)}
+.topbar{background:#000;border-bottom:3px solid #ff6b00;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:99}
+.topbar .logo{font-family:'Orbitron';font-weight:900;font-size:19px;color:#fff}
+.topbar .logo span{color:#ff6b00}
+.hud{display:flex;gap:6px}
+.hud div{background:#1c1c26;border:1px solid #ff6b00;border-radius:20px;padding:5px 10px;font-size:12px;font-weight:800}
+.hud b{color:#ffd700}
+.hero{background:linear-gradient(180deg,#ff6b00,#ff2e00 55%,#0b0b12);padding:22px 14px 26px;text-align:center;clip-path:polygon(0 0,100% 0,100% 88%,0 100%)}
+.hero h1{font-family:'Orbitron';font-size:32px;margin:0;line-height:1;text-shadow:3px 3px 0 #000;letter-spacing:1px}
+.hero h1 span{color:#ffd700}
+.hero p{margin:8px 0 0;font-weight:800;color:#fff;text-shadow:1px 1px 0 #000}
+.btn-jugar{background:#ffd700;color:#000;font-family:'Orbitron';font-weight:900;padding:12px 28px;border:none;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);font-size:15px;margin-top:14px;cursor:pointer}
+.vipPanel{margin:-8px 14px 14px;background:linear-gradient(135deg,#1a1a26,#2a1a00);border:2px solid #ffd700;padding:14px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.vipPanel h2{font-family:'Orbitron';margin:0;font-size:16px;color:#ffd700}
+.vipPanel p{margin:4px 0;font-size:13px;color:#ddd}
+.vipTime{font-size:18px;font-weight:900;color:#00ff88 !important}
+.vipNo{color:#ff4d4d !important}
+.grid{padding:0 14px 20px}
+.modCard{background:linear-gradient(180deg,#1f1f2e,#12121c);border:2px solid #333;margin-bottom:16px;overflow:hidden;position:relative;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+.modCard .imgTop{height:118px;display:flex;align-items:center;justify-content:center;font-size:72px;position:relative}
+.mod1 .imgTop{background:linear-gradient(135deg,#ff2e7e,#7b00ff)}
+.mod2 .imgTop{background:linear-gradient(135deg,#00e5ff,#0066ff)}
+.mod3 .imgTop{background:linear-gradient(135deg,#ff9800,#ff2e00)}
+.mod4 .imgTop{background:linear-gradient(135deg,#ff0000,#5a0000)}
+.mod5 .imgTop{background:linear-gradient(135deg,#ffd700,#ff6b00)}
+.etiqueta{position:absolute;top:10px;left:10px;background:#ffd700;color:#000;font-family:'Orbitron';font-size:11px;font-weight:900;padding:5px 10px;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)}
+.nuevo{position:absolute;top:10px;right:10px;background:#ff2e00;color:#fff;font-size:11px;font-weight:900;padding:5px 8px;transform:rotate(3deg)}
+.modBody{padding:14px;text-align:left}
+.modBody h3{font-family:'Orbitron';font-size:22px;margin:0}
+.modBody h3 span{color:#ffd700;font-size:12px}
+.modBody p{color:#bbb;font-size:13px;margin:6px 0}
+.tags{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}
+.tags span{background:#2a2a3a;border:1px solid #444;font-size:11px;padding:4px 8px;border-radius:20px}
+.btn-descargar{width:100%;background:linear-gradient(90deg,#ff6b00,#ff2e00);color:#fff;font-family:'Orbitron';font-weight:900;font-size:15px;padding:14px;border:none;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);cursor:pointer;text-shadow:1px 1px 0 #000}
+.btn-volver{width:100%;background:#222;color:#fff;padding:12px;border:1px solid #555;font-weight:800;cursor:pointer;margin-top:10px}
+.footer{text-align:center;color:#888;font-size:11px;padding:10px 0 20px}
 </style>
 </head>
 <body>
-<header>
-<div class="logo">🎮 AKIM MODS 🎮</div>
-<div style="font-size:20px;font-weight:900;margin-top:5px">📂 TEXTURAS - MEDIAFIRE</div>
-<div class="sub">Descarga tus texturas favoritas</div>
-</header>
 
-<!-- CAJA DE CUENTA - CONECTADA CON LA TIENDA -->
-<div id="cuentaBox" class="vipBox">
-<h2 style="margin:0">👤 Mi Cuenta</h2>
-<p id="textoCuenta" style="color:#ccc">Cargando tu cuenta...</p>
+<div class="topbar">
+<div class="logo">AKIM<span> MODS</span></div>
+<div class="hud">
+<div>💎 <b id="diamantesTop">0</b></div>
+<div>👑 <b id="vipTop">NO VIP</b></div>
+</div>
+</div>
+
+<div class="hero">
+<p>🔥 BATTLE ROYALE • TEXTURAS 🔥</p>
+<h1>AKIM <span>MODS</span><br>TEXTURAS FF</h1>
+<p>Elige tu skin, descarga y entra a romperla</p>
+<button class="btn-jugar" onclick="window.location.href='tienda.html'">🛒 CONSEGUIR VIP</button>
+</div>
+
+<div class="vipPanel">
+<h2>👤 MI CUENTA - CONECTADA CON LA TIENDA</h2>
 <p><b>Correo:</b> <span id="userEmail">---</span></p>
-<div class="stats">
-<div class="stat">💎<br><b id="diamantes">0</b><br>Diamantes</div>
-<div class="stat">👑<br><b id="diasVip">0</b><br>VIP</div>
-</div>
-<p style="font-size:18px;font-weight:900;color:#00ff88" id="userVip">NO VIP</p>
-<p style="color:#ffd700;font-weight:800" id="vipTiempo"></p>
+<p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span></p>
+<p class="vipTime" id="vipTiempo">Cargando...</p>
 <p id="msgNoLogin" style="color:#ffcc00"></p>
-<button class="btn-gold" id="btnIrTienda" onclick="window.location.href='tienda.html'" style="display:none">🛒 Ir a la Tienda a Conseguir VIP</button>
-<button class="btn-volver" onclick="window.location.href='tienda.html'">⬅️ Volver a la Tienda</button>
 </div>
 
-<div class="card" style="text-align:center">
-<p>👇 Elige tu textura y dale a <b>Descargar</b>. Te va a llevar al acortador y después a Mediafire.</p>
+<div class="grid">
+
+<div class="modCard mod1">
+<div class="imgTop">🌸<span class="etiqueta">MOD 1</span><span class="nuevo">POPULAR</span></div>
+<div class="modBody">
+<h3>SAKURA <span>• LEGENDARIA</span></h3>
+<p>Rosa, suave y limpia. La favorita de todos en Free Fire.</p>
+<div class="tags"><span>📦 Mediafire</span><span>📱 Free Fire</span><span>⭐ 4.9</span></div>
+<button class="btn-descargar" onclick="descargar(1)">⬇️ DESCARGAR SAKURA</button>
+</div>
 </div>
 
-<!-- MOD 1 SAKURA -->
-<div class="modCard" style="border-color:#ff66b2">
-<span class="badge">MOD 1</span>
-<div style="font-size:50px">🌸</div>
-<h2>SAKURA</h2>
-<p>Textura Sakura - Rosa, suave y limpia. La favorita de todos.</p>
-<p>📦 Mediafire • 📱 Para Free Fire</p>
-<button class="btn-descargar" onclick="descargar(1)">⬇️ Descargar MOD 1 - SAKURA</button>
+<div class="modCard mod2">
+<div class="imgTop">🎧<span class="etiqueta">MOD 2</span><span class="nuevo">NUEVO</span></div>
+<div class="modBody">
+<h3>HIP HOP <span>• ÉPICA</span></h3>
+<p>Estilo callejero, colores fuertes y con flow. Para los que andan con estilo.</p>
+<div class="tags"><span>📦 Mediafire</span><span>📱 Free Fire</span><span>⭐ 4.8</span></div>
+<button class="btn-descargar" onclick="descargar(2)">⬇️ DESCARGAR HIP HOP</button>
+</div>
 </div>
 
-<!-- MOD 2 HIP HOP -->
-<div class="modCard" style="border-color:#00e5ff">
-<span class="badge">MOD 2</span>
-<div style="font-size:50px">🎧</div>
-<h2>HIP HOP</h2>
-<p>Textura Hip Hop - Estilo callejero, colores fuertes y con flow.</p>
-<p>📦 Mediafire • 📱 Para Free Fire</p>
-<button class="btn-descargar" onclick="descargar(2)">⬇️ Descargar MOD 2 - HIP HOP</button>
+<div class="modCard mod3">
+<div class="imgTop">💪<span class="etiqueta">MOD 3</span><span class="nuevo">POWER</span></div>
+<div class="modBody">
+<h3>TITAN <span>• MÍTICA</span></h3>
+<p>Poderosa, oscura y agresiva. Para los que juegan serio y no perdonan.</p>
+<div class="tags"><span>📦 Mediafire</span><span>📱 Free Fire</span><span>⭐ 5.0</span></div>
+<button class="btn-descargar" onclick="descargar(3)">⬇️ DESCARGAR TITAN</button>
+</div>
 </div>
 
-<!-- MOD 3 TITAN -->
-<div class="modCard" style="border-color:#ff9800">
-<span class="badge">MOD 3</span>
-<div style="font-size:50px">💪</div>
-<h2>TITAN</h2>
-<p>Textura Titan - Poderosa, oscura y agresiva. Para los que juegan serio.</p>
-<p>📦 Mediafire • 📱 Para Free Fire</p>
-<button class="btn-descargar" onclick="descargar(3)">⬇️ Descargar MOD 3 - TITAN</button>
+<div class="modCard mod4">
+<div class="imgTop">😇<span class="etiqueta">MOD 4</span><span class="nuevo">EXCLUSIVA</span></div>
+<div class="modBody">
+<h3>ANGELICAL ROJO <span>• LEGENDARIA</span></h3>
+<p>Blanca con rojo, elegante y angelical. Se ve brutal en partida.</p>
+<div class="tags"><span>📦 Mediafire</span><span>📱 Free Fire</span><span>⭐ 4.9</span></div>
+<button class="btn-descargar" onclick="descargar(4)">⬇️ DESCARGAR ANGELICAL ROJO</button>
+</div>
 </div>
 
-<!-- MOD 4 ANGELICAL ROJO -->
-<div class="modCard" style="border-color:#ff0000">
-<span class="badge">MOD 4</span>
-<div style="font-size:50px">😇🔴</div>
-<h2>ANGELICAL ROJO</h2>
-<p>Textura Angelical Rojo - Blanca con rojo, elegante y angelical.</p>
-<p>📦 Mediafire • 📱 Para Free Fire</p>
-<button class="btn-descargar" onclick="descargar(4)">⬇️ Descargar MOD 4 - ANGELICAL ROJO</button>
+<div class="modCard mod5">
+<div class="imgTop">🔥<span class="etiqueta">MOD 5</span><span class="nuevo">HOT</span></div>
+<div class="modBody">
+<h3>FREESTYLE <span>• ÉPICA</span></h3>
+<p>Libre, colorida, para jugar con estilo y sin miedo.</p>
+<div class="tags"><span>📦 Mediafire</span><span>📱 Free Fire</span><span>⭐ 4.7</span></div>
+<button class="btn-descargar" onclick="descargar(5)">⬇️ DESCARGAR FREESTYLE</button>
+</div>
 </div>
 
-<!-- MOD 5 FREESTYLE -->
-<div class="modCard" style="border-color:#ffd700">
-<span class="badge">MOD 5</span>
-<div style="font-size:50px">🔥</div>
-<h2>FREESTYLE</h2>
-<p>Textura Freestyle - Libre, colorida, para jugar con estilo.</p>
-<p>📦 Mediafire • 📱 Para Free Fire</p>
-<button class="btn-descargar" onclick="descargar(5)">⬇️ Descargar MOD 5 - FREESTYLE</button>
+<button class="btn-volver" onclick="window.location.href='tienda.html'">⬅️ Volver a la Tienda VIP</button>
 </div>
 
-<div class="card" style="text-align:center">
-<button class="btn-volver" onclick="window.location.href='tienda.html'">⬅️ Volver a la Tienda</button>
-<p style="color:#888;font-size:12px">© AKIM MODS 2026 - Todos los derechos reservados</p>
-</div>
+<div class="footer">© AKIM MODS 2026 • BOOYAH! 🔥</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-// MISMO PROYECTO QUE LA TIENDA - NO CAMBIAR
 const firebaseConfig = {
   apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
   authDomain: "akim-mods.firebaseapp.com",
@@ -126,7 +146,6 @@ const db = firebase.firestore();
 let userActual = null;
 let datos = {diamantes:0, vip:false, vipHasta:0, admin:false};
 
-// LINKS DE ALPHAREDE - YA PUESTOS
 let LINK_MOD1_SAKURA = "https://alpharede.com/yl8RgCKFLMg";
 let LINK_MOD2_HIPHOP = "https://alpharede.com/1Q6khDQ36V7";
 let LINK_MOD3_TITAN = "https://alpharede.com/iOVosUYywNZ";
@@ -136,53 +155,45 @@ let LINK_MOD5_FREESTYLE = "https://alpharede.com/TVj2VC9zoiW";
 function descargar(num){
   let link = "";
   let nombre = "";
-  if(num==1){ link = LINK_MOD1_SAKURA; nombre = "SAKURA"; }
-  if(num==2){ link = LINK_MOD2_HIPHOP; nombre = "HIP HOP"; }
-  if(num==3){ link = LINK_MOD3_TITAN; nombre = "TITAN"; }
-  if(num==4){ link = LINK_MOD4_ANGELICAL; nombre = "ANGELICAL ROJO"; }
-  if(num==5){ link = LINK_MOD5_FREESTYLE; nombre = "FREESTYLE"; }
-  if(!link){ alert("⏳ El link de " + nombre + " todavía no está puesto."); return; }
+  if(num===1){ link = LINK_MOD1_SAKURA; nombre = "SAKURA"; }
+  if(num===2){ link = LINK_MOD2_HIPHOP; nombre = "HIP HOP"; }
+  if(num===3){ link = LINK_MOD3_TITAN; nombre = "TITAN"; }
+  if(num===4){ link = LINK_MOD4_ANGELICAL; nombre = "ANGELICAL ROJO"; }
+  if(num===5){ link = LINK_MOD5_FREESTYLE; nombre = "FREESTYLE"; }
+  if(!link || link === ""){ alert("⏳ El link de " + nombre + " todavía no está puesto."); return; }
   window.open(link, "_blank");
 }
 
 function esVipActivo(){
   if(datos.vip && datos.vipHasta === 0) return true;
   if(!datos.vip) return false;
-  if(datos.vipHasta && Date.now() > datos.vipHasta){
-    datos.vip = false; datos.vipHasta = 0; return false;
-  }
+  if(datos.vipHasta && Date.now() > datos.vipHasta){ datos.vip = false; datos.vipHasta = 0; return false; }
   return true;
 }
-
 function actualizarUI(){
   let activo = esVipActivo();
-  document.getElementById('diamantes').innerText = datos.diamantes || 0;
+  document.getElementById('diamantesTop').innerText = datos.diamantes || 0;
+  document.getElementById('vipTop').innerText = activo ? "VIP ✅" : "NO VIP";
   document.getElementById('userVip').innerText = activo ? "✅ VIP ACTIVO" : "NO VIP";
+  document.getElementById('userVip').className = activo ? "vipTime" : "vipNo";
   if(activo && datos.vipHasta === 0){
     document.getElementById('vipTiempo').innerText = "👑 VIP PERMANENTE";
-    document.getElementById('diasVip').innerText = "∞";
   } else if(activo && datos.vipHasta){
     let falta = datos.vipHasta - Date.now();
     let dias = Math.floor(falta / (24*60*60*1000));
     let horas = Math.floor((falta % (24*60*60*1000)) / (60*60*1000));
     let minutos = Math.floor((falta % (60*60*1000)) / (60*1000));
-    if(dias > 0){
-      document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + dias + "d " + horas + "h " + minutos + "m de VIP";
-    } else {
-      document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
-    }
-    document.getElementById('diasVip').innerText = Math.ceil(falta / (24*60*60*1000));
+    if(dias > 0) document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + dias + "d " + horas + "h " + minutos + "m de VIP";
+    else document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
   } else {
-    document.getElementById('vipTiempo').innerText = "";
-    document.getElementById('diasVip').innerText = "0";
+    document.getElementById('vipTiempo').innerText = "Sin VIP - Ve a la tienda a conseguirlo";
   }
 }
-
 auth.onAuthStateChanged(async (user)=>{
   if(user){
     userActual = user;
     document.getElementById('userEmail').innerText = user.email;
-    document.getElementById('textoCuenta').innerText = "Conectado con la tienda ✅";
+    document.getElementById('msgNoLogin').innerText = "";
     const doc = await db.collection('usuarios').doc(user.uid).get();
     if(doc.exists){
       datos = doc.data();
@@ -191,9 +202,9 @@ auth.onAuthStateChanged(async (user)=>{
     }
     actualizarUI();
   } else {
-    document.getElementById('textoCuenta').innerText = "No has iniciado sesión";
+    document.getElementById('userEmail').innerText = "No has iniciado sesión";
     document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda con el mismo correo para ver tu VIP aquí.";
-    document.getElementById('btnIrTienda').style.display = "block";
+    actualizarUI();
   }
 });
 setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
