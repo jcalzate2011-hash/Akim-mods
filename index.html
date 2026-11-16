@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM MODS - Perfil</title>
+<style>
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center}
+header{padding:20px;background:linear-gradient(90deg,#ff0055,#7b00ff)}
+.logo{font-size:28px;font-weight:900;letter-spacing:2px}
+.card{background:#15151f;margin:15px;border-radius:16px;padding:18px;text-align:left}
+input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;background:#222231;color:#fff;box-sizing:border-box}
+button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
+.btn-pink{background:#ff0055;color:#fff}
+.btn-white{background:#fff;color:#000}
+.btn-dark{background:#2a2a3a;color:#fff}
+.stats{display:flex;gap:10px}
+.stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
+.stat b{font-size:22px;color:#ffd700}
+.vip{color:#00ff88;font-weight:900}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header><div class="logo">🔥 AKIM MODS 🔥</div><div>Tu progreso se guarda en la nube</div></header>
+
+<div id="loginBox" class="card">
+<h2>👤 Crear Perfil / Entrar</h2>
+<input id="email" type="email" placeholder="Tu correo">
+<input id="pass" type="password" placeholder="Contraseña">
+<button class="btn-pink" onclick="registrar()">Crear Perfil</button>
+<button class="btn-white" onclick="entrar()">Iniciar Sesión</button>
+<button class="btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button>
+<p id="msg" style="color:#ffcc00"></p>
+</div>
+
+<div id="perfilBox" class="card hidden">
+<h2>👤 Mi Perfil</h2>
+<p><b>Correo:</b> <span id="userEmail"></span></p>
+<p><b>VIP:</b> <span id="userVip" class="vip">NO VIP</span></p>
+<div class="stats">
+<div class="stat">💎<br><b id="diamantes">0</b><br>Diamantes</div>
+<div class="stat">📄<br><b id="txt">0</b><br>TXT</div>
+<div class="stat">⭐<br><b id="nivel">1</b><br>Nivel</div>
+</div>
+<h3>🎁 Gana Diamantes</h3>
+<button class="btn-pink" onclick="ganar(10,'Ver video')">+10 💎 Ver Video</button>
+<button class="btn-pink" onclick="ganar(20,'Seguir en TikTok')">+20 💎 Seguir en TikTok</button>
+<button class="btn-pink" onclick="ganar(50,'Compartir')">+50 💎 Compartir</button>
+<h3>👑 VIP</h3>
+<button class="btn-white" onclick="comprarVip()">Comprar VIP - Desbloquear todo</button>
+<button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
+</div>
+
+<div class="card">
+<h3>📦 Tus MODS</h3>
+<p>✅ Si eres VIP puedes descargar todo sin anuncios</p>
+<button class="btn-pink" onclick="alert('Link de tu MOD aquí')">Descargar MOD 1</button>
+<button class="btn-pink" onclick="alert('Link de tu MOD aquí')">Descargar MOD 2</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let userActual = null;
+let datos = {diamantes:0, txt:0, nivel:1, vip:false};
+
+async function registrar(){
+  const e=document.getElementById('email').value;
+  const p=document.getElementById('pass').value;
+  try{ await auth.createUserWithEmailAndPassword(e,p); document.getElementById('msg').innerText="Perfil creado!"; }
+  catch(err){ document.getElementById('msg').innerText=err.message; }
+}
+async function entrar(){
+  const e=document.getElementById('email').value;
+  const p=document.getElementById('pass').value;
+  try{ await auth.signInWithEmailAndPassword(e,p); }
+  catch(err){ document.getElementById('msg').innerText=err.message; }
+}
+async function loginGoogle(){
+  const prov = new firebase.auth.GoogleAuthProvider();
+  try{ await auth.signInWithPopup(prov); }catch(err){ document.getElementById('msg').innerText=err.message; }
+}
+async function salir(){ await auth.signOut(); location.reload(); }
+
+auth.onAuthStateChanged(async (user)=>{
+  if(user){
+    userActual=user;
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('perfilBox').classList.remove('hidden');
+    document.getElementById('userEmail').innerText=user.email;
+    const doc = await db.collection('usuarios').doc(user.uid).get();
+    if(doc.exists){ datos=doc.data(); } else {
+      await db.collection('usuarios').doc(user.uid).set(datos);
+    }
+    actualizarUI();
+  }
+});
+
+function actualizarUI(){
+  document.getElementById('diamantes').innerText=datos.diamantes;
+  document.getElementById('txt').innerText=datos.txt;
+  document.getElementById('nivel').innerText=datos.nivel;
+  document.getElementById('userVip').innerText=datos.vip?"✅ VIP ACTIVO":"NO VIP";
+}
+async function guardar(){
+  if(!userActual) return;
+  await db.collection('usuarios').doc(userActual.uid).set(datos);
+  actualizarUI();
+}
+async function ganar(cant, accion){
+  datos.diamantes+=cant;
+  datos.txt+=1;
+  if(datos.diamantes>100) datos.nivel=2;
+  if(datos.diamantes>300) datos.nivel=3;
+  await guardar();
+  alert("Ganaste +"+cant+" diamantes por: "+accion);
+}
+async function comprarVip(){
+  if(datos.diamantes>=500){
+    datos.diamantes-=500; datos.vip=true; await guardar();
+    alert("¡VIP ACTIVADO! 👑");
+  } else {
+    alert("Te faltan diamantes. Necesitas 500. Tienes: "+datos.diamantes+" - Habla con AKIM por WhatsApp para comprar VIP");
+  }
+}
+</script>
+</body>
+  </html>
