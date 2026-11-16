@@ -50,9 +50,6 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <button class="btn-pink" onclick="ganar(20,'Seguir en TikTok')">+20 💎 Seguir en TikTok</button>
 <button class="btn-pink" onclick="ganar(50,'Compartir')">+50 💎 Compartir</button>
 
-<h3>👑 VIP</h3>
-<button class="btn-white" onclick="comprarVip()">Comprar VIP - Desbloquear todo</button>
-
 <h3>🎟️ Código Promocional</h3>
 <input id="codigoPromo" placeholder="Escribe tu código aquí">
 <button class="btn-gold" onclick="canjearCodigo()">Enviar Código</button>
@@ -159,9 +156,6 @@ async function ganar(cant, accion){
   if(datos.diamantes>300) datos.nivel=3;
   await guardar();
   alert("Ganaste +"+cant+" diamantes por: "+accion);
-}
-async function comprarVip(){
-  window.open('https://chat.whatsapp.com/LtNXj5FthkC61Samr10Boa?s=cl&p=a&iam=2','_blank');
 }
 async function canjearCodigo(){
   if(!userActual){ alert("Primero inicia sesión"); return; }
