@@ -49,7 +49,6 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 <p id="subTitulo">Aquí te llegan los mensajes privados de AKIM MODS</p>
 </div>
 
-<!-- SOLO PARA TI - ENVIAR PRIVADO -->
 <div class="card" id="panelEnviar" style="display:none">
 <h3>✉️ ENVIAR MENSAJE PRIVADO - SOLO TÚ</h3>
 <p style="font-size:12px;color:#bbb;margin:0 0 8px">Busca a la persona, dale a ESCRIBIRLE, escribe y envía. Le llega al instante a su correo. Ellos NO pueden contestarte.</p>
@@ -61,7 +60,6 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 <div id="listaParaEnviar"><p style="color:#888">Cargando personas...</p></div>
 </div>
 
-<!-- CORREO DE TODOS - LO QUE RECIBEN -->
 <div class="card" id="cardCorreo">
 <h3>📩 MIS MENSAJES PRIVADOS</h3>
 <p style="font-size:12px;color:#bbb">Solo tú ves tus mensajes. Nadie más los ve.</p>
@@ -95,10 +93,8 @@ let userActual = null;
 let misDatos = {nombre:"", admin:false};
 let todosUsuarios = [];
 let usuarioSeleccionado = null;
-
 function irACorreo(){
   document.getElementById('cardCorreo').scrollIntoView({behavior:'smooth'});
-  // Marcar como leídos al abrir el correo
   if(!userActual) return;
   db.collection('mensajes_privados').where('paraUid','==',userActual.uid).where('leido','==',false).get().then(snap=>{
     snap.forEach(d=>{ db.collection('mensajes_privados').doc(d.id).update({leido:true}); });
@@ -152,7 +148,6 @@ async function enviarPrivado(){
   }catch(e){ alert("Error: "+e.message); }
 }
 function cargarInbox(){
-  // EN VIVO - llega al instante, no se queda pensando
   db.collection('mensajes_privados').where('paraUid','==',userActual.uid).orderBy('fecha','desc').onSnapshot((snap)=>{
     let box=document.getElementById('listaMensajes');
     let badge=document.getElementById('badgeCorreo');
@@ -187,7 +182,6 @@ auth.onAuthStateChanged((user)=>{
       if(doc.exists){
         misDatos=doc.data();
         if(misDatos.admin){
-          // SI ERES TU - VES EL PANEL PARA ENVIAR
           document.getElementById('panelEnviar').style.display="block";
           document.getElementById('tituloPrincipal').innerText="✉️ ENVIAR PRIVADOS + 📩 MI CORREO";
           document.getElementById('subTitulo').innerText="Tú eres el único que puede enviar. Ellos solo reciben.";
@@ -204,4 +198,4 @@ auth.onAuthStateChanged((user)=>{
 });
 </script>
 </body>
-</html>
+  </html>
