@@ -33,8 +33,14 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <div>Solo Moderadores - Nadie más puede ver esto</div>
 </header>
 
+<!-- CARGANDO -->
+<div id="cargandoBox" class="card">
+<h2>⏳ Cargando...</h2>
+<p style="color:#aaa;font-size:14px">Espera un segundito.</p>
+</div>
+
 <!-- LOGIN -->
-<div id="loginBox" class="card">
+<div id="loginBox" class="card hidden">
 <h2>👤 Entra con tu cuenta</h2>
 <p style="color:#aaa;font-size:14px">Este correo es <b>PRIVADO</b>. Solo Moderadores y Admin. La web detecta sola quién eres.</p>
 <input id="email" type="email" placeholder="Tu correo">
@@ -112,7 +118,6 @@ async function loginGoogle(){
 }
 async function salir(){ await auth.signOut(); location.reload(); }
 
-// SOLO MODERADOR O ADMIN PUEDE VER - NADIE MÁS
 function puedeVerCorreo(){
   if(!datosUsuario) return false;
   if(datosUsuario.admin === true) return true;
@@ -125,23 +130,34 @@ function miRolTexto(){
   if(datosUsuario.rolEquipo) return datosUsuario.rolEquipo;
   return "Usuario normal";
 }
+// PARA QUE EL CORREO DIGA BIEN EL ROL - Reseñas = Reseñero
+function nombreBonitoRol(rol){
+  if(rol === "Reseñas") return "Reseñero / Encargado de Reseñas";
+  if(rol === "Moderador") return "Moderador";
+  if(rol === "Soporte") return "Soporte";
+  return rol || "";
+}
 
 auth.onAuthStateChanged(async (user)=>{
-  if(user){
+  try{
+    if(!user){
+      document.getElementById('cargandoBox').classList.add('hidden');
+      document.getElementById('loginBox').classList.remove('hidden');
+      return;
+    }
     userActual = user;
+    document.getElementById('cargandoBox').classList.add('hidden');
     document.getElementById('loginBox').classList.add('hidden');
     const doc = await db.collection('usuarios').doc(user.uid).get();
     if(doc.exists){ datosUsuario = doc.data(); }
     else { datosUsuario = {diamantes:0, vip:false, admin:false, rolEquipo:"Usuario"}; }
 
-    // SI NO ES MODERADOR, NO VE NADA - NI NOMBRES, NI MENSAJES
     if(!puedeVerCorreo()){
       document.getElementById('sinPermisoBox').classList.remove('hidden');
       document.getElementById('tuCorreoSinPermiso').innerText = user.email;
       document.getElementById('tuRolSinPermiso').innerText = miRolTexto();
       return;
     }
-    // SÍ ES MODERADOR / ADMIN, MUESTRA BANDEJA PRIVADA
     document.getElementById('correoBox').classList.remove('hidden');
     document.getElementById('userEmail').innerText = user.email;
     document.getElementById('miRol').innerText = miRolTexto();
@@ -149,6 +165,10 @@ auth.onAuthStateChanged(async (user)=>{
     if(datosUsuario.admin === true){
       document.getElementById('adminModeradorBox').classList.remove('hidden');
     }
+  }catch(err){
+    document.getElementById('cargandoBox').classList.add('hidden');
+    document.getElementById('loginBox').classList.remove('hidden');
+    document.getElementById('msgLogin').innerText = "Error: " + err.message;
   }
 });
 
@@ -166,70 +186,110 @@ function cambiarTab(tab){
 async function cargarPostulaciones(){
   let lista = document.getElementById('lista');
   lista.innerHTML = "Cargando correos privados...";
-  let snap = await db.collection('postulaciones').orderBy('fecha','desc').get();
-  let html = "";
-  let count = 0;
-  snap.forEach(doc=>{
-    let d = doc.data();
-    let estado = d.estado || "Pendiente";
-    if(estado !== tabActual) return;
-    count++;
-    let esNuevo = estado === "Pendiente";
-    html += `<div class="postBox ${esNuevo ? "nuevo" : ""}">
-    <b style="font-size:17px">📩 Hoja de Vida Privada</b> - <span style="color:#ffd700;font-weight:900">${estado}</span><br>
-    <b>Nombre:</b> ${d.nombre}<br>
-    <b>Quiere ser:</b> ${d.rol}<br>
-    <b>Edad:</b> ${d.edad} | <b>Ciudad:</b> ${d.ciudad || "No puso"}<br>
-    <b>Correo del que se postuló:</b> ${d.correo}<br>
-    <b>WhatsApp:</b> ${d.whatsapp}<br>
-    <b>Horas:</b> ${d.horas || "No puso"} | <b>💎:</b> ${d.diamantes || 0} | <b>VIP:</b> ${d.vip ? "SÍ" : "NO"}<br>
-    <b>Experiencia:</b> ${d.experiencia || "No puso"}<br>
-    <b>Motivo:</b> ${d.motivo || "No puso"}<br>
-    <b>Fecha:</b> ${new Date(d.fecha).toLocaleString()}<br>
-    ${d.mensajeAdmin ? "<b>Mensaje que le dejaste:</b> " + d.mensajeAdmin + "<br>" : ""}
-    ${d.revisadoPor ? "<b>Revisado por:</b> " + d.revisadoPor + "<br>" : ""}
-    <button class="btn-green" onclick="cambiarEstado('${doc.id}','${d.correo}','${d.nombre}','Aceptado')">✅ Aceptarlo</button>
-    <button class="btn-pink" onclick="cambiarEstado('${doc.id}','${d.correo}','${d.nombre}','Rechazado')">❌ No Aceptarlo</button>
-    <button class="btn-blue" onclick="escribirle('${d.correo}','${d.nombre}','${d.rol}')">✉️ Escribirle</button>
-    </div>`;
-  });
-  document.getElementById('contador').innerText = "Tienes " + count + " mensajes privados en " + tabActual;
-  lista.innerHTML = html || "No hay mensajes privados en esta bandeja.";
+  try{
+    let snap = await db.collection('postulaciones').get();
+    let docs = snap.docs.sort((a,b)=> (b.data().fecha||0) - (a.data().fecha||0));
+    let html = "";
+    let count = 0;
+    docs.forEach(doc=>{
+      let d = doc.data();
+      let estado = d.estado || "Pendiente";
+      if(estado !== tabActual) return;
+      count++;
+      let esNuevo = estado === "Pendiente";
+      html += `<div class="postBox ${esNuevo ? "nuevo" : ""}">
+      <b style="font-size:17px">📩 Hoja de Vida Privada</b> - <span style="color:#ffd700;font-weight:900">${estado}</span><br>
+      <b>Nombre:</b> ${d.nombre}<br>
+      <b>Quiere ser:</b> ${nombreBonitoRol(d.rol)}<br>
+      <b>Edad:</b> ${d.edad} | <b>Ciudad:</b> ${d.ciudad || "No puso"}<br>
+      <b>Correo del que se postuló:</b> ${d.correo}<br>
+      <b>WhatsApp:</b> ${d.whatsapp}<br>
+      <b>Horas:</b> ${d.horas || "No puso"} | <b>💎:</b> ${d.diamantes || 0} | <b>VIP:</b> ${d.vip ? "SÍ" : "NO"}<br>
+      <b>Experiencia:</b> ${d.experiencia || "No puso"}<br>
+      <b>Motivo:</b> ${d.motivo || "No puso"}<br>
+      <b>Fecha:</b> ${d.fecha ? new Date(d.fecha).toLocaleString() : ""}<br>
+      ${d.mensajeAdmin ? "<b>Mensaje que le dejaste:</b> " + d.mensajeAdmin + "<br>" : ""}
+      ${d.revisadoPor ? "<b>Revisado por:</b> " + d.revisadoPor + "<br>" : ""}
+      <button class="btn-green" onclick="cambiarEstado('${doc.id}','${d.correo}','${d.nombre}','Aceptado')">✅ Aceptarlo</button>
+      <button class="btn-pink" onclick="cambiarEstado('${doc.id}','${d.correo}','${d.nombre}','Rechazado')">❌ No Aceptarlo</button>
+      <button class="btn-blue" onclick="escribirle('${d.correo}','${d.nombre}','${d.rol}')">✉️ Escribirle</button>
+      </div>`;
+    });
+    document.getElementById('contador').innerText = "Tienes " + count + " mensajes privados en " + tabActual;
+    lista.innerHTML = html || "No hay mensajes privados en esta bandeja.";
+  }catch(e){
+    lista.innerHTML = "Error cargando: " + e.message;
+  }
 }
 
 async function cambiarEstado(id, correo, nombre, nuevoEstado){
   let mensaje = prompt("¿Qué mensaje le quieres dejar a " + nombre + "?");
   if(mensaje === null) mensaje = "";
+  let docPost = await db.collection('postulaciones').doc(id).get();
+  let rolPost = docPost.exists ? (docPost.data().rol || "") : "";
+  let rolBonito = nombreBonitoRol(rolPost);
   await db.collection('postulaciones').doc(id).update({estado: nuevoEstado, mensajeAdmin: mensaje, revisadoPor: userActual.email, fechaRevision: Date.now()});
-  let asunto = nuevoEstado === "Aceptado" ? "✅ ¡Fuiste ACEPTADO en AKIM!" : "❌ Tu postulación en AKIM";
-  let cuerpo = "Hola " + nombre + ",%0A%0A" + (nuevoEstado === "Aceptado" ? "¡FELICIDADES! Fuiste ACEPTADO en AKIM." : "Gracias por postularte. Esta vez NO fuiste aceptado.") + "%0A%0A" + (mensaje ? "Mensaje del Moderador: " + mensaje : "");
-  window.open("mailto:" + correo + "?subject=" + encodeURIComponent(asunto) + "&body=" + cuerpo, "_blank");
-  alert("✅ Listo, " + nombre + " quedó como " + nuevoEstado);
+
+  // NUEVO - SI LO ACEPTARON, SALE SOLO EN ANUNCIOS CON SU ROL
+  if(nuevoEstado === "Aceptado"){
+    await db.collection('anuncios').add({
+      titulo: "🎉 " + nombre + " fue aceptado como " + rolBonito,
+      mensaje: "🎉 ¡Felicidades! " + nombre + " fue aceptado como " + rolBonito + " en AKIM. ¡Bienvenido al equipo! 🎉" + (mensaje ? " Mensaje: " + mensaje : ""),
+      nombre: nombre,
+      rol: rolPost,
+      tipo: "aceptado",
+      fecha: Date.now(),
+      por: userActual.email
+    });
+  }
+
+  // CORREO QUE LE LLEGA A LA PERSONA - CON SU ROL, COMO ME PEDISTE
+  let asunto = "";
+  let textoCorreo = "";
+  if(nuevoEstado === "Aceptado"){
+    asunto = "✅ Fuiste aceptado como " + rolBonito + " en AKIM";
+    textoCorreo = "Hola " + nombre + ",\n\n¡FELICIDADES! Fuiste aceptado como " + rolBonito + " en AKIM.\n\nBienvenido al equipo, ya eres parte de AKIM como " + rolBonito + ".";
+  } else {
+    asunto = "❌ No fuiste aceptado como " + rolBonito + " en AKIM";
+    textoCorreo = "Hola " + nombre + ",\n\nGracias por postularte. Esta vez NO fuiste aceptado como " + rolBonito + " en AKIM.\n\nPuedes volver a postularte en otro momento.";
+  }
+  if(mensaje){
+    textoCorreo += "\n\nMensaje del Moderador: " + mensaje;
+  }
+  textoCorreo += "\n\nRevisa tu estado en postulaciones.html";
+
+  window.open("mailto:" + correo + "?subject=" + encodeURIComponent(asunto) + "&body=" + encodeURIComponent(textoCorreo), "_blank");
+  alert("✅ Listo, " + nombre + " quedó como " + nuevoEstado + " como " + rolBonito + (nuevoEstado === "Aceptado" ? "\n\nYa le llegó el correo que dice: Fuiste aceptado como " + rolBonito + "\nY ya salió en ANUNCIOS." : "\n\nYa le llegó el correo que dice: No fuiste aceptado como " + rolBonito));
   cargarPostulaciones();
 }
 function escribirle(correo, nombre, rol){
-  let texto = prompt("¿Qué le quieres escribir a " + nombre + " (" + rol + ")?");
+  let texto = prompt("¿Qué le quieres escribir a " + nombre + " (" + nombreBonitoRol(rol) + ")?");
   if(!texto) return;
-  window.open("mailto:" + correo + "?subject=" + encodeURIComponent("Mensaje de AKIM - Sobre tu postulación") + "&body=" + encodeURIComponent("Hola " + nombre + ",\n\n" + texto), "_blank");
+  window.open("mailto:" + correo + "?subject=" + encodeURIComponent("Mensaje de AKIM - Sobre tu postulación como " + nombreBonitoRol(rol)) + "&body=" + encodeURIComponent("Hola " + nombre + ",\n\n" + texto), "_blank");
 }
 
+// ===== SOLO ADMIN: PONER / QUITAR MODERADOR =====
 async function cargarUsuarios(){
   let lista = document.getElementById('listaUsuarios');
   lista.innerHTML = "Cargando...";
-  let snap = await db.collection('usuarios').get();
-  let html = "";
-  snap.forEach(doc=>{
-    let d = doc.data();
-    let rol = d.admin ? "Admin" : (d.rolEquipo || "Usuario");
-    html += `<div class="postBox">
-    <b>ID:</b> ${doc.id}<br>
-    <b>Rol actual:</b> <span style="color:#ffd700;font-weight:900">${rol}</span><br>
-    <b>💎:</b> ${d.diamantes || 0} | <b>VIP:</b> ${d.vip ? "SÍ" : "NO"}<br>
-    <button class="btn-gold" onclick="ponerModerador('${doc.id}', 'Moderador')">🛡️ Hacer Moderador</button>
-    <button class="btn-dark" onclick="ponerModerador('${doc.id}', 'Usuario')">❌ Quitar Moderador</button>
-    </div>`;
-  });
-  lista.innerHTML = html;
+  try{
+    let snap = await db.collection('usuarios').get();
+    let html = "";
+    snap.forEach(doc=>{
+      let d = doc.data();
+      let rol = d.admin ? "Admin" : (d.rolEquipo || "Usuario");
+      html += `<div class="postBox">
+      <b>ID:</b> ${doc.id}<br>
+      <b>Rol actual:</b> <span style="color:#ffd700;font-weight:900">${rol}</span><br>
+      <b>💎:</b> ${d.diamantes || 0} | <b>VIP:</b> ${d.vip ? "SÍ" : "NO"}<br>
+      <button class="btn-gold" onclick="ponerModerador('${doc.id}', 'Moderador')">🛡️ Hacer Moderador</button>
+      <button class="btn-dark" onclick="ponerModerador('${doc.id}', 'Usuario')">❌ Quitar Moderador</button>
+      </div>`;
+    });
+    lista.innerHTML = html;
+  }catch(e){
+    lista.innerHTML = "Error: " + e.message;
+  }
 }
 async function ponerModerador(id, rol){
   await db.collection('usuarios').doc(id).update({rolEquipo: rol});
@@ -238,4 +298,4 @@ async function ponerModerador(id, rol){
 }
 </script>
 </body>
-  </html>
+</html>
