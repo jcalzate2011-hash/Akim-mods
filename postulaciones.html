@@ -31,6 +31,9 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .estadoRechazado{color:#ff0055;font-weight:900}
 .paso{font-size:13px;color:#aaa;text-align:center}
 .privado{background:#1a0000;border:1px solid #ff0055;border-radius:12px;padding:12px;margin:10px 0;text-align:center;font-size:13px}
+.avisoCorreo{background:linear-gradient(135deg,#003a1a,#1a1a2e);border:2px solid #00ff88;border-radius:16px;padding:16px;margin:12px 0;text-align:center}
+#avisoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+.avisoBox{background:#15151f;border:2px solid #00ff88;border-radius:20px;padding:24px;text-align:center;max-width:360px;width:100%}
 </style>
 </head>
 <body>
@@ -51,11 +54,16 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <p id="msgLogin" style="color:#ffcc00"></p>
 </div>
 
-<!-- MI ESTADO - SOLO MI POSTULACION, NADIE MAS LA VE -->
+<!-- MI ESTADO - SOLO MI POSTULACION -->
 <div id="miEstadoBox" class="card hidden">
 <h2>📬 Mi Postulación</h2>
 <div class="privado">🔒 PRIVADO - Solo tú ves tu postulación. Nadie más puede ver quién se postuló ni qué escribió.</div>
 <div id="miEstado"></div>
+<div class="avisoCorreo">
+<h2 style="margin:5px 0">📩 Revisa tu correo</h2>
+<p style="margin:5px 0">En los próximos minutos o horas te llegará tu respuesta de si te aceptaron o no te aceptaron.</p>
+<p style="font-size:12px;color:#aaa;margin:5px 0">Revisa también tu carpeta de Spam / Correo no deseado.</p>
+</div>
 <button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
 
@@ -134,6 +142,18 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <p id="msgPaso2" style="color:#ffcc00"></p>
 </div>
 
+<!-- AVISO CUANDO ENVÍA -->
+<div id="avisoModal">
+<div class="avisoBox">
+<div style="font-size:60px">📩</div>
+<h2 style="color:#00ff88;margin:10px 0">¡Enviado!</h2>
+<h3 style="margin:5px 0">Revisa tu correo</h3>
+<p style="color:#ddd;line-height:1.5">En los próximos minutos o horas te llegará tu respuesta de si te aceptaron o no te aceptaron.</p>
+<p style="font-size:12px;color:#aaa">Revisa también tu carpeta de Spam / Correo no deseado.<br>Tu postulación es privada, solo los Moderadores la ven.</p>
+<button class="btn-green" onclick="cerrarAviso()">✅ Entendido</button>
+</div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -182,14 +202,12 @@ auth.onAuthStateChanged(async (user)=>{
   if(user){
     userActual = user;
     document.getElementById('loginBox').classList.add('hidden');
-    // Cargar datos de la Tienda para auto-llenar
     const doc = await db.collection('usuarios').doc(user.uid).get();
     if(doc.exists){
       datosUsuario = doc.data();
     } else {
       datosUsuario = {diamantes:0, vip:false, admin:false};
     }
-    // Auto-llenar correo y datos
     document.getElementById('fCorreo').value = user.email || "";
     if(datosUsuario.nombre){
       document.getElementById('fNombre').value = datosUsuario.nombre;
@@ -211,7 +229,6 @@ auth.onAuthStateChanged(async (user)=>{
     textoAuto += "🛡️ Admin: " + (datosUsuario.admin ? "SÍ" : "NO");
     document.getElementById('textoAuto').innerHTML = textoAuto;
 
-    // Ver SOLO MI postulación - nadie más ve la de los demás
     const snap = await db.collection('postulaciones').where('uid','==',user.uid).orderBy('fecha','desc').limit(1).get();
     if(!snap.empty){
       yaPostulado = snap.docs[0].data();
@@ -220,7 +237,6 @@ auth.onAuthStateChanged(async (user)=>{
     } else {
       document.getElementById('paso1Box').classList.remove('hidden');
     }
-    // YA NO HAY PANEL ADMIN AQUÍ - ESO SOLO ESTÁ EN correo.html
   }
 });
 
@@ -231,11 +247,11 @@ function mostrarMiEstado(){
   let texto = "⏳ PENDIENTE - Estamos revisando tu postulación";
   if(estado === "Aceptado"){
     clase = "estadoAceptado";
-    texto = "✅ ¡ACEPTADO! ¡Felicidades! El Moderador te aceptó. Escríbele para que te dé tu rol.";
+    texto = "✅ ¡ACEPTADO! ¡Felicidades! El Moderador te aceptó. Revisa tu correo.";
   }
   if(estado === "Rechazado"){
     clase = "estadoRechazado";
-    texto = "❌ NO ACEPTADO - Esta vez no fuiste aceptado. Puedes volver a postularte en otro momento.";
+    texto = "❌ NO ACEPTADO - Esta vez no fuiste aceptado. Revisa tu correo para ver el mensaje.";
   }
   document.getElementById('miEstado').innerHTML = `
     <div class="infoBox">
@@ -245,7 +261,6 @@ function mostrarMiEstado(){
     <b>Fecha:</b> ${new Date(yaPostulado.fecha).toLocaleString()}<br>
     ${yaPostulado.mensajeAdmin ? "<b>Mensaje del Moderador:</b> " + yaPostulado.mensajeAdmin + "<br>" : ""}
     </div>
-    <p style="font-size:13px;color:#aaa">Cuando te acepten o no, te va a aparecer aquí mismo. Solo tú ves esto.</p>
   `;
   if(estado === "Pendiente"){
     document.getElementById('miEstado').innerHTML += `<button class="btn-dark" onclick="editarPostulacion()">✏️ Editar mi postulación</button>`;
@@ -295,6 +310,14 @@ function elegirRol(rol){
   document.getElementById('rolElegido').innerText = "✅ Elegiste: " + rol;
 }
 
+function mostrarAvisoCorreo(){
+  document.getElementById('avisoModal').style.display = "flex";
+}
+function cerrarAviso(){
+  document.getElementById('avisoModal').style.display = "none";
+  location.reload();
+}
+
 async function enviarTodo(){
   if(!rolElegido){
     alert("❌ Primero escoge qué quieres ser: Soporte, Reseñas o Moderador");
@@ -320,7 +343,6 @@ async function enviarTodo(){
   if(!confirm("¿Seguro que quieres enviar todo?\n\nNombre: " + datos.nombre + "\nRol: " + datos.rol + "\nCorreo: " + datos.correo)){
     return;
   }
-  // Guardar nombre/whatsapp para la próxima vez que se auto-llene
   await db.collection('usuarios').doc(userActual.uid).set({
     nombre: datos.nombre,
     whatsapp: datos.whatsapp,
@@ -334,9 +356,8 @@ async function enviarTodo(){
     await db.collection('postulaciones').add(datos);
   }
 
-  // YA NO ABRE GMAIL - Solo se guarda privado y le llega SOLO a correo.html de Moderadores
-  alert("✅ ¡Enviado todo completo!\n\nTu hoja de vida se envió privada.\nSolo los Moderadores la pueden ver en su Correo Privado.\nCuando te acepten o no, te va a aparecer aquí.");
-  location.reload();
+  // AVISO - REVISA TU CORREO
+  mostrarAvisoCorreo();
 }
 </script>
 </body>
