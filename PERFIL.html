@@ -11,9 +11,11 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 .topbar{background:#000;border-bottom:3px solid #ff6b00;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
 .topbar .logo{font-family:'Orbitron';font-weight:900;font-size:18px}
 .topbar .logo span{color:#ff6b00}
-.hud{display:flex;gap:6px}
+.hud{display:flex;gap:6px;align-items:center}
 .hud div{background:#1c1c26;border:1px solid #ff6b00;border-radius:20px;padding:5px 10px;font-size:12px;font-weight:800}
 .hud b{color:#ffd700}
+.correoBtn{position:relative;background:#1c1c26;border:2px solid #ffd700;border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer}
+.badgeCorreo{position:absolute;top:-6px;right:-6px;background:#ff0000;color:#fff;font-size:11px;font-weight:900;min-width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;padding:0 4px}
 .hero{text-align:center;padding:20px 14px}
 .avatar{width:110px;height:110px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-family:'Orbitron';font-size:42px;font-weight:900;border:4px solid #ffd700;background:linear-gradient(135deg,#ff6b00,#ff2e00)}
 .hero h2{font-family:'Orbitron';margin:12px 0 4px;font-size:24px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
@@ -66,6 +68,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 <div class="hud">
 <div>💎 <b id="diamantesTop">0</b></div>
 <div>👑 <b id="vipTop">NO VIP</b></div>
+<button class="correoBtn" onclick="window.location.href='PRIVADOS.html'">📩<span class="badgeCorreo" id="badgeCorreoPerfil">0</span></button>
 </div>
 </div>
 
@@ -130,7 +133,8 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 <button onclick="window.location.href='tienda.html'">🛒 Tienda</button>
 <button onclick="window.location.href='CHAT.html'">💬 Chat</button>
 <button onclick="window.location.href='CHAT-MOD.html'">🛡️ Chat Mod</button>
-<button onclick="window.location.href='BANEADOS.html'">🚫 Baneados</button>
+<button onclick="window.location.href='Baneados.html'">🚫 Baneados</button>
+<button onclick="window.location.href='PRIVADOS.html'">📩 Mensajes Privados</button>
 <button onclick="window.location.href='TXT.html'">📂 Texturas</button>
 <button onclick="window.location.href='PAREDES.html'">🧱 Paredes</button>
 </div>
@@ -250,11 +254,11 @@ async function banearUsuario(uid, nombre){
   let motivo = prompt("¿Por qué vas a banear a " + nombre + "?\nEscribe el motivo:");
   if(motivo === null) return;
   if(!motivo.trim()) motivo = "Sin motivo";
-  if(!confirm("¿Seguro quieres BANEAR a " + nombre + "?\nMotivo: " + motivo + "\n\nVa a aparecer en BANEADOS.html en rojo para todos.")){ return; }
+  if(!confirm("¿Seguro quieres BANEAR a " + nombre + "?\nMotivo: " + motivo + "\n\nVa a aparecer en Baneados.html en rojo para todos.")){ return; }
   try{
     await db.collection('usuarios').doc(uid).set({baneado:true}, {merge:true});
     await db.collection('baneados').add({uidBaneado: uid, nombreBaneado: nombre, baneadoPor: datos.nombre || userActual.email.split('@')[0], uidModerador: userActual.uid, motivo: motivo, fecha: firebase.firestore.FieldValue.serverTimestamp()});
-    alert("🚫 " + nombre + " fue BANEADO. Ya aparece en BANEADOS.html");
+    alert("🚫 " + nombre + " fue BANEADO. Ya aparece en Baneados.html");
   }catch(e){ alert("Error: " + e.message); }
 }
 async function desbanearUsuario(uid, nombre){
@@ -302,6 +306,14 @@ function cargarUsuarios(){
     filtrarUsuarios();
   });
 }
+function escucharCorreito(){
+  if(!userActual) return;
+  db.collection('mensajes_privados').where('paraUid','==',userActual.uid).where('leido','==',false).onSnapshot((snap)=>{
+    let badge = document.getElementById('badgeCorreoPerfil');
+    if(snap.size > 0){ badge.style.display="flex"; badge.innerText=snap.size; }
+    else { badge.style.display="none"; }
+  });
+}
 auth.onAuthStateChanged(async (user)=>{
   if(user){
     userActual = user;
@@ -309,6 +321,7 @@ auth.onAuthStateChanged(async (user)=>{
     document.getElementById('emailPreview').innerText = user.email;
     document.getElementById('miIdTexto').innerText = user.uid;
     document.getElementById('msgNoLogin').innerText = "";
+    escucharCorreito();
     db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
       if(doc.exists){
         datos = doc.data();
@@ -332,4 +345,4 @@ auth.onAuthStateChanged(async (user)=>{
 setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
 </script>
 </body>
-  </html>
+</html>
