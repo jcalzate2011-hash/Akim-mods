@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM MODS - Chat de Moderadores | Free Fire</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100vh;display:flex;flex-direction:column}
+.topbar{background:#000;border-bottom:3px solid #0095F6;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.topbar .logo{font-family:'Orbitron';font-weight:900;font-size:18px}
+.topbar .logo span{color:#0095F6}
+.hud{display:flex;gap:6px}
+.hud div{background:#1c1c26;border:1px solid #0095F6;border-radius:20px;padding:5px 10px;font-size:12px;font-weight:800}
+.hud b{color:#ffd700}
+.vipBar{background:linear-gradient(135deg,#0a1a2e,#1a1a26);border-bottom:2px solid #0095F6;padding:10px 12px;text-align:center}
+.vipBar p{margin:2px 0;font-size:13px;color:#ddd}
+.vipTime{font-size:15px;font-weight:900;color:#00ff88}
+.vipNo{color:#ff4d4d;font-weight:900}
+.online{background:#1c1c26;padding:8px 12px;text-align:center;font-size:13px;font-weight:800;border-bottom:1px solid #333}
+.online b{color:#00ff88}
+#chatBox{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:#0f0f18}
+.msg{background:#1f1f2e;padding:10px 12px;border-radius:14px;border-left:4px solid #0095F6;max-width:85%;word-break:break-word}
+.msg.mio{background:#0a1a2e;border-left-color:#00e5ff;align-self:flex-end}
+.msg.donacion{background:linear-gradient(135deg,#1a2a00,#2a1a00);border-left-color:#00ff88;border:1px solid #00ff88}
+.msg .nombre{font-size:12px;font-weight:900;color:#00e5ff;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.msg .nombre span{color:#fff;background:#0095F6;font-size:10px;padding:2px 6px;border-radius:10px}
+.msg .texto{font-size:14px;margin:4px 0 0}
+.msg .hora{font-size:10px;color:#888;text-align:right;margin-top:4px}
+.inputBar{background:#000;padding:10px;display:flex;gap:8px;border-top:2px solid #0095F6}
+.inputBar input{flex:1;padding:13px;border-radius:20px;border:1px solid #444;background:#1c1c26;color:#fff;font-size:14px;outline:none}
+.inputBar input:disabled{background:#222;color:#888}
+.inputBar button{background:linear-gradient(90deg,#0095F6,#00e5ff);color:#fff;border:none;padding:12px 18px;border-radius:20px;font-family:'Orbitron';font-weight:900;cursor:pointer}
+.inputBar button:disabled{background:#333;color:#888;cursor:not-allowed}
+.btns{display:flex;gap:8px;padding:10px;background:#111}
+.btns button{flex:1;padding:10px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer;border-radius:10px}
+.verificado{display:inline-flex;width:18px;height:18px;background:#0095F6;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:900;box-shadow:0 0 8px #0095F6;flex-shrink:0}
+.barDonar{background:#1c1c26;padding:8px 12px;display:flex;gap:8px;border-bottom:1px solid #333}
+.barDonar button{flex:1;background:linear-gradient(90deg,#0095F6,#00e5ff);color:#fff;border:none;padding:11px;font-family:'Orbitron';font-weight:900;cursor:pointer;border-radius:10px}
+.avisoMod{background:#0a1a2e;border:1px solid #0095F6;padding:10px 12px;text-align:center;font-size:13px;font-weight:800}
+.avisoMod.noMod{background:#2a1a00;border-color:#ff6b00;color:#ffcc00}
+.modalDonar{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;padding:14px}
+.modalBox{background:#1f1f2e;width:100%;max-width:400px;border:2px solid #00e5ff;padding:16px;border-radius:16px;max-height:90vh;overflow-y:auto}
+.modalBox h3{font-family:'Orbitron';color:#00e5ff;margin:0 0 8px;text-align:center}
+.modalBox p{font-size:13px;color:#bbb;text-align:center;margin:4px 0 10px}
+.modalBox label{font-size:12px;font-weight:800;color:#aaa}
+.modalBox select,.modalBox input{width:100%;padding:12px;margin:6px 0 12px;border-radius:10px;border:1px solid #444;background:#12121c;color:#fff;font-size:14px;outline:none}
+.cantidades{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.cantidades button{flex:1;background:#333;color:#fff;border:1px solid #555;padding:10px;font-weight:900;cursor:pointer;border-radius:10px}
+.cantidades button.sel{background:#00e5ff;color:#000;border-color:#00e5ff}
+.btnDonarFinal{width:100%;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;font-family:'Orbitron';font-weight:900;padding:14px;border:none;cursor:pointer;font-size:15px;border-radius:10px}
+.btnCerrar{width:100%;background:#333;color:#fff;padding:10px;border:none;cursor:pointer;margin-top:8px;border-radius:10px;font-weight:800}
+.btnVerificarId{width:100%;background:#0095F6;color:#fff;padding:10px;border:none;cursor:pointer;font-weight:900;margin-bottom:10px;border-radius:10px}
+.oDiv{text-align:center;color:#888;font-weight:900;margin:6px 0;font-size:12px}
+.miIdMini{background:#000;border:1px dashed #00e5ff;padding:8px;text-align:center;margin-bottom:10px}
+.miIdMini code{color:#00e5ff;font-size:11px;word-break:break-all}
+.btnCopyMini{background:#0095F6;color:#fff;border:none;padding:6px 10px;font-weight:900;cursor:pointer;font-size:11px;margin-top:6px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+<div class="logo">AKIM<span> MODS</span> - CHAT MODERADORES</div>
+<div class="hud">
+<div>💎 <b id="diamantesTop">0</b></div>
+<div>👑 <b id="vipTop">NO VIP</b></div>
+</div>
+</div>
+
+<div class="vipBar">
+<p><b>Nombre:</b> <span id="nombreBar" style="color:#00e5ff">Cargando...</span> <span id="verificadoBar" style="display:none" class="verificado">✓</span> | <b>Correo:</b> <span id="userEmail">---</span></p>
+<p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span> | <b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span> | <b>Rango:</b> <span id="rangoBar" style="color:#0095F6">USUARIO</span></p>
+<p class="vipTime" id="vipTiempo">Cargando...</p>
+<p id="msgNoLogin" style="color:#ffcc00"></p>
+</div>
+
+<div class="online">🛡️ CHAT DE MODERADORES • Todos lo pueden ver, solo los moderadores pueden hablar</div>
+
+<div class="avisoMod" id="avisoMod">Cargando...</div>
+
+<div class="barDonar"><button onclick="abrirDonar()">💎 DONAR DIAMANTES</button></div>
+
+<div id="chatBox">
+<div style="text-align:center;color:#888;font-size:13px;padding:20px">🛡️ Bienvenido al Chat de Moderadores de AKIM MODS<br>Solo los moderadores pueden escribir aquí<br>Los demás solo pueden ver lo que hablan los moderadores</div>
+</div>
+
+<div class="inputBar">
+<input id="inputMsg" type="text" placeholder="Solo moderadores pueden escribir aquí... 🛡️" maxlength="200">
+<button id="btnEnviar" onclick="enviarMensaje()">ENVIAR ➤</button>
+</div>
+
+<div class="btns">
+<button onclick="window.location.href='tienda.html'">🛒 Tienda</button>
+<button onclick="window.location.href='PERFIL.html'">👤 Mi Perfil</button>
+<button onclick="window.location.href='CHAT.html'">💬 Chat Global</button>
+<button onclick="window.location.href='TXT.html'">📂 Texturas</button>
+</div>
+
+<div class="modalDonar" id="modalDonar">
+<div class="modalBox">
+<h3>💎 DONAR DIAMANTES</h3>
+<p>Tienes: <b id="misDiamantesDonar" style="color:#ffd700">0</b> diamantes</p>
+<div class="miIdMini"><b>🆔 TU ID:</b><br><code id="miIdChat">---</code><br><button class="btnCopyMini" onclick="copiarMiIdChat()">📋 COPIAR MI ID</button></div>
+<label>OPCIÓN 1 - Escoger la persona 👇</label>
+<select id="selectDonar"><option value="">-- Escoge a quién donar --</option></select>
+<div class="oDiv">— O —</div>
+<label>OPCIÓN 2 - Pegar el ID 📋</label>
+<input id="inputIdDestino" type="text" placeholder="Pega aquí el ID que copiaste del perfil...">
+<button class="btnVerificarId" onclick="verificarId()">🔍 VERIFICAR ID</button>
+<p id="infoDestino" style="font-weight:900;color:#00ff88"></p>
+<label>¿Cuántos diamantes?</label>
+<div class="cantidades"><button onclick="elegirCantidad(10,this)">10 💎</button><button onclick="elegirCantidad(50,this)">50 💎</button><button onclick="elegirCantidad(100,this)">100 💎</button><button onclick="elegirCantidad(500,this)">500 💎</button><button onclick="elegirCantidad(1000,this)">1000 💎</button></div>
+<input id="inputCantidad" type="number" placeholder="O escribe la cantidad... Ej: 25" min="1">
+<button class="btnDonarFinal" onclick="confirmarDonar()">💎 DONAR AHORA</button>
+<p id="msgDonar" style="font-weight:800"></p>
+<button class="btnCerrar" onclick="cerrarDonar()">❌ Cerrar</button>
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let userActual = null;
+let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00", verificado:false};
+let miNombre = "Invitado";
+let cantidadDonar = 0;
+let listaUsuariosDonar = [];
+let destinoVerificado = null;
+
+function esMod(){ return datos.admin === true; }
+function esVipActivo(){
+  if(datos.vip && datos.vipHasta === 0) return true;
+  if(!datos.vip) return false;
+  if(datos.vipHasta && Date.now() > datos.vipHasta){ datos.vip = false; datos.vipHasta = 0; return false; }
+  return true;
+}
+function actualizarUI(){
+  let activo = esVipActivo();
+  let soyMod = esMod();
+  miNombre = datos.nombre || (userActual ? userActual.email.split('@')[0] : "Invitado");
+  document.getElementById('nombreBar').innerText = miNombre;
+  document.getElementById('diamantesTop').innerText = datos.diamantes || 0;
+  document.getElementById('diamantesBar').innerText = datos.diamantes || 0;
+  document.getElementById('misDiamantesDonar').innerText = datos.diamantes || 0;
+  document.getElementById('vipTop').innerText = activo ? "VIP ✅" : "NO VIP";
+  document.getElementById('userVip').innerText = activo ? "✅ VIP ACTIVO" : "NO VIP";
+  document.getElementById('userVip').className = activo ? "vipTime" : "vipNo";
+  document.getElementById('verificadoBar').style.display = datos.verificado ? "inline-flex" : "none";
+  document.getElementById('rangoBar').innerText = soyMod ? "🛡️ MODERADOR" : "USUARIO";
+  document.getElementById('rangoBar').style.color = soyMod ? "#00ff88" : "#0095F6";
+  // SOLO MODERADORES PUEDEN HABLAR
+  let input = document.getElementById('inputMsg');
+  let btn = document.getElementById('btnEnviar');
+  let aviso = document.getElementById('avisoMod');
+  if(soyMod){
+    input.disabled = false;
+    btn.disabled = false;
+    input.placeholder = "Escribe como moderador... 🛡️";
+    aviso.className = "avisoMod";
+    aviso.innerText = "🛡️ ERES MODERADOR - Puedes hablar aquí";
+  } else {
+    input.disabled = true;
+    btn.disabled = true;
+    input.placeholder = "Solo moderadores pueden escribir aquí... 👀";
+    aviso.className = "avisoMod noMod";
+    aviso.innerText = "👀 Solo puedes VER este chat - Solo los moderadores pueden hablar aquí";
+  }
+  if(activo && datos.vipHasta === 0){
+    document.getElementById('vipTiempo').innerText = "👑 VIP PERMANENTE";
+  } else if(activo && datos.vipHasta){
+    let falta = datos.vipHasta - Date.now();
+    let dias = Math.floor(falta / (24*60*60*1000));
+    let horas = Math.floor((falta % (24*60*60*1000)) / (60*60*1000));
+    let minutos = Math.floor((falta % (60*60*1000)) / (60*1000));
+    if(dias > 0) document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + dias + "d " + horas + "h " + minutos + "m de VIP";
+    else document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
+  } else {
+    document.getElementById('vipTiempo').innerText = "Sin VIP - Ve a la tienda a conseguirlo";
+  }
+}
+function formatearHora(ts){
+  if(!ts) return "";
+  let d = ts.toDate ? ts.toDate() : new Date(ts);
+  let h = d.getHours().toString().padStart(2,'0');
+  let m = d.getMinutes().toString().padStart(2,'0');
+  return h + ":" + m;
+}
+function mostrarMensaje(doc){
+  let data = doc.data();
+  let box = document.getElementById('chatBox');
+  if(document.getElementById('msg-'+doc.id)) return;
+  let div = document.createElement('div');
+  div.id = 'msg-'+doc.id;
+  let esMio = userActual && data.uid === userActual.uid;
+  div.className = 'msg' + (esMio ? ' mio' : '') + (data.tipo === 'donacion' ? ' donacion' : '');
+  let badge = "";
+  if(data.vip) badge += "<span>VIP 👑</span>";
+  if(data.admin) badge += "<span>MOD 🛡️</span>";
+  let checkVerificado = data.verificado ? '<span class="verificado">✓</span>' : '';
+  div.innerHTML = '<div class="nombre"><span style="background:none;padding:0;color:#00e5ff;font-size:12px">' + (data.nombre || "Moderador") + '</span> ' + checkVerificado + ' ' + badge + '</div><div class="texto"></div><div class="hora">' + formatearHora(data.fecha) + '</div>';
+  div.querySelector('.texto').textContent = data.texto;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+function enviarMensaje(){
+  if(!esMod()){
+    alert("❌ Solo los moderadores pueden hablar en este chat. Tú solo puedes ver.");
+    return;
+  }
+  let input = document.getElementById('inputMsg');
+  let texto = input.value.trim();
+  if(!texto){ alert("Escribe algo primero"); return; }
+  if(!userActual){ alert("Inicia sesión primero en la tienda"); window.location.href='tienda.html'; return; }
+  db.collection('chat_moderadores').add({
+    texto: texto,
+    nombre: miNombre,
+    uid: userActual.uid,
+    vip: esVipActivo(),
+    admin: true,
+    verificado: datos.verificado || false,
+    tipo: "mensaje",
+    fecha: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{ input.value = ""; }).catch((e)=>{ alert("Error: " + e.message); });
+}
+document.getElementById('inputMsg').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ enviarMensaje(); } });
+
+// DONAR - IGUAL QUE EL CHAT NORMAL
+function copiarMiIdChat(){
+  if(!userActual) return;
+  if(navigator.clipboard){ navigator.clipboard.writeText(userActual.uid).then(()=>alert("✅ Tu ID copiado")); }
+  else { alert("Tu ID es: " + userActual.uid); }
+}
+function abrirDonar(){
+  if(!userActual){ alert("Inicia sesión primero en la tienda"); window.location.href='tienda.html'; return; }
+  document.getElementById('modalDonar').style.display = "flex";
+  document.getElementById('msgDonar').innerText = "";
+  document.getElementById('infoDestino').innerText = "";
+  document.getElementById('miIdChat').innerText = userActual.uid;
+  destinoVerificado = null;
+  cargarPersonasDonar();
+}
+function cerrarDonar(){ document.getElementById('modalDonar').style.display = "none"; }
+function elegirCantidad(cant, btn){
+  cantidadDonar = cant;
+  document.getElementById('inputCantidad').value = cant;
+  document.querySelectorAll('.cantidades button').forEach(b=>b.classList.remove('sel'));
+  if(btn) btn.classList.add('sel');
+}
+document.getElementById('inputCantidad').addEventListener('input', function(){
+  cantidadDonar = parseInt(this.value) || 0;
+  document.querySelectorAll('.cantidades button').forEach(b=>b.classList.remove('sel'));
+});
+function cargarPersonasDonar(){
+  db.collection('usuarios').get().then((snap)=>{
+    listaUsuariosDonar = [];
+    let sel = document.getElementById('selectDonar');
+    sel.innerHTML = '<option value="">-- Escoge a quién donar --</option>';
+    snap.forEach(doc=>{
+      let d = doc.data(); d.id = doc.id;
+      if(doc.id === userActual.uid) return;
+      listaUsuariosDonar.push(d);
+      let opt = document.createElement('option');
+      opt.value = doc.id;
+      opt.text = (d.nombre || "Jugador") + (d.verificado ? " ✓" : "") + " - 💎 " + (d.diamantes||0) + " - " + (d.email||"");
+      sel.appendChild(opt);
+    });
+    if(listaUsuariosDonar.length===0){ sel.innerHTML = '<option value="">No hay otras personas todavía</option>'; }
+  });
+}
+document.getElementById('selectDonar').addEventListener('change', function(){
+  if(this.value){
+    document.getElementById('inputIdDestino').value = "";
+    destinoVerificado = null;
+    let p = listaUsuariosDonar.find(u=>u.id===this.value);
+    if(p) document.getElementById('infoDestino').innerText = "✅ Le vas a donar a: " + (p.nombre || "Jugador");
+  }
+});
+document.getElementById('inputIdDestino').addEventListener('input', function(){
+  if(this.value.trim()){
+    document.getElementById('selectDonar').value = "";
+    destinoVerificado = null;
+    document.getElementById('infoDestino').innerText = "";
+  }
+});
+async function verificarId(){
+  let id = document.getElementById('inputIdDestino').value.trim();
+  let info = document.getElementById('infoDestino');
+  if(!id){ info.style.color="#ff4d4d"; info.innerText="❌ Pega el ID primero"; return; }
+  if(id === userActual.uid){ info.style.color="#ff4d4d"; info.innerText="❌ No te puedes donar a ti mismo"; return; }
+  info.style.color="#ffd700"; info.innerText="Buscando...";
+  try{
+    let doc = await db.collection('usuarios').doc(id).get();
+    if(!doc.exists){ info.style.color="#ff4d4d"; info.innerText="❌ Ese ID no existe"; destinoVerificado=null; return; }
+    let d = doc.data();
+    destinoVerificado = {id: doc.id, nombre: d.nombre || "Jugador"};
+    info.style.color="#00ff88"; info.innerText="✅ Le vas a donar a: " + (d.nombre || "Jugador") + (d.verificado ? " ✓" : "") + " - 💎 " + (d.diamantes||0);
+  }catch(e){ info.style.color="#ff4d4d"; info.innerText="Error: " + e.message; }
+}
+async function confirmarDonar(){
+  let msg = document.getElementById('msgDonar');
+  let idPegado = document.getElementById('inputIdDestino').value.trim();
+  let idLista = document.getElementById('selectDonar').value;
+  let uidDestino = "";
+  let nombreDestino = "";
+  if(idPegado){
+    if(!destinoVerificado){ msg.style.color="#ff4d4d"; msg.innerText="❌ Dale a VERIFICAR ID primero"; return; }
+    uidDestino = destinoVerificado.id;
+    nombreDestino = destinoVerificado.nombre;
+  } else if(idLista){
+    uidDestino = idLista;
+    let p = listaUsuariosDonar.find(u=>u.id===idLista);
+    nombreDestino = p ? (p.nombre || "Jugador") : "Jugador";
+  } else {
+    msg.style.color="#ff4d4d"; msg.innerText="❌ Escoge una persona O pega su ID"; return;
+  }
+  let cant = parseInt(document.getElementById('inputCantidad').value) || cantidadDonar;
+  if(!cant || cant <= 0){ msg.style.color="#ff4d4d"; msg.innerText="❌ Escoge o escribe cuántos diamantes"; return; }
+  if(cant > (datos.diamantes || 0)){
+    msg.style.color="#ff4d4d"; msg.innerText="❌ No tienes suficientes. Tienes " + (datos.diamantes||0) + " y quieres donar " + cant;
+    alert("❌ No puedes donar " + cant + " porque solo tienes " + (datos.diamantes||0));
+    return;
+  }
+  if(!confirm("¿Seguro quieres donar 💎 " + cant + " diamantes a " + nombreDestino + "? Te van a quedar " + ((datos.diamantes||0)-cant) + " diamantes.")){ return; }
+  msg.style.color="#ffd700"; msg.innerText="Donando...";
+  try{
+    await db.collection('usuarios').doc(userActual.uid).update({ diamantes: firebase.firestore.FieldValue.increment(-cant) });
+    await db.collection('usuarios').doc(uidDestino).update({ diamantes: firebase.firestore.FieldValue.increment(cant) });
+    await db.collection('chat_moderadores').add({
+      texto: "🎁 " + miNombre + " donó 💎 " + cant + " diamantes a " + nombreDestino + " 🔥",
+      nombre: miNombre,
+      uid: userActual.uid,
+      vip: esVipActivo(),
+      admin: datos.admin || false,
+      verificado: datos.verificado || false,
+      tipo: "donacion",
+      fecha: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    datos.diamantes = (datos.diamantes||0) - cant;
+    actualizarUI();
+    msg.style.color="#00ff88"; msg.innerText="✅ ¡Donaste 💎 " + cant + " a " + nombreDestino + "! Te quedan " + datos.diamantes;
+    document.getElementById('inputCantidad').value = "";
+    cantidadDonar = 0;
+    setTimeout(()=>{ cerrarDonar(); }, 1500);
+  }catch(e){ msg.style.color="#ff4d4d"; msg.innerText="Error: " + e.message; }
+}
+auth.onAuthStateChanged(async (user)=>{
+  if(user){
+    userActual = user;
+    document.getElementById('userEmail').innerText = user.email;
+    document.getElementById('msgNoLogin').innerText = "";
+    db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
+      if(doc.exists){
+        datos = doc.data();
+        if(datos.vipHasta===undefined) datos.vipHasta=0;
+        if(datos.diamantes===undefined) datos.diamantes=0;
+        if(!datos.nombre) datos.nombre = user.email.split('@')[0];
+        actualizarUI();
+      }
+    });
+    actualizarUI();
+  } else {
+    document.getElementById('userEmail').innerText = "No has iniciado sesión";
+    document.getElementById('nombreBar').innerText = "Invitado";
+    document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda para ver este chat.";
+    actualizarUI();
+  }
+  db.collection('chat_moderadores').orderBy('fecha','asc').limitToLast(100).onSnapshot((snap)=>{
+    snap.docChanges().forEach((change)=>{ if(change.type === 'added'){ mostrarMensaje(change.doc); } });
+  });
+});
+setInterval(()=>{ if(userActual){ actualizarUI(); } }, 30000);
+</script>
+</body>
+  </html>
