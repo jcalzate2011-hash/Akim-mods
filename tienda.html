@@ -16,6 +16,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .btn-dark{background:#2a2a3a;color:#fff}
 .btn-gold{background:#ffd700;color:#000}
 .btn-green{background:#00c853;color:#fff}
+.btn-purple{background:#7b00ff;color:#fff}
 .stats{display:flex;gap:10px}
 .stat{flex:1;background:#222231;border-radius:12px;padding:12px;text-align:center}
 .stat b{font-size:22px;color:#ffd700}
@@ -25,6 +26,12 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .userBox button{padding:8px;font-size:13px;margin:3px 0}
 .vipBox{background:linear-gradient(135deg,#3a2a00,#1a1a2e);border:2px solid #ffd700;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
 .adBox{background:linear-gradient(135deg,#003a1a,#1a1a2e);border:2px solid #00ff88;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
+.ruletaBox{background:linear-gradient(135deg,#2a003a,#1a1a2e);border:2px solid #ff0055;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
+.ruletaWrap{position:relative;width:260px;height:260px;margin:15px auto}
+#rueda{width:260px;height:260px;border-radius:50%;border:6px solid #ffd700;background:conic-gradient(#ff0055 0deg 72deg,#ffd700 72deg 144deg,#00c853 144deg 216deg,#0095F6 216deg 288deg,#7b00ff 288deg 360deg);position:relative;transition:transform 4s cubic-bezier(0.12,0.8,0.08,1);display:flex;align-items:center;justify-content:center}
+#rueda span{position:absolute;font-weight:900;font-size:13px;color:#fff;text-shadow:1px 1px 2px #000;text-align:center}
+#flecha{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:32px;z-index:10}
+#centroRueda{width:60px;height:60px;background:#fff;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;z-index:5}
 #anuncioModal{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;color:#000;z-index:9999;display:none;flex-direction:column;box-sizing:border-box}
 .adTop{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #ddd}
 .adTop b{color:#555;font-size:14px}
@@ -69,6 +76,27 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <p style="color:#00ff88;font-weight:800">Solo 1 anuncio al día</p>
 <p id="msgAnuncio" style="color:#ffd700;font-weight:800"></p>
 <button class="btn-green" id="btnAnuncio" onclick="verAnuncio()">🎬 Ver Anuncio de 15s - Ganar 4h VIP GRATIS</button>
+</div>
+
+<div class="ruletaBox">
+<h2>🎡 RULETA AKIM - SORTEO</h2>
+<p>Gana diamantes o VIP 5 HORAS 👑<br><span style="font-size:13px;color:#ffcc00">El VIP es MUY difícil, solo sale 2 de cada 100 giros</span></p>
+<div class="ruletaWrap">
+<div id="flecha">🔻</div>
+<div id="rueda">
+<span style="top:18px;left:50%;transform:translateX(-50%)">💎 10</span>
+<span style="top:70px;right:22px;transform:rotate(70deg)">👑 VIP<br>5H</span>
+<span style="bottom:50px;right:35px;transform:rotate(140deg)">💎 200</span>
+<span style="bottom:50px;left:35px;transform:rotate(220deg)">💎 100</span>
+<span style="top:70px;left:22px;transform:rotate(290deg)">💎 50</span>
+<div id="centroRueda">🎡</div>
+</div>
+</div>
+<p id="msgRuleta" style="color:#ffd700;font-weight:800">🎡 Gira y gana tu premio</p>
+<p id="tiempoRuleta" style="color:#fff;font-size:13px"></p>
+<button class="btn-green" id="btnRuletaGratis" onclick="girarRuleta('gratis')">🎡 GIRAR GRATIS - 1 vez al día</button>
+<button class="btn-purple" id="btnRuletaPago" onclick="girarRuleta('pago')">💎 GIRAR POR 500 DIAMANTES</button>
+<p style="font-size:12px;color:#aaa">Premios: 10 • 50 • 100 • 200 diamantes • VIP 5H (muy raro)</p>
 </div>
 
 <div class="vipBox">
@@ -123,7 +151,6 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <div id="listaUsuarios"></div>
 </div>
 
-<!-- ANUNCIO ESTILO GOOGLE - COMO CUANDO ENTRAS A UN LINK -->
 <div id="anuncioModal">
 <div class="adTop">
 <b>ⓘ Anuncio • Google</b>
@@ -160,8 +187,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0, admin:false, baneadoVisual:false, puedeReportar:false, reportes:0, reportado:false, ultimoAnuncio:0};
+let datos = {diamantes:0, txt:0, nivel:1, vip:false, vipHasta:0, admin:false, baneadoVisual:false, puedeReportar:false, reportes:0, reportado:false, ultimoAnuncio:0, ultimoRuletaGratis:0};
 let anuncioListo = false;
+let girando = false;
+let rotacionActual = 0;
 
 function esVipActivo(){
   if(datos.vip && datos.vipHasta === 0) return true;
@@ -205,12 +234,14 @@ auth.onAuthStateChanged(async (user)=>{
       if(datos.admin===undefined) datos.admin=false;
       if(datos.diamantes===undefined) datos.diamantes=0;
       if(datos.ultimoAnuncio===undefined) datos.ultimoAnuncio=0;
+      if(datos.ultimoRuletaGratis===undefined) datos.ultimoRuletaGratis=0;
     } else {
       await db.collection('usuarios').doc(user.uid).set(datos);
     }
     esVipActivo();
     actualizarUI();
     actualizarAnuncio();
+    actualizarRuleta();
   }
 });
 
@@ -248,6 +279,7 @@ async function guardar(){
   await db.collection('usuarios').doc(userActual.uid).set(datos);
   actualizarUI();
   actualizarAnuncio();
+  actualizarRuleta();
 }
 
 async function canjearCodigo(){
@@ -289,6 +321,88 @@ async function comprarVip(dias, precio){
   await guardar();
   let totalHoras = Math.floor((datos.vipHasta - Date.now()) / (60*60*1000));
   alert("✅ ¡Compraste VIP! Ahora tienes " + totalHoras + "h de VIP en total 💎\nCuando se acabe ese tiempo, se te quita el VIP solo.");
+}
+
+// ===== RULETA =====
+function actualizarRuleta(){
+  let btnG = document.getElementById('btnRuletaGratis');
+  let txt = document.getElementById('tiempoRuleta');
+  if(!btnG || !txt) return;
+  let ahora = Date.now();
+  let falta = (datos.ultimoRuletaGratis + 24*60*60*1000) - ahora;
+  if(datos.ultimoRuletaGratis && falta > 0){
+    let h = Math.floor(falta / (60*60*1000));
+    let m = Math.floor((falta % (60*60*1000)) / (60*1000));
+    txt.innerText = "⏳ Tu giro gratis vuelve en " + h + "h " + m + "m";
+    btnG.innerText = "⏳ Gratis en " + h + "h " + m + "m";
+    btnG.style.opacity = "0.5";
+  } else {
+    txt.innerText = "✅ Tienes tu giro GRATIS de hoy";
+    btnG.innerText = "🎡 GIRAR GRATIS - 1 vez al día";
+    btnG.style.opacity = "1";
+  }
+}
+
+function elegirPremio(){
+  // Probabilidades: 10=40%, 50=30%, 100=18%, 200=10%, VIP 5H=2% (muy dificil)
+  let r = Math.random()*100;
+  if(r < 40) return {tipo:"diamantes", valor:10, texto:"💎 10 Diamantes", angulo:36};
+  if(r < 70) return {tipo:"diamantes", valor:50, texto:"💎 50 Diamantes", angulo:252};
+  if(r < 88) return {tipo:"diamantes", valor:100, texto:"💎 100 Diamantes", angulo:180};
+  if(r < 98) return {tipo:"diamantes", valor:200, texto:"💎 200 Diamantes", angulo:108};
+  return {tipo:"vip", valor:5, texto:"👑 VIP 5 HORAS", angulo:324};
+}
+
+async function girarRuleta(tipo){
+  if(!userActual){ alert("Primero inicia sesión"); return; }
+  if(girando){ alert("⏳ Espera que la ruleta termine de girar"); return; }
+  let ahora = Date.now();
+  if(tipo === 'gratis'){
+    let falta = (datos.ultimoRuletaGratis + 24*60*60*1000) - ahora;
+    if(datos.ultimoRuletaGratis && falta > 0){
+      let h = Math.floor(falta / (60*60*1000));
+      let m = Math.floor((falta % (60*60*1000)) / (60*1000));
+      alert("⏳ Ya usaste tu giro gratis de hoy.\nVuelve en " + h + "h " + m + "m\nO gira por 500 diamantes si quieres.");
+      return;
+    }
+  }
+  if(tipo === 'pago'){
+    if(datos.diamantes < 500){
+      alert("❌ No tienes 500 diamantes.\nTienes " + datos.diamantes + " diamantes.\nUsa tu giro gratis o consigue más diamantes.");
+      return;
+    }
+    if(!confirm("¿Quieres girar por 500 diamantes?\nTe van a quedar " + (datos.diamantes - 500) + " diamantes")) return;
+    datos.diamantes -= 500;
+  }
+  if(tipo === 'gratis'){
+    datos.ultimoRuletaGratis = ahora;
+  }
+  // Guardamos el cobro / tiempo ANTES de girar para que no hagan trampa recargando
+  await db.collection('usuarios').doc(userActual.uid).set(datos);
+
+  girando = true;
+  document.getElementById('msgRuleta').innerText = "🎡 Girando... ¡Suerte!";
+  let premio = elegirPremio();
+  // Gira 5 vueltas + cae en el premio
+  rotacionActual += 360*5 + (360 - premio.angulo);
+  document.getElementById('rueda').style.transform = "rotate(" + rotacionActual + "deg)";
+
+  setTimeout(async ()=>{
+    girando = false;
+    if(premio.tipo === "diamantes"){
+      datos.diamantes += premio.valor;
+      document.getElementById('msgRuleta').innerText = "🎉 ¡Ganaste " + premio.texto + "!";
+      alert("🎉 ¡Ganaste " + premio.texto + "!\nYa se te sumaron a tu cuenta 💎\nAhora tienes " + datos.diamantes + " diamantes");
+    } else {
+      let ahora2 = Date.now();
+      datos.vip = true;
+      let base = (datos.vipHasta && datos.vipHasta > ahora2) ? datos.vipHasta : ahora2;
+      datos.vipHasta = base + (5 * 60 * 60 * 1000);
+      document.getElementById('msgRuleta').innerText = "👑🔥 ¡INCREÍBLE! ¡Ganaste VIP 5 HORAS!";
+      alert("👑🔥 ¡INCREÍBLE! ¡Eres de los pocos que ganó VIP 5 HORAS!\nYa está activo tu VIP. ¡Felicidades!");
+    }
+    await guardar();
+  }, 4200);
 }
 
 function actualizarAnuncio(){
@@ -393,7 +507,7 @@ async function darDiamantes(id){
   alert("✅ Le diste +" + cantidad + " diamantes.\nAhora tiene " + nuevo + " diamantes 💎");
   cargarUsuarios();
 }
-setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); actualizarAnuncio(); } }, 30000);
+setInterval(()=>{ if(userActual){ esVipActivo(); actualizarUI(); actualizarAnuncio(); actualizarRuleta(); } }, 30000);
 </script>
 </body>
   </html>
