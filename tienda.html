@@ -28,7 +28,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .adBox{background:linear-gradient(135deg,#003a1a,#1a1a2e);border:2px solid #00ff88;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
 .ruletaBox{background:linear-gradient(135deg,#1a0000,#1a1a2e);border:2px solid #C85A00;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
 .ruletaWrap{position:relative;width:260px;height:260px;margin:15px auto}
-#rueda{width:260px;height:260px;border-radius:50%;border:6px solid #C9A227;background:conic-gradient(#C85A00 0deg 72deg,#8F0000 72deg 144deg,#C85A00 144deg 216deg,#8F0000 216deg 288deg,#C85A00 288deg 360deg);position:relative;transition:transform 4s cubic-bezier(0.12,0.8,0.08,1);overflow:hidden;box-shadow:0 0 25px rgba(0,0,0,0.8)}
+#rueda{width:260px;height:260px;border-radius:50%;border:6px solid #C9A227;background:conic-gradient(#8F0000 0deg 60deg,#C85A00 60deg 120deg,#8F0000 120deg 180deg,#C85A00 180deg 240deg,#8F0000 240deg 300deg,#C9A227 300deg 360deg);position:relative;transition:transform 4s cubic-bezier(0.12,0.8,0.08,1);overflow:hidden;box-shadow:0 0 25px rgba(0,0,0,0.8)}
 .etiqueta{position:absolute;top:50%;left:50%;font-weight:900;font-size:15px;color:#fff;text-shadow:1px 1px 3px #000;text-align:center;line-height:1.1;white-space:nowrap}
 #flecha{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:32px;z-index:10}
 #centroRueda{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;background:radial-gradient(circle,#fff,#C9A227);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;z-index:5;border:3px solid #8F0000}
@@ -84,11 +84,12 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <div class="ruletaWrap">
 <div id="flecha">🔻</div>
 <div id="rueda">
-<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(36deg) translateY(-82px)">💎 10</div>
-<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(108deg) translateY(-82px)">👑 VIP 5H</div>
-<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(180deg) translateY(-82px)">💎 200</div>
-<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(252deg) translateY(-82px)">💎 100</div>
-<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(324deg) translateY(-82px)">💎 50</div>
+<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(30deg) translateY(-82px)">💎 10</div>
+<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(90deg) translateY(-82px)">💎 200</div>
+<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(150deg) translateY(-82px)">💎 100</div>
+<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(210deg) translateY(-82px)">💎 400</div>
+<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(270deg) translateY(-82px)">💎 50</div>
+<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(330deg) translateY(-82px)">👑 VIP 5H</div>
 <div id="centroRueda">🎡</div>
 </div>
 </div>
@@ -96,7 +97,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <p id="tiempoRuleta" style="color:#fff;font-size:13px"></p>
 <button class="btn-green" id="btnRuletaGratis" onclick="girarRuleta('gratis')">🎡 GIRAR GRATIS - 1 vez al día</button>
 <button class="btn-purple" id="btnRuletaPago" onclick="girarRuleta('pago')">💎 GIRAR POR 500 DIAMANTES</button>
-<p style="font-size:12px;color:#aaa">Premios: 10 • 50 • 100 • 200 diamantes • VIP 5H (muy raro)</p>
+<p style="font-size:12px;color:#aaa">Premios: 10 • 50 • 100 • 200 • 400 diamantes • VIP 5H (muy raro)</p>
 </div>
 
 <div class="vipBox">
@@ -349,7 +350,7 @@ async function comprarVip(dias, precio){
   alert("✅ ¡Compraste VIP! Ahora tienes " + totalHoras + "h de VIP en total 💎\nCuando se acabe ese tiempo, se te quita el VIP solo.");
 }
 
-// ===== RULETA CASINO - NARANJA OSCURO Y ROJO OSCURO =====
+// ===== RULETA CASINO - ROJO 10, 50 y 100, NARANJA 200 y 400, AMARILLO SOLO VIP =====
 function actualizarRuleta(){
   let btnG = document.getElementById('btnRuletaGratis');
   let txt = document.getElementById('tiempoRuleta');
@@ -370,13 +371,14 @@ function actualizarRuleta(){
 }
 
 function elegirPremio(){
-  // Probabilidades: 10=40%, 50=30%, 100=18%, 200=10%, VIP 5H=2% (muy dificil)
+  // 10=35%, 50=28%, 100=18%, 200=10%, 400=7%, VIP 5H=2%
   let r = Math.random() * 100;
-  if(r < 40) return {tipo:"diamantes", valor:10, texto:"💎 10 Diamantes", angulo:36};
-  if(r < 70) return {tipo:"diamantes", valor:50, texto:"💎 50 Diamantes", angulo:324};
-  if(r < 88) return {tipo:"diamantes", valor:100, texto:"💎 100 Diamantes", angulo:252};
-  if(r < 98) return {tipo:"diamantes", valor:200, texto:"💎 200 Diamantes", angulo:180};
-  return {tipo:"vip", valor:5, texto:"👑 VIP 5 HORAS", angulo:108};
+  if(r < 35) return {tipo:"diamantes", valor:10, texto:"💎 10 Diamantes", angulo:30};
+  if(r < 63) return {tipo:"diamantes", valor:50, texto:"💎 50 Diamantes", angulo:270};
+  if(r < 81) return {tipo:"diamantes", valor:100, texto:"💎 100 Diamantes", angulo:150};
+  if(r < 91) return {tipo:"diamantes", valor:200, texto:"💎 200 Diamantes", angulo:90};
+  if(r < 98) return {tipo:"diamantes", valor:400, texto:"💎 400 Diamantes", angulo:210};
+  return {tipo:"vip", valor:5, texto:"👑 VIP 5 HORAS", angulo:330};
 }
 
 async function girarRuleta(tipo){
