@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM MODS - Baneados | Free Fire</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;height:100vh;display:flex;flex-direction:column}
+.topbar{background:#000;border-bottom:3px solid #ff0000;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.topbar .logo{font-family:'Orbitron';font-weight:900;font-size:18px}
+.topbar .logo span{color:#ff0000}
+.hud{display:flex;gap:6px}
+.hud div{background:#1c1c26;border:1px solid #ff0000;border-radius:20px;padding:5px 10px;font-size:12px;font-weight:800}
+.hud b{color:#ffd700}
+.vipBar{background:linear-gradient(135deg,#2a0000,#1a0000);border-bottom:2px solid #ff0000;padding:10px 12px;text-align:center}
+.vipBar p{margin:2px 0;font-size:13px;color:#ddd}
+.vipTime{font-size:15px;font-weight:900;color:#00ff88}
+.vipNo{color:#ff4d4d;font-weight:900}
+.aviso{background:#2a0000;border:1px solid #ff0000;padding:10px 12px;text-align:center;font-size:13px;font-weight:800}
+#listaBaneados{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:#0f0f18}
+.msgBan{background:#2a0000;border:2px solid #ff0000;border-left:6px solid #ff0000;padding:12px;border-radius:14px}
+.msgBan .titulo{font-family:'Orbitron';color:#ff0000;font-size:14px;font-weight:900}
+.msgBan .nombreB{color:#fff;font-size:16px;font-weight:900;margin:6px 0}
+.msgBan .detalle{font-size:13px;color:#ffcccc}
+.msgBan .hora{font-size:11px;color:#888;text-align:right;margin-top:6px}
+.verificado{display:inline-flex;width:18px;height:18px;background:#0095F6;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:900;flex-shrink:0}
+.btns{display:flex;gap:8px;padding:10px;background:#111}
+.btns button{flex:1;padding:10px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+<div class="logo">AKIM<span> MODS</span> - 🚫 BANEADOS</div>
+<div class="hud">
+<div>💎 <b id="diamantesTop">0</b></div>
+<div>👑 <b id="vipTop">NO VIP</b></div>
+</div>
+</div>
+
+<div class="vipBar">
+<p><b>Nombre:</b> <span id="nombreBar" style="color:#ffd700">Cargando...</span> <span id="verificadoBar" style="display:none" class="verificado">✓</span> | <b>Correo:</b> <span id="userEmail">---</span></p>
+<p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span> | <b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span></p>
+<p class="vipTime" id="vipTiempo">Cargando...</p>
+</div>
+
+<div class="aviso">🚫 NADIE PUEDE ESCRIBIR AQUÍ - Solo aparecen los baneados cuando un moderador banea a alguien</div>
+
+<div id="listaBaneados">
+<div style="text-align:center;color:#888;font-size:13px;padding:20px">🚫 Aquí van a aparecer todos los baneados<br>Cuando banees a alguien, aquí llega el mensaje en rojo solo</div>
+</div>
+
+<div class="btns">
+<button onclick="window.location.href='tienda.html'">🛒 Tienda</button>
+<button onclick="window.location.href='PERFIL.html'">👤 Mi Perfil</button>
+<button onclick="window.location.href='CHAT.html'">💬 Chat Global</button>
+<button onclick="window.location.href='CHAT-MOD.html'">🛡️ Chat Mod</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let userActual = null;
+let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", verificado:false};
+
+function esVipActivo(){
+  if(datos.vip && datos.vipHasta === 0) return true;
+  if(!datos.vip) return false;
+  if(datos.vipHasta && Date.now() > datos.vipHasta){ return false; }
+  return true;
+}
+function actualizarUI(){
+  let activo = esVipActivo();
+  let miNombre = datos.nombre || (userActual ? userActual.email.split('@')[0] : "Invitado");
+  document.getElementById('nombreBar').innerText = miNombre;
+  document.getElementById('diamantesTop').innerText = datos.diamantes || 0;
+  document.getElementById('diamantesBar').innerText = datos.diamantes || 0;
+  document.getElementById('vipTop').innerText = activo ? "VIP ✅" : "NO VIP";
+  document.getElementById('userVip').innerText = activo ? "✅ VIP ACTIVO" : "NO VIP";
+  document.getElementById('userVip').className = activo ? "vipTime" : "vipNo";
+  document.getElementById('verificadoBar').style.display = datos.verificado ? "inline-flex" : "none";
+  if(activo && datos.vipHasta === 0) document.getElementById('vipTiempo').innerText = "👑 VIP PERMANENTE";
+  else if(activo && datos.vipHasta){
+    let falta = datos.vipHasta - Date.now();
+    let dias = Math.floor(falta / (24*60*60*1000));
+    let horas = Math.floor((falta % (24*60*60*1000)) / (60*60*1000));
+    document.getElementById('vipTiempo').innerText = dias > 0 ? "⏳ Te quedan " + dias + "d " + horas + "h de VIP" : "⏳ Te quedan " + horas + "h de VIP";
+  } else document.getElementById('vipTiempo').innerText = "Sin VIP - Ve a la tienda a conseguirlo";
+}
+function formatearHora(ts){
+  if(!ts) return "";
+  let d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0') + " - " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear();
+}
+function mostrarBaneado(doc){
+  let data = doc.data();
+  let box = document.getElementById('listaBaneados');
+  if(document.getElementById('ban-'+doc.id)) return;
+  let div = document.createElement('div');
+  div.id = 'ban-'+doc.id;
+  div.className = 'msgBan';
+  div.innerHTML = '<div class="titulo">🚫 USUARIO BANEADO</div><div class="nombreB">🚫 ' + (data.nombreBaneado || "Jugador") + ' fue BANEADO</div><div class="detalle">Baneado por: <b>' + (data.baneadoPor || "Moderador") + '</b><br>Motivo: ' + (data.motivo || "Sin motivo") + '</div><div class="hora">' + formatearHora(data.fecha) + '</div>';
+  box.prepend(div);
+}
+auth.onAuthStateChanged((user)=>{
+  if(user){
+    userActual = user;
+    document.getElementById('userEmail').innerText = user.email;
+    db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
+      if(doc.exists){
+        datos = doc.data();
+        if(datos.vipHasta===undefined) datos.vipHasta=0;
+        if(datos.diamantes===undefined) datos.diamantes=0;
+        actualizarUI();
+      }
+    });
+  } else {
+    document.getElementById('userEmail').innerText = "No has iniciado sesión";
+    actualizarUI();
+  }
+  db.collection('baneados').orderBy('fecha','desc').onSnapshot((snap)=>{
+    snap.docChanges().forEach((change)=>{ if(change.type === 'added'){ mostrarBaneado(change.doc); } });
+  });
+});
+</script>
+</body>
+</html>
