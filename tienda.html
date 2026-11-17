@@ -26,12 +26,12 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 .userBox button{padding:8px;font-size:13px;margin:3px 0}
 .vipBox{background:linear-gradient(135deg,#3a2a00,#1a1a2e);border:2px solid #ffd700;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
 .adBox{background:linear-gradient(135deg,#003a1a,#1a1a2e);border:2px solid #00ff88;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
-.ruletaBox{background:linear-gradient(135deg,#1a0000,#1a1a2e);border:2px solid #C85A00;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
+.ruletaBox{background:linear-gradient(135deg,#1a0000,#1a1a2e);border:2px solid #FFFFFF;border-radius:16px;padding:16px;text-align:center;margin:12px 0}
 .ruletaWrap{position:relative;width:260px;height:260px;margin:15px auto}
-#rueda{width:260px;height:260px;border-radius:50%;border:6px solid #C9A227;background:conic-gradient(#8F0000 0deg 60deg,#C85A00 60deg 120deg,#8F0000 120deg 180deg,#C85A00 180deg 240deg,#8F0000 240deg 300deg,#C9A227 300deg 360deg);position:relative;transition:transform 4s cubic-bezier(0.12,0.8,0.08,1);overflow:hidden;box-shadow:0 0 25px rgba(0,0,0,0.8)}
+#rueda{width:260px;height:260px;border-radius:50%;border:6px solid #FFFFFF;background:conic-gradient(#8F0000 0deg 60deg,#C85A00 60deg 120deg,#8F0000 120deg 180deg,#C85A00 180deg 240deg,#8F0000 240deg 300deg,#FFE600 300deg 360deg);position:relative;transition:transform 4s cubic-bezier(0.12,0.8,0.08,1);overflow:hidden;box-shadow:0 0 25px rgba(255,255,255,0.4)}
 .etiqueta{position:absolute;top:50%;left:50%;font-weight:900;font-size:15px;color:#fff;text-shadow:1px 1px 3px #000;text-align:center;line-height:1.1;white-space:nowrap}
 #flecha{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:32px;z-index:10}
-#centroRueda{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;background:radial-gradient(circle,#fff,#C9A227);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;z-index:5;border:3px solid #8F0000}
+#centroRueda{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;background:radial-gradient(circle,#FFFFFF,#E8E8E8);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;z-index:5;border:3px solid #FFFFFF}
 #anuncioModal{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;color:#000;z-index:9999;display:none;flex-direction:column;box-sizing:border-box}
 .adTop{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #ddd}
 .adTop b{color:#555;font-size:14px}
@@ -89,7 +89,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <div class="etiqueta" style="transform:translate(-50%,-50%) rotate(150deg) translateY(-82px)">💎 100</div>
 <div class="etiqueta" style="transform:translate(-50%,-50%) rotate(210deg) translateY(-82px)">💎 400</div>
 <div class="etiqueta" style="transform:translate(-50%,-50%) rotate(270deg) translateY(-82px)">💎 50</div>
-<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(330deg) translateY(-82px)">👑 VIP 5H</div>
+<div class="etiqueta" style="transform:translate(-50%,-50%) rotate(330deg) translateY(-82px);color:#000;text-shadow:1px 1px 2px #fff">👑 VIP 5H</div>
 <div id="centroRueda">🎡</div>
 </div>
 </div>
@@ -350,7 +350,7 @@ async function comprarVip(dias, precio){
   alert("✅ ¡Compraste VIP! Ahora tienes " + totalHoras + "h de VIP en total 💎\nCuando se acabe ese tiempo, se te quita el VIP solo.");
 }
 
-// ===== RULETA CASINO - ROJO 10, 50 y 100, NARANJA 200 y 400, AMARILLO SOLO VIP =====
+// ===== RULETA CASINO - ROJO 10, 50 y 100, NARANJA 200 y 400, AMARILLO INTENSO SOLO VIP, BORDES BLANCOS =====
 function actualizarRuleta(){
   let btnG = document.getElementById('btnRuletaGratis');
   let txt = document.getElementById('tiempoRuleta');
