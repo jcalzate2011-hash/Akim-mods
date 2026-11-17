@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM MODS - Mensajes Privados</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
+.topbar{background:#000;border-bottom:3px solid #ff6b00;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.topbar .logo{font-family:'Orbitron';font-weight:900;font-size:18px}
+.topbar .logo span{color:#ff6b00}
+.correoBtn{position:relative;background:#1c1c26;border:2px solid #ffd700;border-radius:50%;width:48px;height:48px;font-size:24px;cursor:pointer}
+.badge{position:absolute;top:-6px;right:-6px;background:#ff0000;color:#fff;font-size:11px;font-weight:900;min-width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;padding:0 4px}
+.hero{text-align:center;padding:16px}
+.hero h2{font-family:'Orbitron';margin:0;font-size:22px}
+.hero p{color:#bbb;font-size:13px}
+.card{margin:0 14px 14px;background:#1f1f2e;border:1px solid #333;padding:16px}
+.card h3{font-family:'Orbitron';margin:0 0 10px;font-size:16px;color:#ffd700}
+.card input,.card textarea{width:100%;padding:12px;margin:6px 0 12px;border-radius:10px;border:1px solid #444;background:#12121c;color:#fff;font-size:14px;outline:none}
+.btn{width:100%;background:linear-gradient(90deg,#ff6b00,#ff2e00);color:#fff;font-family:'Orbitron';font-weight:900;padding:13px;border:none;cursor:pointer;font-size:14px}
+.btnAzul{width:100%;background:#0095F6;color:#fff;font-family:'Orbitron';font-weight:900;padding:11px;border:none;cursor:pointer;font-size:13px;margin-top:8px}
+.userRow{background:#1c1c26;border:1px solid #333;padding:10px;margin-bottom:8px}
+.userRow.sel{border:2px solid #ffd700;background:#2a2300}
+.userRow .nombreU{font-weight:900;font-size:14px}
+.userRow .emailU{font-size:11px;color:#999}
+.msgCard{background:#1c1c26;border:1px solid #ffd700;padding:14px;margin-bottom:10px;border-left:4px solid #ff6b00}
+.msgCard.nuevo{border:2px solid #00ff88;background:#0a1a0a}
+.msgCard .de{font-size:12px;color:#ffd700;font-weight:900}
+.msgCard .texto{font-size:15px;margin:8px 0;line-height:1.4}
+.msgCard .fecha{font-size:11px;color:#999}
+.noMsg{text-align:center;color:#888;padding:20px}
+.btns{display:flex;gap:8px;padding:0 14px 20px;flex-wrap:wrap}
+.btns button{flex:1;padding:12px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer}
+.verificado{display:inline-flex;width:20px;height:20px;background:#0095F6;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900}
+.seleccionado{background:#0a1a2e;border:1px solid #00e5ff;padding:10px;margin-bottom:12px;text-align:center;font-weight:900}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+<div class="logo">AKIM<span> MODS</span> - PRIVADOS</div>
+<button class="correoBtn" onclick="irACorreo()">📩<span class="badge" id="badgeCorreo">0</span></button>
+</div>
+
+<div class="hero">
+<h2 id="tituloPrincipal">📩 MI CORREO</h2>
+<p id="subTitulo">Aquí te llegan los mensajes privados de AKIM MODS</p>
+</div>
+
+<!-- SOLO PARA TI - ENVIAR PRIVADO -->
+<div class="card" id="panelEnviar" style="display:none">
+<h3>✉️ ENVIAR MENSAJE PRIVADO - SOLO TÚ</h3>
+<p style="font-size:12px;color:#bbb;margin:0 0 8px">Busca a la persona, dale a ESCRIBIRLE, escribe y envía. Le llega al instante a su correo. Ellos NO pueden contestarte.</p>
+<input id="buscarUserPriv" placeholder="🔍 Buscar por nombre, correo o ID..." oninput="filtrarPriv()">
+<div id="seleccionadoBox" style="display:none" class="seleccionado">Para: <span id="paraNombre">---</span></div>
+<textarea id="textoPrivado" placeholder="Escribe tu mensaje privado aquí... Ej: Hola, ganaste el sorteo, habla conmigo..." rows="3"></textarea>
+<button class="btn" onclick="enviarPrivado()">📩 ENVIAR MENSAJE PRIVADO</button>
+<p id="msgEnviado" style="text-align:center;font-weight:800;font-size:13px"></p>
+<div id="listaParaEnviar"><p style="color:#888">Cargando personas...</p></div>
+</div>
+
+<!-- CORREO DE TODOS - LO QUE RECIBEN -->
+<div class="card" id="cardCorreo">
+<h3>📩 MIS MENSAJES PRIVADOS</h3>
+<p style="font-size:12px;color:#bbb">Solo tú ves tus mensajes. Nadie más los ve.</p>
+<div id="listaMensajes"><p class="noMsg">📩 No tienes mensajes todavía...</p></div>
+</div>
+
+<div class="btns">
+<button onclick="window.location.href='PERFIL.html'">👤 Mi Perfil</button>
+<button onclick="window.location.href='tienda.html'">🛒 Tienda</button>
+<button onclick="window.location.href='CHAT.html'">💬 Chat</button>
+<button onclick="window.location.href='Baneados.html'">🚫 Baneados</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let userActual = null;
+let misDatos = {nombre:"", admin:false};
+let todosUsuarios = [];
+let usuarioSeleccionado = null;
+
+function irACorreo(){
+  document.getElementById('cardCorreo').scrollIntoView({behavior:'smooth'});
+  // Marcar como leídos al abrir el correo
+  if(!userActual) return;
+  db.collection('mensajes_privados').where('paraUid','==',userActual.uid).where('leido','==',false).get().then(snap=>{
+    snap.forEach(d=>{ db.collection('mensajes_privados').doc(d.id).update({leido:true}); });
+  });
+}
+function seleccionarUsuario(uid, nombre){
+  usuarioSeleccionado = {uid: uid, nombre: nombre};
+  document.getElementById('seleccionadoBox').style.display = "block";
+  document.getElementById('paraNombre').innerText = nombre;
+  document.getElementById('msgEnviado').innerText = "";
+  document.querySelectorAll('.userRow').forEach(r=>r.classList.remove('sel'));
+  document.getElementById('row-'+uid).classList.add('sel');
+  document.getElementById('textoPrivado').focus();
+}
+function filtrarPriv(){
+  let texto = document.getElementById('buscarUserPriv').value.toLowerCase();
+  let filtrados = todosUsuarios.filter(u => (u.nombre||"").toLowerCase().includes(texto) || (u.email||"").toLowerCase().includes(texto) || (u.id||"").toLowerCase().includes(texto));
+  mostrarParaEnviar(filtrados);
+}
+function mostrarParaEnviar(lista){
+  let box = document.getElementById('listaParaEnviar');
+  if(lista.length===0){ box.innerHTML="<p style='color:#888'>No hay personas.</p>"; return; }
+  box.innerHTML="";
+  lista.forEach(u=>{
+    let div=document.createElement('div');
+    div.className="userRow"; div.id="row-"+u.id;
+    let badge = u.verificado ? ' <span class="verificado">✓</span>' : '';
+    div.innerHTML='<div class="nombreU">'+(u.nombre||"Sin nombre")+badge+'</div><div class="emailU">'+(u.email||"")+'</div><button class="btnAzul" onclick="seleccionarUsuario(\''+u.id+'\', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">✉️ ESCRIBIRLE PRIVADO</button>';
+    box.appendChild(div);
+  });
+}
+async function enviarPrivado(){
+  if(!usuarioSeleccionado){ alert("Primero elige a quién le quieres escribir, dale a ESCRIBIRLE"); return; }
+  let texto = document.getElementById('textoPrivado').value.trim();
+  if(!texto){ alert("Escribe el mensaje primero"); return; }
+  document.getElementById('msgEnviado').style.color="#ffd700";
+  document.getElementById('msgEnviado').innerText="Enviando...";
+  try{
+    await db.collection('mensajes_privados').add({
+      paraUid: usuarioSeleccionado.uid,
+      paraNombre: usuarioSeleccionado.nombre,
+      deUid: userActual.uid,
+      deNombre: misDatos.nombre || "AKIM MODS",
+      mensaje: texto,
+      leido: false,
+      fecha: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('textoPrivado').value="";
+    document.getElementById('msgEnviado').style.color="#00ff88";
+    document.getElementById('msgEnviado').innerText="✅ ¡Mensaje enviado a "+usuarioSeleccionado.nombre+"! Ya le llegó a su correo.";
+  }catch(e){ alert("Error: "+e.message); }
+}
+function cargarInbox(){
+  // EN VIVO - llega al instante, no se queda pensando
+  db.collection('mensajes_privados').where('paraUid','==',userActual.uid).orderBy('fecha','desc').onSnapshot((snap)=>{
+    let box=document.getElementById('listaMensajes');
+    let badge=document.getElementById('badgeCorreo');
+    let noLeidos=0;
+    if(snap.empty){ box.innerHTML='<p class="noMsg">📩 No tienes mensajes todavía...</p>'; badge.style.display="none"; return; }
+    box.innerHTML="";
+    snap.forEach(doc=>{
+      let m=doc.data();
+      if(!m.leido) noLeidos++;
+      let fechaTxt="Ahora mismo";
+      if(m.fecha && m.fecha.toDate){ fechaTxt=m.fecha.toDate().toLocaleString(); }
+      let div=document.createElement('div');
+      div.className="msgCard"+(!m.leido?" nuevo":"");
+      div.innerHTML='<div class="de">👑 '+(m.deNombre||"AKIM MODS")+' • Mensaje Privado</div><div class="texto">'+m.mensaje+'</div><div class="fecha">'+fechaTxt+' • '+(m.leido?"✅ Visto":"🔴 Nuevo - Dale al correíto para marcarlo visto")+'</div>';
+      box.appendChild(div);
+    });
+    if(noLeidos>0){ badge.style.display="flex"; badge.innerText=noLeidos; }
+    else { badge.style.display="none"; }
+  });
+}
+function cargarUsuariosParaEnviar(){
+  db.collection('usuarios').onSnapshot((snap)=>{
+    todosUsuarios=[];
+    snap.forEach(doc=>{ let d=doc.data(); d.id=doc.id; todosUsuarios.push(d); });
+    filtrarPriv();
+  });
+}
+auth.onAuthStateChanged((user)=>{
+  if(user){
+    userActual=user;
+    db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
+      if(doc.exists){
+        misDatos=doc.data();
+        if(misDatos.admin){
+          // SI ERES TU - VES EL PANEL PARA ENVIAR
+          document.getElementById('panelEnviar').style.display="block";
+          document.getElementById('tituloPrincipal').innerText="✉️ ENVIAR PRIVADOS + 📩 MI CORREO";
+          document.getElementById('subTitulo').innerText="Tú eres el único que puede enviar. Ellos solo reciben.";
+          cargarUsuariosParaEnviar();
+        } else {
+          document.getElementById('panelEnviar').style.display="none";
+        }
+      }
+    });
+    cargarInbox();
+  } else {
+    document.getElementById('listaMensajes').innerHTML='<p class="noMsg">⚠️ Inicia sesión en la tienda para ver tu correo.</p>';
+  }
+});
+</script>
+</body>
+</html>
