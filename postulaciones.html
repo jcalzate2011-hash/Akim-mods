@@ -42,8 +42,14 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <div>¿Quieres trabajar con nosotros? Postúlate aquí</div>
 </header>
 
+<!-- CARGANDO - PARA QUE NO SE VEA NEGRO -->
+<div id="cargandoBox" class="card">
+<h2>⏳ Cargando...</h2>
+<p style="color:#aaa;font-size:14px">Espera un segundito, estamos cargando tu cuenta.</p>
+</div>
+
 <!-- PASO 0 - LOGIN -->
-<div id="loginBox" class="card">
+<div id="loginBox" class="card hidden">
 <h2>👤 Primero inicia sesión</h2>
 <p style="color:#aaa;font-size:14px">Si ya tienes cuenta en la Tienda, usa el mismo correo. Así se te auto-llena tu hojita de vida sola.</p>
 <input id="email" type="email" placeholder="Tu correo">
@@ -52,6 +58,7 @@ button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-
 <button class="btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button>
 <p style="font-size:13px;color:#aaa">¿No tienes cuenta? <a href="tienda.html" style="color:#ffd700">Crea una en la Tienda</a></p>
 <p id="msgLogin" style="color:#ffcc00"></p>
+<p id="msgError" style="color:#ff5555;font-size:13px"></p>
 </div>
 
 <!-- MI ESTADO - SOLO MI POSTULACION -->
@@ -198,10 +205,18 @@ async function salir(){
   location.reload();
 }
 
+// CORREGIDO - YA NO SE QUEDA EN NEGRO
 auth.onAuthStateChanged(async (user)=>{
-  if(user){
+  try{
+    if(!user){
+      document.getElementById('cargandoBox').classList.add('hidden');
+      document.getElementById('loginBox').classList.remove('hidden');
+      return;
+    }
     userActual = user;
+    document.getElementById('cargandoBox').classList.add('hidden');
     document.getElementById('loginBox').classList.add('hidden');
+
     const doc = await db.collection('usuarios').doc(user.uid).get();
     if(doc.exists){
       datosUsuario = doc.data();
@@ -229,13 +244,32 @@ auth.onAuthStateChanged(async (user)=>{
     textoAuto += "🛡️ Admin: " + (datosUsuario.admin ? "SÍ" : "NO");
     document.getElementById('textoAuto').innerHTML = textoAuto;
 
-    const snap = await db.collection('postulaciones').where('uid','==',user.uid).orderBy('fecha','desc').limit(1).get();
-    if(!snap.empty){
-      yaPostulado = snap.docs[0].data();
-      yaPostulado.id = snap.docs[0].id;
+    // SIN orderBy - ESTO ERA LO QUE LO DEJABA EN NEGRO
+    let snap = null;
+    try{
+      snap = await db.collection('postulaciones').where('uid','==',user.uid).get();
+    }catch(e){
+      console.log("Error buscando postulación, muestro formulario", e);
+      snap = null;
+    }
+    if(snap && !snap.empty){
+      // Ordenamos aquí, no en Firebase
+      let docs = snap.docs.sort((a,b)=> (b.data().fecha||0) - (a.data().fecha||0));
+      yaPostulado = docs[0].data();
+      yaPostulado.id = docs[0].id;
       mostrarMiEstado();
     } else {
       document.getElementById('paso1Box').classList.remove('hidden');
+    }
+  }catch(err){
+    console.log(err);
+    document.getElementById('cargandoBox').classList.add('hidden');
+    document.getElementById('msgError').innerText = "Error: " + err.message + " - Igual te muestro el formulario.";
+    // SI ALGO FALLA, IGUAL MUESTRA EL FORMULARIO, NUNCA NEGRO
+    if(userActual){
+      document.getElementById('paso1Box').classList.remove('hidden');
+    }else{
+      document.getElementById('loginBox').classList.remove('hidden');
     }
   }
 });
@@ -355,8 +389,6 @@ async function enviarTodo(){
   } else {
     await db.collection('postulaciones').add(datos);
   }
-
-  // AVISO - REVISA TU CORREO
   mostrarAvisoCorreo();
 }
 </script>
