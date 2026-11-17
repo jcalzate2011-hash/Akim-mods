@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AKIM MODS - Anuncios Automáticos</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800&display=swap');*{box-sizing:border-box}body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}.topbar{background:#000;border-bottom:3px solid #ff6b00;padding:10px 12px;display:flex;justify-content:space-between}.logo{font-family:'Orbitron';font-weight:900}.logo span{color:#ff6b00}.card{margin:14px;background:#1f1f2e;border:1px solid #333;padding:16px}.card h3{font-family:'Orbitron';color:#ffd700;margin:0 0 10px}.auto{background:#1c1c26;border-left:4px solid #00ff88;padding:14px;margin-bottom:10px}.auto b{font-size:15px}.fecha{font-size:11px;color:#999}.btns{display:flex;gap:8px;padding:0 14px 20px;flex-wrap:wrap}.btns button{flex:1;padding:12px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer}.vipBox{background:#2a2300;border:1px solid #ffd700;padding:10px;margin:0 14px;text-align:center;font-weight:800;font-size:13px}</style></head>
+<body>
+<div class="topbar"><div class="logo">AKIM<span> MODS</span> - ANUNCIOS</div><div id="miNombreTop">👤</div></div>
+<div id="vipInfo" class="vipBox">Cargando...</div>
+<div class="card"><h3>📢 ANUNCIOS AUTOMÁTICOS</h3><p style="font-size:12px;color:#bbb">Aquí aparece solo, sin que nadie escriba. Si subes un mod, una textura o actualizas la web, aquí sale al instante.</p><div id="listaAuto">Cargando...</div></div>
+<div class="btns"><button onclick="location.href='index.html'">🏠 Principal</button><button onclick="location.href='tienda.html'">🛒 Tienda</button><button onclick="location.href='PERFIL.html'">👤 Perfil</button></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c"};
+firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.firestore();
+let userActual=null, misDatos={};
+function tiempoVip(){if(!misDatos.vip) return "Sin VIP"; if(!misDatos.vipHasta||misDatos.vipHasta==0) return "👑 VIP PERMANENTE"; let d=misDatos.vipHasta-Date.now(); if(d<=0) return "VIP VENCIDO"; return "👑 VIP - Te quedan "+Math.floor(d/86400000)+" días";}
+// ESTO ES LO IMPORTANTE: Solo escucha MODS, TEXTURAS y ACTUALIZACIONES. NUNCA escucha BANEADOS, por eso un baneo NUNCA aparece aquí.
+let todo=[];
+function pintar(){
+  let box=document.getElementById('listaAuto');
+  if(todo.length==0){box.innerHTML="Todavía no hay novedades...";return;}
+  todo.sort((a,b)=>(b.fechaMs||0)-(a.fechaMs||0));
+  box.innerHTML="";
+  todo.forEach(a=>{
+    let f=a.fecha&&a.fecha.toDate?a.fecha.toDate().toLocaleString():"Ahora mismo";
+    box.innerHTML+=`<div class="auto"><b>${a.icono} ${a.titulo}</b><p>${a.mensaje}</p><div class="fecha">${f}</div></div>`;
+  });
+}
+function escuchar(coleccion, icono, plantilla){
+  db.collection(coleccion).onSnapshot(s=>{
+    todo = todo.filter(x=>x.coleccion!==coleccion);
+    s.forEach(d=>{let m=d.data(); todo.push({coleccion:coleccion, icono:icono, titulo:plantilla(m), mensaje:m.descripcion||m.mensaje||"Ya está disponible en la tienda.", fecha:m.fecha, fechaMs:m.fecha?m.fecha.toMillis():Date.now()})});
+    pintar();
+  });
+}
+auth.onAuthStateChanged(u=>{if(u){userActual=u;db.collection('usuarios').doc(u.uid).onSnapshot(d=>{if(d.exists){misDatos=d.data();document.getElementById('miNombreTop').innerText="👤 "+(misDatos.nombre||"");document.getElementById('vipInfo').innerText="💎 "+(misDatos.diamantes||0)+" • "+tiempoVip();}});} 
+  // AQUÍ ESTÁ EL AUTO-ENVÍO:
+  escuchar('mods','🔥', m=>"NUEVO MOD: "+(m.nombre||"Nuevo Mod"));
+  escuchar('texturas','🎨', m=>"NUEVA TEXTURA: "+(m.nombre||"Nueva Textura"));
+  escuchar('actualizaciones','⚡', m=>"ACTUALIZACIÓN: "+(m.titulo||"La web se actualizó"));
+  escuchar('anuncios','📢', m=>m.titulo||"Anuncio");
+});
+</script></body></html>
