@@ -30,7 +30,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 .colores{display:flex;gap:10px;margin:8px 0 14px;flex-wrap:wrap}
 .colorOpt{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent}
 .colorOpt.sel{border-color:#fff}
-.btns{display:flex;gap:8px;padding:0 14px 20px}
+.btns{display:flex;gap:8px;padding:0 14px 20px;flex-wrap:wrap}
 .btns button{flex:1;padding:12px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer}
 .verificado{display:inline-flex;width:24px;height:24px;background:#0095F6;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900;box-shadow:0 0 10px #0095F6;flex-shrink:0}
 .verificado-peq{width:20px;height:20px;font-size:12px}
@@ -39,6 +39,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 .panelAdmin .sub{color:#bbb;font-size:12px;margin:0 0 12px}
 .btn-verificarme{width:100%;background:#0095F6;color:#fff;font-family:'Orbitron';font-weight:900;padding:12px;border:none;cursor:pointer;margin-bottom:12px}
 .userRow{background:#1c1c26;border:1px solid #333;padding:10px;margin-bottom:8px}
+.userRow.baneado{border:2px solid #ff0000;background:#2a0000}
 .userRow .nombreU{font-weight:900;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .userRow .emailU{font-size:11px;color:#999}
 .userRow .tags{font-size:11px;color:#ffd700;margin-top:2px}
@@ -48,6 +49,8 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 .btnV{padding:8px 12px;border:none;font-weight:900;cursor:pointer;font-size:12px;margin-top:8px;width:100%}
 .btnV.si{background:#0095F6;color:#fff}
 .btnV.no{background:#333;color:#fff}
+.btnBan{padding:8px 12px;border:none;font-weight:900;cursor:pointer;font-size:12px;margin-top:6px;width:100%;background:#ff0000;color:#fff}
+.btnUnban{padding:8px 12px;border:none;font-weight:900;cursor:pointer;font-size:12px;margin-top:6px;width:100%;background:#00ff88;color:#000}
 .buscarInput{width:100%;padding:11px;margin:0 0 12px;border-radius:10px;border:1px solid #0095F6;background:#12121c;color:#fff;outline:none}
 .promoCard{margin:0 14px 14px;background:#1f1f2e;border:1px solid #ff6b00;padding:16px}
 .promoCard h3{font-family:'Orbitron';color:#ff6b00;margin:0 0 8px;font-size:16px}
@@ -116,16 +119,18 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 
 <div class="panelAdmin" id="panelAdmin">
 <h3>🛡️ PANEL DE MODERADOR / ADMIN</h3>
-<p class="sub">Aquí puedes verificar a cualquier persona y copiar su ID para donarle diamantes en el chat.</p>
+<p class="sub">Aquí puedes verificar y banear a cualquier persona. Solo aquí aparece el botón de banear.</p>
 <button class="btn-verificarme" onclick="verificarmeYo()">✅ VERIFICARME A MI MISMO</button>
 <input class="buscarInput" id="buscarUser" placeholder="🔍 Buscar por nombre, correo o ID..." oninput="filtrarUsuarios()">
-<p style="font-size:13px"><b>Total de personas en la web:</b> <span id="totalUsuarios" style="color:#0095F6">0</span> | <b>Verificados:</b> <span id="totalVerificados" style="color:#00ff88">0</span></p>
+<p style="font-size:13px"><b>Total:</b> <span id="totalUsuarios" style="color:#0095F6">0</span> | <b>Verificados:</b> <span id="totalVerificados" style="color:#00ff88">0</span> | <b>Baneados:</b> <span id="totalBaneados" style="color:#ff0000">0</span></p>
 <div id="listaUsuarios"><p style="color:#888">Cargando personas...</p></div>
 </div>
 
 <div class="btns">
 <button onclick="window.location.href='tienda.html'">🛒 Tienda</button>
 <button onclick="window.location.href='CHAT.html'">💬 Chat</button>
+<button onclick="window.location.href='CHAT-MOD.html'">🛡️ Chat Mod</button>
+<button onclick="window.location.href='BANEADOS.html'">🚫 Baneados</button>
 <button onclick="window.location.href='TXT.html'">📂 Texturas</button>
 <button onclick="window.location.href='PAREDES.html'">🧱 Paredes</button>
 </div>
@@ -147,11 +152,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00", verificado:false};
+let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"", colorPerfil:"#ff6b00", verificado:false, baneado:false};
 let colorElegido = "#ff6b00";
 let todosUsuarios = [];
 let usuariosCargados = false;
-
 function elegirColor(el){
   document.querySelectorAll('.colorOpt').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
@@ -205,17 +209,10 @@ async function guardarPerfil(){
   if(!nuevoNombre){ alert("Pon tu nombre / apodo primero"); return; }
   document.getElementById('msgGuardado').innerText = "Guardando...";
   try{
-    await db.collection('usuarios').doc(userActual.uid).set({
-      nombre: nuevoNombre,
-      bio: nuevaBio,
-      colorPerfil: colorElegido,
-      email: userActual.email
-    }, {merge:true});
-    datos.nombre = nuevoNombre;
-    datos.bio = nuevaBio;
-    datos.colorPerfil = colorElegido;
+    await db.collection('usuarios').doc(userActual.uid).set({nombre: nuevoNombre, bio: nuevaBio, colorPerfil: colorElegido, email: userActual.email}, {merge:true});
+    datos.nombre = nuevoNombre; datos.bio = nuevaBio; datos.colorPerfil = colorElegido;
     actualizarUI();
-    document.getElementById('msgGuardado').innerText = "✅ ¡Perfil guardado! Ya en todas partes te ves como " + nuevoNombre;
+    document.getElementById('msgGuardado').innerText = "✅ ¡Perfil guardado! Ya te ves como " + nuevoNombre;
   }catch(e){ alert("Error: " + e.message); }
 }
 async function canjearPromo(){
@@ -223,10 +220,7 @@ async function canjearPromo(){
   let codigo = document.getElementById('inputPromo').value.trim();
   let msg = document.getElementById('msgPromo');
   if(!codigo){ msg.style.color="#ff4d4d"; msg.innerText="Escribe un código primero"; return; }
-  if(datos.admin){
-    msg.style.color="#00ff88"; msg.innerText="Ya tienes este beneficio activado";
-    return;
-  }
+  if(datos.admin){ msg.style.color="#00ff88"; msg.innerText="Ya tienes este beneficio activado"; return; }
   if(codigo === "2011"){
     try{
       await db.collection('usuarios').doc(userActual.uid).set({admin:true, email:userActual.email}, {merge:true});
@@ -242,9 +236,8 @@ async function canjearPromo(){
 async function verificarmeYo(){
   if(!userActual) return;
   await db.collection('usuarios').doc(userActual.uid).set({verificado:true, email:userActual.email}, {merge:true});
-  datos.verificado = true;
-  actualizarUI();
-  alert("✅ ¡Ya estás VERIFICADO! Ahora todos te ven con el chulito azul.");
+  datos.verificado = true; actualizarUI();
+  alert("✅ ¡Ya estás VERIFICADO!");
 }
 async function cambiarVerificado(uid, actual, nombre){
   try{
@@ -252,12 +245,28 @@ async function cambiarVerificado(uid, actual, nombre){
     alert((!actual ? "✅ " : "❌ ") + nombre + (!actual ? " ahora está VERIFICADO" : " ya NO está verificado"));
   }catch(e){ alert("Error: " + e.message); }
 }
+async function banearUsuario(uid, nombre){
+  if(uid === userActual.uid){ alert("❌ No te puedes banear a ti mismo"); return; }
+  let motivo = prompt("¿Por qué vas a banear a " + nombre + "?\nEscribe el motivo:");
+  if(motivo === null) return;
+  if(!motivo.trim()) motivo = "Sin motivo";
+  if(!confirm("¿Seguro quieres BANEAR a " + nombre + "?\nMotivo: " + motivo + "\n\nVa a aparecer en BANEADOS.html en rojo para todos.")){ return; }
+  try{
+    await db.collection('usuarios').doc(uid).set({baneado:true}, {merge:true});
+    await db.collection('baneados').add({uidBaneado: uid, nombreBaneado: nombre, baneadoPor: datos.nombre || userActual.email.split('@')[0], uidModerador: userActual.uid, motivo: motivo, fecha: firebase.firestore.FieldValue.serverTimestamp()});
+    alert("🚫 " + nombre + " fue BANEADO. Ya aparece en BANEADOS.html");
+  }catch(e){ alert("Error: " + e.message); }
+}
+async function desbanearUsuario(uid, nombre){
+  if(!confirm("¿Seguro quieres DESBANEAR a " + nombre + "?")){ return; }
+  try{
+    await db.collection('usuarios').doc(uid).set({baneado:false}, {merge:true});
+    alert("✅ " + nombre + " ya fue DESBANEADO");
+  }catch(e){ alert("Error: " + e.message); }
+}
 function copiarId(id){
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(id).then(()=>alert("✅ ID copiado: " + id));
-  } else {
-    let t = document.createElement('textarea'); t.value = id; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); alert("✅ ID copiado");
-  }
+  if(navigator.clipboard){ navigator.clipboard.writeText(id).then(()=>alert("✅ ID copiado: " + id)); }
+  else { let t = document.createElement('textarea'); t.value = id; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); alert("✅ ID copiado"); }
 }
 function copiarMiId(){ if(userActual) copiarId(userActual.uid); }
 function filtrarUsuarios(){
@@ -267,30 +276,29 @@ function filtrarUsuarios(){
 }
 function mostrarLista(lista){
   let box = document.getElementById('listaUsuarios');
-  if(lista.length===0){ box.innerHTML = "<p style='color:#888'>No hay personas con ese nombre.</p>"; return; }
+  if(lista.length===0){ box.innerHTML = "<p style='color:#888'>No hay personas.</p>"; return; }
   box.innerHTML = "";
   lista.forEach(u=>{
     let div = document.createElement('div');
-    div.className = "userRow";
+    div.className = "userRow" + (u.baneado ? " baneado" : "");
     let esVerif = u.verificado ? true : false;
+    let esBan = u.baneado ? true : false;
     let esVip = u.vip ? "👑 VIP" : "Sin VIP";
     let badge = esVerif ? '<span class="verificado verificado-peq">✓</span>' : '';
-    div.innerHTML = '<div class="nombreU">'+ (u.nombre||"Sin nombre") +' '+ badge +'</div><div class="emailU">'+ (u.email||"") +'</div><div class="tags">'+ esVip +' • 💎 '+(u.diamantes||0)+' • '+(esVerif?"✅ VERIFICADO":"Sin verificar")+'</div><div class="idBox"><code>'+u.id+'</code><button class="btnCopy" onclick="copiarId(\''+u.id+'\')">📋 COPIAR ID</button></div><button class="btnV '+(esVerif?"no":"si")+'" onclick="cambiarVerificado(\''+u.id+'\', '+esVerif+', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">'+ (esVerif?"❌ Quitar verificado":"✅ Verificar") +'</button>';
+    let badgeBan = esBan ? '<span style="background:#ff0000;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px">🚫 BANEADO</span>' : '';
+    let btnBan = esBan ? '<button class="btnUnban" onclick="desbanearUsuario(\''+u.id+'\', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">✅ DESBANEAR</button>' : '<button class="btnBan" onclick="banearUsuario(\''+u.id+'\', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">🚫 BANEAR</button>';
+    div.innerHTML = '<div class="nombreU">'+ (u.nombre||"Sin nombre") +' '+ badge +' '+ badgeBan +'</div><div class="emailU">'+ (u.email||"") +'</div><div class="tags">'+ esVip +' • 💎 '+(u.diamantes||0)+' • '+(esVerif?"✅ VERIFICADO":"Sin verificar")+' • '+(esBan?"🚫 BANEADO":"Sin ban")+'</div><div class="idBox"><code>'+u.id+'</code><button class="btnCopy" onclick="copiarId(\''+u.id+'\')">📋 COPIAR ID</button></div><button class="btnV '+(esVerif?"no":"si")+'" onclick="cambiarVerificado(\''+u.id+'\', '+esVerif+', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">'+ (esVerif?"❌ Quitar verificado":"✅ Verificar") +'</button>' + btnBan;
     box.appendChild(div);
   });
 }
 function cargarUsuarios(){
   db.collection('usuarios').onSnapshot((snap)=>{
     todosUsuarios = [];
-    let verifCount = 0;
-    snap.forEach(doc=>{
-      let d = doc.data();
-      d.id = doc.id;
-      todosUsuarios.push(d);
-      if(d.verificado) verifCount++;
-    });
+    let verifCount = 0; let banCount = 0;
+    snap.forEach(doc=>{ let d = doc.data(); d.id = doc.id; todosUsuarios.push(d); if(d.verificado) verifCount++; if(d.baneado) banCount++; });
     document.getElementById('totalUsuarios').innerText = todosUsuarios.length;
     document.getElementById('totalVerificados').innerText = verifCount;
+    document.getElementById('totalBaneados').innerText = banCount;
     filtrarUsuarios();
   });
 }
@@ -312,12 +320,12 @@ auth.onAuthStateChanged(async (user)=>{
         colorElegido = datos.colorPerfil || "#ff6b00";
         actualizarUI();
       } else {
-        db.collection('usuarios').doc(user.uid).set({email:user.email, nombre:user.email.split('@')[0], diamantes:0, vip:false, vipHasta:0, admin:false}, {merge:true});
+        db.collection('usuarios').doc(user.uid).set({email:user.email, nombre:user.email.split('@')[0], diamantes:0, vip:false, vipHasta:0, admin:false, baneado:false}, {merge:true});
       }
     });
   } else {
     document.getElementById('userEmail').innerText = "No has iniciado sesión";
-    document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda con el mismo correo para editar tu perfil.";
+    document.getElementById('msgNoLogin').innerText = "⚠️ Inicia sesión en la tienda para editar tu perfil.";
     actualizarUI();
   }
 });
