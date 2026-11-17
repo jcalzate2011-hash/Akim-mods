@@ -3,162 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AKIM - Postulaciones</title>
+<title>AKIM - Correo Privado</title>
 <style>
 body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center}
 header{padding:20px;background:linear-gradient(90deg,#ff0055,#7b00ff)}
 .logo{font-size:28px;font-weight:900;letter-spacing:2px}
 .card{background:#15151f;margin:15px;border-radius:16px;padding:18px;text-align:left}
-input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;background:#222231;color:#fff;box-sizing:border-box;font-family:Arial}
-textarea{min-height:80px;resize:vertical}
+input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;background:#222231;color:#fff;box-sizing:border-box}
 button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
 .btn-pink{background:#ff0055;color:#fff}
 .btn-white{background:#fff;color:#000}
 .btn-dark{background:#2a2a3a;color:#fff}
 .btn-gold{background:#ffd700;color:#000}
 .btn-green{background:#00c853;color:#fff}
-.btn-purple{background:#7b00ff;color:#fff}
 .btn-blue{background:#0095F6;color:#fff}
 .hidden{display:none !important}
+.postBox{background:#222231;padding:14px;margin:12px 0;border-radius:12px;border:1px solid #444}
+.postBox.nuevo{border:2px solid #ffd700}
 .infoBox{background:#222231;padding:12px;border-radius:12px;margin:10px 0;font-size:14px;line-height:1.6}
-.auto{color:#00ff88;font-size:12px;font-weight:800}
-.rolBox{background:#222231;border:2px solid #333;border-radius:16px;padding:16px;margin:10px 0;cursor:pointer;text-align:center}
-.rolBox.seleccionado{border-color:#ffd700;background:#3a2a00;box-shadow:0 0 15px rgba(255,215,0,0.4)}
-.rolBox h2{margin:5px 0}
-.postBox{background:#222231;padding:12px;margin:10px 0;border-radius:12px;border:1px solid #444}
-.estadoPendiente{color:#ffd700;font-weight:900}
-.estadoAceptado{color:#00ff88;font-weight:900}
-.estadoRechazado{color:#ff0055;font-weight:900}
-.paso{font-size:13px;color:#aaa;text-align:center}
+.tabBtn{flex:1;padding:12px;border-radius:12px;background:#2a2a3a;color:#fff;border:none;font-weight:800;cursor:pointer}
+.tabBtn.activo{background:#ffd700;color:#000}
+.tabs{display:flex;gap:8px}
 .privado{background:#1a0000;border:1px solid #ff0055;border-radius:12px;padding:12px;margin:10px 0;text-align:center;font-size:13px}
-.avisoCorreo{background:linear-gradient(135deg,#003a1a,#1a1a2e);border:2px solid #00ff88;border-radius:16px;padding:16px;margin:12px 0;text-align:center}
-#avisoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
-.avisoBox{background:#15151f;border:2px solid #00ff88;border-radius:20px;padding:24px;text-align:center;max-width:360px;width:100%}
 </style>
 </head>
 <body>
 <header>
-<div class="logo">📋 AKIM POSTULACIONES 📋</div>
-<div>¿Quieres trabajar con nosotros? Postúlate aquí</div>
+<div class="logo">📩 AKIM CORREO PRIVADO 📩</div>
+<div>Solo Moderadores - Nadie más puede ver esto</div>
 </header>
 
-<!-- CARGANDO - PARA QUE NO SE VEA NEGRO -->
+<!-- CARGANDO -->
 <div id="cargandoBox" class="card">
 <h2>⏳ Cargando...</h2>
-<p style="color:#aaa;font-size:14px">Espera un segundito, estamos cargando tu cuenta.</p>
+<p style="color:#aaa;font-size:14px">Espera un segundito.</p>
 </div>
 
-<!-- PASO 0 - LOGIN -->
+<!-- LOGIN -->
 <div id="loginBox" class="card hidden">
-<h2>👤 Primero inicia sesión</h2>
-<p style="color:#aaa;font-size:14px">Si ya tienes cuenta en la Tienda, usa el mismo correo. Así se te auto-llena tu hojita de vida sola.</p>
+<h2>👤 Entra con tu cuenta</h2>
+<p style="color:#aaa;font-size:14px">Este correo es <b>PRIVADO</b>. Solo Moderadores y Admin. La web detecta sola quién eres.</p>
 <input id="email" type="email" placeholder="Tu correo">
 <input id="pass" type="password" placeholder="Contraseña">
 <button class="btn-pink" onclick="entrar()">Iniciar Sesión</button>
 <button class="btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button>
-<p style="font-size:13px;color:#aaa">¿No tienes cuenta? <a href="tienda.html" style="color:#ffd700">Crea una en la Tienda</a></p>
 <p id="msgLogin" style="color:#ffcc00"></p>
-<p id="msgError" style="color:#ff5555;font-size:13px"></p>
 </div>
 
-<!-- MI ESTADO - SOLO MI POSTULACION -->
-<div id="miEstadoBox" class="card hidden">
-<h2>📬 Mi Postulación</h2>
-<div class="privado">🔒 PRIVADO - Solo tú ves tu postulación. Nadie más puede ver quién se postuló ni qué escribió.</div>
-<div id="miEstado"></div>
-<div class="avisoCorreo">
-<h2 style="margin:5px 0">📩 Revisa tu correo</h2>
-<p style="margin:5px 0">En los próximos minutos o horas te llegará tu respuesta de si te aceptaron o no te aceptaron.</p>
-<p style="font-size:12px;color:#aaa;margin:5px 0">Revisa también tu carpeta de Spam / Correo no deseado.</p>
-</div>
+<!-- SIN PERMISO - NO VE NADA -->
+<div id="sinPermisoBox" class="card hidden" style="text-align:center">
+<h2>🔒 CORREO PRIVADO</h2>
+<p>No tienes permiso para ver este correo.</p>
+<p>Tu cuenta es: <b id="tuCorreoSinPermiso"></b><br>Tu rol: <b id="tuRolSinPermiso"></b></p>
+<div class="privado">🔒 Este correo es privado. Nadie puede ver quién envió su hoja de vida ni qué escribió, solo los Moderadores.</div>
+<p style="color:#aaa;font-size:14px">Si deberías ser Moderador, pídele al Admin que te ponga como Moderador.</p>
 <button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
 
-<!-- PASO 1 - HOJA DE VIDA -->
-<div id="paso1Box" class="card hidden">
-<p class="paso">PASO 1 DE 2 - TU HOJITA DE VIDA</p>
-<h2>📋 Tu Hojita de Vida</h2>
-<p style="color:#aaa;font-size:14px">Lo que ya tenemos guardado se puso solo. Lo que no tengas, lo escribes tú.</p>
-
-<div class="infoBox" id="infoAuto">
-<b>🔄 Información automática de tu cuenta:</b><br>
-<span id="textoAuto">Cargando...</span>
+<!-- BANDEJA SOLO MODERADORES -->
+<div id="correoBox" class="card hidden">
+<h2>📩 Correo Privado - Postulaciones</h2>
+<p>👤 <b id="userEmail"></b> | 🛡️ Rol: <b id="miRol" style="color:#ffd700"></b></p>
+<div class="privado">🔒 PRIVADO - Solo tú y los Moderadores ven esto. Ningún otro usuario puede ver quién se postuló ni qué escribió.</div>
+<div class="tabs">
+<button class="tabBtn activo" id="tabPendientes" onclick="cambiarTab('Pendiente')">⏳ Pendientes</button>
+<button class="tabBtn" id="tabAceptados" onclick="cambiarTab('Aceptado')">✅ Aceptados</button>
+<button class="tabBtn" id="tabRechazados" onclick="cambiarTab('Rechazado')">❌ Rechazados</button>
+</div>
+<p id="contador" style="color:#ffd700;font-weight:800"></p>
+<button class="btn-white" onclick="cargarPostulaciones()">🔄 Actualizar Correo</button>
+<div id="lista"></div>
+<button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
 
-<label>👤 Nombre Completo * <span class="auto" id="autoNombre"></span></label>
-<input id="fNombre" placeholder="Ejemplo: Juan Pérez">
-
-<label>🎂 Edad *</label>
-<input id="fEdad" type="number" placeholder="Ejemplo: 16">
-
-<label>📧 Correo * <span class="auto">SE PUSO SOLO</span></label>
-<input id="fCorreo" type="email" placeholder="Tu correo">
-
-<label>📱 WhatsApp / Contacto * <span class="auto" id="autoWhats"></span></label>
-<input id="fWhats" placeholder="Ejemplo: +57 300 123 4567">
-
-<label>🌍 País / Ciudad</label>
-<input id="fCiudad" placeholder="Ejemplo: Colombia - Pereira">
-
-<label>💼 ¿Tienes experiencia ayudando en servidores, grupos o tiendas?</label>
-<textarea id="fExperiencia" placeholder="Cuéntanos si ya has sido admin, soporte, moderador, etc. Si no tienes, pon: No tengo pero quiero aprender"></textarea>
-
-<label>❤️ ¿Por qué quieres trabajar en AKIM?</label>
-<textarea id="fMotivo" placeholder="Cuéntanos por qué quieres ser parte del equipo"></textarea>
-
-<label>⏰ ¿Cuántas horas al día puedes estar activo?</label>
-<select id="fHoras">
-<option value="">Escoge...</option>
-<option value="1-2 horas">1-2 horas</option>
-<option value="2-4 horas">2-4 horas</option>
-<option value="4-6 horas">4-6 horas</option>
-<option value="Todo el día">Todo el día</option>
-</select>
-
-<button class="btn-gold" onclick="irPaso2()">Continuar ➡️ Escoger Rol</button>
-<p id="msgPaso1" style="color:#ffcc00"></p>
-</div>
-
-<!-- PASO 2 - ESCOGER ROL -->
-<div id="paso2Box" class="card hidden">
-<p class="paso">PASO 2 DE 2 - ¿QUÉ QUIERES SER?</p>
-<h2>🎯 Escoge tu Rol</h2>
-<p style="color:#aaa;font-size:14px">Escoge UNO. Después le das a Enviar Todo Completo.</p>
-
-<div class="rolBox" id="rolSoporte" onclick="elegirRol('Soporte')">
-<h2>🛠️ SOPORTE</h2>
-<p>Ayudar a los usuarios con dudas, problemas con VIP, diamantes, cuentas y reportes.</p>
-<p style="color:#ffd700;font-size:13px">Ideal si eres paciente y te gusta ayudar.</p>
-</div>
-
-<div class="rolBox" id="rolResenas" onclick="elegirRol('Reseñas')">
-<h2>⭐ ENCARGADO DE RESEÑAS</h2>
-<p>Revisar reseñas, responder comentarios, pedir opiniones y hacer que la Tienda se vea confiable.</p>
-<p style="color:#ffd700;font-size:13px">NUEVO ROL - Ideal si te gusta hablar con la gente.</p>
-</div>
-
-<div class="rolBox" id="rolModerador" onclick="elegirRol('Moderador')">
-<h2>🛡️ MODERADOR</h2>
-<p>Cuidar el grupo, quitar spam, ayudar a mantener el orden y apoyar al Admin.</p>
-<p style="color:#ffd700;font-size:13px">Ideal si estás muy activo.</p>
-</div>
-
-<p id="rolElegido" style="color:#00ff88;font-weight:900;text-align:center"></p>
-<button class="btn-dark" onclick="volverPaso1()">⬅️ Volver</button>
-<button class="btn-green" onclick="enviarTodo()">✅ ENVIAR TODO COMPLETO</button>
-<p id="msgPaso2" style="color:#ffcc00"></p>
-</div>
-
-<!-- AVISO CUANDO ENVÍA -->
-<div id="avisoModal">
-<div class="avisoBox">
-<div style="font-size:60px">📩</div>
-<h2 style="color:#00ff88;margin:10px 0">¡Enviado!</h2>
-<h3 style="margin:5px 0">Revisa tu correo</h3>
-<p style="color:#ddd;line-height:1.5">En los próximos minutos o horas te llegará tu respuesta de si te aceptaron o no te aceptaron.</p>
-<p style="font-size:12px;color:#aaa">Revisa también tu carpeta de Spam / Correo no deseado.<br>Tu postulación es privada, solo los Moderadores la ven.</p>
-<button class="btn-green" onclick="cerrarAviso()">✅ Entendido</button>
-</div>
+<!-- SOLO ADMIN: PONER MODERADORES -->
+<div id="adminModeradorBox" class="card hidden" style="border:1px solid #ffd700;background:#1a1a2e">
+<h2>🛡️ Solo Admin - Poner Moderadores</h2>
+<p style="color:#ffd700;font-size:14px">Solo tú como Admin puedes decir quién es Moderador y quién puede entrar a este Correo Privado.</p>
+<button class="btn-white" onclick="cargarUsuarios()">👥 Ver Usuarios - Poner / Quitar Moderador</button>
+<div id="listaUsuarios"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -180,32 +103,41 @@ const db = firebase.firestore();
 
 let userActual = null;
 let datosUsuario = null;
-let rolElegido = "";
-let yaPostulado = null;
+let tabActual = "Pendiente";
 
 async function entrar(){
   const e = document.getElementById('email').value;
   const p = document.getElementById('pass').value;
-  try{
-    await auth.signInWithEmailAndPassword(e,p);
-  }catch(err){
-    document.getElementById('msgLogin').innerText = err.message;
-  }
+  try{ await auth.signInWithEmailAndPassword(e,p); }
+  catch(err){ document.getElementById('msgLogin').innerText = err.message; }
 }
 async function loginGoogle(){
   const prov = new firebase.auth.GoogleAuthProvider();
-  try{
-    await auth.signInWithPopup(prov);
-  }catch(err){
-    document.getElementById('msgLogin').innerText = err.message;
-  }
+  try{ await auth.signInWithPopup(prov); }
+  catch(err){ document.getElementById('msgLogin').innerText = err.message; }
 }
-async function salir(){
-  await auth.signOut();
-  location.reload();
+async function salir(){ await auth.signOut(); location.reload(); }
+
+function puedeVerCorreo(){
+  if(!datosUsuario) return false;
+  if(datosUsuario.admin === true) return true;
+  if(datosUsuario.rolEquipo === "Moderador") return true;
+  if(datosUsuario.rolEquipo === "Admin") return true;
+  return false;
+}
+function miRolTexto(){
+  if(datosUsuario.admin === true) return "Admin";
+  if(datosUsuario.rolEquipo) return datosUsuario.rolEquipo;
+  return "Usuario normal";
+}
+// PARA QUE EL CORREO DIGA BIEN EL ROL - Reseñas = Reseñero
+function nombreBonitoRol(rol){
+  if(rol === "Reseñas") return "Reseñero / Encargado de Reseñas";
+  if(rol === "Moderador") return "Moderador";
+  if(rol === "Soporte") return "Soporte";
+  return rol || "";
 }
 
-// CORREGIDO - YA NO SE QUEDA EN NEGRO
 auth.onAuthStateChanged(async (user)=>{
   try{
     if(!user){
@@ -216,181 +148,154 @@ auth.onAuthStateChanged(async (user)=>{
     userActual = user;
     document.getElementById('cargandoBox').classList.add('hidden');
     document.getElementById('loginBox').classList.add('hidden');
-
     const doc = await db.collection('usuarios').doc(user.uid).get();
-    if(doc.exists){
-      datosUsuario = doc.data();
-    } else {
-      datosUsuario = {diamantes:0, vip:false, admin:false};
-    }
-    document.getElementById('fCorreo').value = user.email || "";
-    if(datosUsuario.nombre){
-      document.getElementById('fNombre').value = datosUsuario.nombre;
-      document.getElementById('autoNombre').innerText = "SE PUSO SOLO";
-    }
-    if(datosUsuario.whatsapp){
-      document.getElementById('fWhats').value = datosUsuario.whatsapp;
-      document.getElementById('autoWhats').innerText = "SE PUSO SOLO";
-    }
-    if(datosUsuario.ciudad){
-      document.getElementById('fCiudad').value = datosUsuario.ciudad;
-    }
-    if(datosUsuario.edad){
-      document.getElementById('fEdad').value = datosUsuario.edad;
-    }
-    let textoAuto = "📧 Correo: " + user.email + "<br>";
-    textoAuto += "💎 Diamantes: " + (datosUsuario.diamantes || 0) + "<br>";
-    textoAuto += "👑 VIP: " + (datosUsuario.vip ? "SÍ" : "NO") + "<br>";
-    textoAuto += "🛡️ Admin: " + (datosUsuario.admin ? "SÍ" : "NO");
-    document.getElementById('textoAuto').innerHTML = textoAuto;
+    if(doc.exists){ datosUsuario = doc.data(); }
+    else { datosUsuario = {diamantes:0, vip:false, admin:false, rolEquipo:"Usuario"}; }
 
-    // SIN orderBy - ESTO ERA LO QUE LO DEJABA EN NEGRO
-    let snap = null;
-    try{
-      snap = await db.collection('postulaciones').where('uid','==',user.uid).get();
-    }catch(e){
-      console.log("Error buscando postulación, muestro formulario", e);
-      snap = null;
+    if(!puedeVerCorreo()){
+      document.getElementById('sinPermisoBox').classList.remove('hidden');
+      document.getElementById('tuCorreoSinPermiso').innerText = user.email;
+      document.getElementById('tuRolSinPermiso').innerText = miRolTexto();
+      return;
     }
-    if(snap && !snap.empty){
-      // Ordenamos aquí, no en Firebase
-      let docs = snap.docs.sort((a,b)=> (b.data().fecha||0) - (a.data().fecha||0));
-      yaPostulado = docs[0].data();
-      yaPostulado.id = docs[0].id;
-      mostrarMiEstado();
-    } else {
-      document.getElementById('paso1Box').classList.remove('hidden');
+    document.getElementById('correoBox').classList.remove('hidden');
+    document.getElementById('userEmail').innerText = user.email;
+    document.getElementById('miRol').innerText = miRolTexto();
+    cargarPostulaciones();
+    if(datosUsuario.admin === true){
+      document.getElementById('adminModeradorBox').classList.remove('hidden');
     }
   }catch(err){
-    console.log(err);
     document.getElementById('cargandoBox').classList.add('hidden');
-    document.getElementById('msgError').innerText = "Error: " + err.message + " - Igual te muestro el formulario.";
-    // SI ALGO FALLA, IGUAL MUESTRA EL FORMULARIO, NUNCA NEGRO
-    if(userActual){
-      document.getElementById('paso1Box').classList.remove('hidden');
-    }else{
-      document.getElementById('loginBox').classList.remove('hidden');
-    }
+    document.getElementById('loginBox').classList.remove('hidden');
+    document.getElementById('msgLogin').innerText = "Error: " + err.message;
   }
 });
 
-function mostrarMiEstado(){
-  document.getElementById('miEstadoBox').classList.remove('hidden');
-  let estado = yaPostulado.estado || "Pendiente";
-  let clase = "estadoPendiente";
-  let texto = "⏳ PENDIENTE - Estamos revisando tu postulación";
-  if(estado === "Aceptado"){
-    clase = "estadoAceptado";
-    texto = "✅ ¡ACEPTADO! ¡Felicidades! El Moderador te aceptó. Revisa tu correo.";
-  }
-  if(estado === "Rechazado"){
-    clase = "estadoRechazado";
-    texto = "❌ NO ACEPTADO - Esta vez no fuiste aceptado. Revisa tu correo para ver el mensaje.";
-  }
-  document.getElementById('miEstado').innerHTML = `
-    <div class="infoBox">
-    <b>Rol al que te postulaste:</b> ${yaPostulado.rol}<br>
-    <b>Nombre:</b> ${yaPostulado.nombre}<br>
-    <b>Estado:</b> <span class="${clase}">${texto}</span><br>
-    <b>Fecha:</b> ${new Date(yaPostulado.fecha).toLocaleString()}<br>
-    ${yaPostulado.mensajeAdmin ? "<b>Mensaje del Moderador:</b> " + yaPostulado.mensajeAdmin + "<br>" : ""}
-    </div>
-  `;
-  if(estado === "Pendiente"){
-    document.getElementById('miEstado').innerHTML += `<button class="btn-dark" onclick="editarPostulacion()">✏️ Editar mi postulación</button>`;
+function cambiarTab(tab){
+  tabActual = tab;
+  document.getElementById('tabPendientes').classList.remove('activo');
+  document.getElementById('tabAceptados').classList.remove('activo');
+  document.getElementById('tabRechazados').classList.remove('activo');
+  if(tab === "Pendiente") document.getElementById('tabPendientes').classList.add('activo');
+  if(tab === "Aceptado") document.getElementById('tabAceptados').classList.add('activo');
+  if(tab === "Rechazado") document.getElementById('tabRechazados').classList.add('activo');
+  cargarPostulaciones();
+}
+
+async function cargarPostulaciones(){
+  let lista = document.getElementById('lista');
+  lista.innerHTML = "Cargando correos privados...";
+  try{
+    let snap = await db.collection('postulaciones').get();
+    let docs = snap.docs.sort((a,b)=> (b.data().fecha||0) - (a.data().fecha||0));
+    let html = "";
+    let count = 0;
+    docs.forEach(doc=>{
+      let d = doc.data();
+      let estado = d.estado || "Pendiente";
+      if(estado !== tabActual) return;
+      count++;
+      let esNuevo = estado === "Pendiente";
+      html += `<div class="postBox ${esNuevo ? "nuevo" : ""}">
+      <b style="font-size:17px">📩 Hoja de Vida Privada</b> - <span style="color:#ffd700;font-weight:900">${estado}</span><br>
+      <b>Nombre:</b> ${d.nombre}<br>
+      <b>Quiere ser:</b> ${nombreBonitoRol(d.rol)}<br>
+      <b>Edad:</b> ${d.edad} | <b>Ciudad:</b> ${d.ciudad || "No puso"}<br>
+      <b>Correo del que se postuló:</b> ${d.correo}<br>
+      <b>WhatsApp:</b> ${d.whatsapp}<br>
+      <b>Horas:</b> ${d.horas || "No puso"} | <b>💎:</b> ${d.diamantes || 0} | <b>VIP:</b> ${d.vip ? "SÍ" : "NO"}<br>
+      <b>Experiencia:</b> ${d.experiencia || "No puso"}<br>
+      <b>Motivo:</b> ${d.motivo || "No puso"}<br>
+      <b>Fecha:</b> ${d.fecha ? new Date(d.fecha).toLocaleString() : ""}<br>
+      ${d.mensajeAdmin ? "<b>Mensaje que le dejaste:</b> " + d.mensajeAdmin + "<br>" : ""}
+      ${d.revisadoPor ? "<b>Revisado por:</b> " + d.revisadoPor + "<br>" : ""}
+      <button class="btn-green" onclick="cambiarEstado('${doc.id}','${d.correo}','${d.nombre}','Aceptado')">✅ Aceptarlo</button>
+      <button class="btn-pink" onclick="cambiarEstado('${doc.id}','${d.correo}','${d.nombre}','Rechazado')">❌ No Aceptarlo</button>
+      <button class="btn-blue" onclick="escribirle('${d.correo}','${d.nombre}','${d.rol}')">✉️ Escribirle</button>
+      </div>`;
+    });
+    document.getElementById('contador').innerText = "Tienes " + count + " mensajes privados en " + tabActual;
+    lista.innerHTML = html || "No hay mensajes privados en esta bandeja.";
+  }catch(e){
+    lista.innerHTML = "Error cargando: " + e.message;
   }
 }
 
-function editarPostulacion(){
-  document.getElementById('miEstadoBox').classList.add('hidden');
-  document.getElementById('paso1Box').classList.remove('hidden');
-  document.getElementById('fNombre').value = yaPostulado.nombre || "";
-  document.getElementById('fEdad').value = yaPostulado.edad || "";
-  document.getElementById('fCorreo').value = yaPostulado.correo || "";
-  document.getElementById('fWhats').value = yaPostulado.whatsapp || "";
-  document.getElementById('fCiudad').value = yaPostulado.ciudad || "";
-  document.getElementById('fExperiencia').value = yaPostulado.experiencia || "";
-  document.getElementById('fMotivo').value = yaPostulado.motivo || "";
-  document.getElementById('fHoras').value = yaPostulado.horas || "";
-  elegirRol(yaPostulado.rol);
-}
+async function cambiarEstado(id, correo, nombre, nuevoEstado){
+  let mensaje = prompt("¿Qué mensaje le quieres dejar a " + nombre + "?");
+  if(mensaje === null) mensaje = "";
+  let docPost = await db.collection('postulaciones').doc(id).get();
+  let rolPost = docPost.exists ? (docPost.data().rol || "") : "";
+  let rolBonito = nombreBonitoRol(rolPost);
+  await db.collection('postulaciones').doc(id).update({estado: nuevoEstado, mensajeAdmin: mensaje, revisadoPor: userActual.email, fechaRevision: Date.now()});
 
-function irPaso2(){
-  let nombre = document.getElementById('fNombre').value.trim();
-  let edad = document.getElementById('fEdad').value.trim();
-  let correo = document.getElementById('fCorreo').value.trim();
-  let whats = document.getElementById('fWhats').value.trim();
-  if(!nombre || !edad || !correo || !whats){
-    document.getElementById('msgPaso1').innerText = "❌ Te falta llenar: Nombre, Edad, Correo y WhatsApp son obligatorios";
-    alert("❌ Te falta llenar Nombre, Edad, Correo y WhatsApp");
-    return;
+  // NUEVO - SI LO ACEPTARON, SALE SOLO EN ANUNCIOS CON SU ROL
+  if(nuevoEstado === "Aceptado"){
+    await db.collection('anuncios').add({
+      titulo: "🎉 " + nombre + " fue aceptado como " + rolBonito,
+      mensaje: "🎉 ¡Felicidades! " + nombre + " fue aceptado como " + rolBonito + " en AKIM. ¡Bienvenido al equipo! 🎉" + (mensaje ? " Mensaje: " + mensaje : ""),
+      nombre: nombre,
+      rol: rolPost,
+      tipo: "aceptado",
+      fecha: Date.now(),
+      por: userActual.email
+    });
   }
-  document.getElementById('paso1Box').classList.add('hidden');
-  document.getElementById('paso2Box').classList.remove('hidden');
-  window.scrollTo(0,0);
-}
-function volverPaso1(){
-  document.getElementById('paso2Box').classList.add('hidden');
-  document.getElementById('paso1Box').classList.remove('hidden');
-}
-function elegirRol(rol){
-  rolElegido = rol;
-  document.getElementById('rolSoporte').classList.remove('seleccionado');
-  document.getElementById('rolResenas').classList.remove('seleccionado');
-  document.getElementById('rolModerador').classList.remove('seleccionado');
-  if(rol === "Soporte") document.getElementById('rolSoporte').classList.add('seleccionado');
-  if(rol === "Reseñas") document.getElementById('rolResenas').classList.add('seleccionado');
-  if(rol === "Moderador") document.getElementById('rolModerador').classList.add('seleccionado');
-  document.getElementById('rolElegido').innerText = "✅ Elegiste: " + rol;
-}
 
-function mostrarAvisoCorreo(){
-  document.getElementById('avisoModal').style.display = "flex";
-}
-function cerrarAviso(){
-  document.getElementById('avisoModal').style.display = "none";
-  location.reload();
-}
-
-async function enviarTodo(){
-  if(!rolElegido){
-    alert("❌ Primero escoge qué quieres ser: Soporte, Reseñas o Moderador");
-    return;
-  }
-  let datos = {
-    uid: userActual.uid,
-    nombre: document.getElementById('fNombre').value.trim(),
-    edad: document.getElementById('fEdad').value.trim(),
-    correo: document.getElementById('fCorreo').value.trim(),
-    whatsapp: document.getElementById('fWhats').value.trim(),
-    ciudad: document.getElementById('fCiudad').value.trim(),
-    experiencia: document.getElementById('fExperiencia').value.trim(),
-    motivo: document.getElementById('fMotivo').value.trim(),
-    horas: document.getElementById('fHoras').value,
-    rol: rolElegido,
-    diamantes: datosUsuario ? (datosUsuario.diamantes || 0) : 0,
-    vip: datosUsuario ? !!datosUsuario.vip : false,
-    estado: "Pendiente",
-    mensajeAdmin: "",
-    fecha: Date.now()
-  };
-  if(!confirm("¿Seguro que quieres enviar todo?\n\nNombre: " + datos.nombre + "\nRol: " + datos.rol + "\nCorreo: " + datos.correo)){
-    return;
-  }
-  await db.collection('usuarios').doc(userActual.uid).set({
-    nombre: datos.nombre,
-    whatsapp: datos.whatsapp,
-    ciudad: datos.ciudad,
-    edad: datos.edad
-  }, {merge:true});
-
-  if(yaPostulado && yaPostulado.id){
-    await db.collection('postulaciones').doc(yaPostulado.id).set(datos);
+  // CORREO QUE LE LLEGA A LA PERSONA - CON SU ROL, COMO ME PEDISTE
+  let asunto = "";
+  let textoCorreo = "";
+  if(nuevoEstado === "Aceptado"){
+    asunto = "✅ Fuiste aceptado como " + rolBonito + " en AKIM";
+    textoCorreo = "Hola " + nombre + ",\n\n¡FELICIDADES! Fuiste aceptado como " + rolBonito + " en AKIM.\n\nBienvenido al equipo, ya eres parte de AKIM como " + rolBonito + ".";
   } else {
-    await db.collection('postulaciones').add(datos);
+    asunto = "❌ No fuiste aceptado como " + rolBonito + " en AKIM";
+    textoCorreo = "Hola " + nombre + ",\n\nGracias por postularte. Esta vez NO fuiste aceptado como " + rolBonito + " en AKIM.\n\nPuedes volver a postularte en otro momento.";
   }
-  mostrarAvisoCorreo();
+  if(mensaje){
+    textoCorreo += "\n\nMensaje del Moderador: " + mensaje;
+  }
+  textoCorreo += "\n\nRevisa tu estado en postulaciones.html";
+
+  window.open("mailto:" + correo + "?subject=" + encodeURIComponent(asunto) + "&body=" + encodeURIComponent(textoCorreo), "_blank");
+  alert("✅ Listo, " + nombre + " quedó como " + nuevoEstado + " como " + rolBonito + (nuevoEstado === "Aceptado" ? "\n\nYa le llegó el correo que dice: Fuiste aceptado como " + rolBonito + "\nY ya salió en ANUNCIOS." : "\n\nYa le llegó el correo que dice: No fuiste aceptado como " + rolBonito));
+  cargarPostulaciones();
+}
+function escribirle(correo, nombre, rol){
+  let texto = prompt("¿Qué le quieres escribir a " + nombre + " (" + nombreBonitoRol(rol) + ")?");
+  if(!texto) return;
+  window.open("mailto:" + correo + "?subject=" + encodeURIComponent("Mensaje de AKIM - Sobre tu postulación como " + nombreBonitoRol(rol)) + "&body=" + encodeURIComponent("Hola " + nombre + ",\n\n" + texto), "_blank");
+}
+
+// ===== SOLO ADMIN: PONER / QUITAR MODERADOR =====
+async function cargarUsuarios(){
+  let lista = document.getElementById('listaUsuarios');
+  lista.innerHTML = "Cargando...";
+  try{
+    let snap = await db.collection('usuarios').get();
+    let html = "";
+    snap.forEach(doc=>{
+      let d = doc.data();
+      let rol = d.admin ? "Admin" : (d.rolEquipo || "Usuario");
+      html += `<div class="postBox">
+      <b>ID:</b> ${doc.id}<br>
+      <b>Rol actual:</b> <span style="color:#ffd700;font-weight:900">${rol}</span><br>
+      <b>💎:</b> ${d.diamantes || 0} | <b>VIP:</b> ${d.vip ? "SÍ" : "NO"}<br>
+      <button class="btn-gold" onclick="ponerModerador('${doc.id}', 'Moderador')">🛡️ Hacer Moderador</button>
+      <button class="btn-dark" onclick="ponerModerador('${doc.id}', 'Usuario')">❌ Quitar Moderador</button>
+      </div>`;
+    });
+    lista.innerHTML = html;
+  }catch(e){
+    lista.innerHTML = "Error: " + e.message;
+  }
+}
+async function ponerModerador(id, rol){
+  await db.collection('usuarios').doc(id).update({rolEquipo: rol});
+  alert("✅ Listo. Ahora esa persona es: " + rol + "\nSi es Moderador, ya puede entrar a correo.html y aceptar gente.");
+  cargarUsuarios();
 }
 </script>
 </body>
-  </html>
+</html>
