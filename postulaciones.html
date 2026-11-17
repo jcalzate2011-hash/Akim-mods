@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM - Postulaciones</title>
+<style>
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center}
+header{padding:20px;background:linear-gradient(90deg,#ff0055,#7b00ff)}
+.logo{font-size:28px;font-weight:900;letter-spacing:2px}
+.card{background:#15151f;margin:15px;border-radius:16px;padding:18px;text-align:left}
+input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;background:#222231;color:#fff;box-sizing:border-box;font-family:Arial}
+textarea{min-height:80px;resize:vertical}
+button{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
+.btn-pink{background:#ff0055;color:#fff}
+.btn-white{background:#fff;color:#000}
+.btn-dark{background:#2a2a3a;color:#fff}
+.btn-gold{background:#ffd700;color:#000}
+.btn-green{background:#00c853;color:#fff}
+.btn-purple{background:#7b00ff;color:#fff}
+.btn-blue{background:#0095F6;color:#fff}
+.hidden{display:none !important}
+.infoBox{background:#222231;padding:12px;border-radius:12px;margin:10px 0;font-size:14px;line-height:1.6}
+.auto{color:#00ff88;font-size:12px;font-weight:800}
+.rolBox{background:#222231;border:2px solid #333;border-radius:16px;padding:16px;margin:10px 0;cursor:pointer;text-align:center}
+.rolBox.seleccionado{border-color:#ffd700;background:#3a2a00;box-shadow:0 0 15px rgba(255,215,0,0.4)}
+.rolBox h2{margin:5px 0}
+.postBox{background:#222231;padding:12px;margin:10px 0;border-radius:12px;border:1px solid #444}
+.estadoPendiente{color:#ffd700;font-weight:900}
+.estadoAceptado{color:#00ff88;font-weight:900}
+.estadoRechazado{color:#ff0055;font-weight:900}
+.paso{font-size:13px;color:#aaa;text-align:center}
+.privado{background:#1a0000;border:1px solid #ff0055;border-radius:12px;padding:12px;margin:10px 0;text-align:center;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">📋 AKIM POSTULACIONES 📋</div>
+<div>¿Quieres trabajar con nosotros? Postúlate aquí</div>
+</header>
+
+<!-- PASO 0 - LOGIN -->
+<div id="loginBox" class="card">
+<h2>👤 Primero inicia sesión</h2>
+<p style="color:#aaa;font-size:14px">Si ya tienes cuenta en la Tienda, usa el mismo correo. Así se te auto-llena tu hojita de vida sola.</p>
+<input id="email" type="email" placeholder="Tu correo">
+<input id="pass" type="password" placeholder="Contraseña">
+<button class="btn-pink" onclick="entrar()">Iniciar Sesión</button>
+<button class="btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button>
+<p style="font-size:13px;color:#aaa">¿No tienes cuenta? <a href="tienda.html" style="color:#ffd700">Crea una en la Tienda</a></p>
+<p id="msgLogin" style="color:#ffcc00"></p>
+</div>
+
+<!-- MI ESTADO - SOLO MI POSTULACION, NADIE MAS LA VE -->
+<div id="miEstadoBox" class="card hidden">
+<h2>📬 Mi Postulación</h2>
+<div class="privado">🔒 PRIVADO - Solo tú ves tu postulación. Nadie más puede ver quién se postuló ni qué escribió.</div>
+<div id="miEstado"></div>
+<button class="btn-dark" onclick="salir()">Cerrar Sesión</button>
+</div>
+
+<!-- PASO 1 - HOJA DE VIDA -->
+<div id="paso1Box" class="card hidden">
+<p class="paso">PASO 1 DE 2 - TU HOJITA DE VIDA</p>
+<h2>📋 Tu Hojita de Vida</h2>
+<p style="color:#aaa;font-size:14px">Lo que ya tenemos guardado se puso solo. Lo que no tengas, lo escribes tú.</p>
+
+<div class="infoBox" id="infoAuto">
+<b>🔄 Información automática de tu cuenta:</b><br>
+<span id="textoAuto">Cargando...</span>
+</div>
+
+<label>👤 Nombre Completo * <span class="auto" id="autoNombre"></span></label>
+<input id="fNombre" placeholder="Ejemplo: Juan Pérez">
+
+<label>🎂 Edad *</label>
+<input id="fEdad" type="number" placeholder="Ejemplo: 16">
+
+<label>📧 Correo * <span class="auto">SE PUSO SOLO</span></label>
+<input id="fCorreo" type="email" placeholder="Tu correo">
+
+<label>📱 WhatsApp / Contacto * <span class="auto" id="autoWhats"></span></label>
+<input id="fWhats" placeholder="Ejemplo: +57 300 123 4567">
+
+<label>🌍 País / Ciudad</label>
+<input id="fCiudad" placeholder="Ejemplo: Colombia - Pereira">
+
+<label>💼 ¿Tienes experiencia ayudando en servidores, grupos o tiendas?</label>
+<textarea id="fExperiencia" placeholder="Cuéntanos si ya has sido admin, soporte, moderador, etc. Si no tienes, pon: No tengo pero quiero aprender"></textarea>
+
+<label>❤️ ¿Por qué quieres trabajar en AKIM?</label>
+<textarea id="fMotivo" placeholder="Cuéntanos por qué quieres ser parte del equipo"></textarea>
+
+<label>⏰ ¿Cuántas horas al día puedes estar activo?</label>
+<select id="fHoras">
+<option value="">Escoge...</option>
+<option value="1-2 horas">1-2 horas</option>
+<option value="2-4 horas">2-4 horas</option>
+<option value="4-6 horas">4-6 horas</option>
+<option value="Todo el día">Todo el día</option>
+</select>
+
+<button class="btn-gold" onclick="irPaso2()">Continuar ➡️ Escoger Rol</button>
+<p id="msgPaso1" style="color:#ffcc00"></p>
+</div>
+
+<!-- PASO 2 - ESCOGER ROL -->
+<div id="paso2Box" class="card hidden">
+<p class="paso">PASO 2 DE 2 - ¿QUÉ QUIERES SER?</p>
+<h2>🎯 Escoge tu Rol</h2>
+<p style="color:#aaa;font-size:14px">Escoge UNO. Después le das a Enviar Todo Completo.</p>
+
+<div class="rolBox" id="rolSoporte" onclick="elegirRol('Soporte')">
+<h2>🛠️ SOPORTE</h2>
+<p>Ayudar a los usuarios con dudas, problemas con VIP, diamantes, cuentas y reportes.</p>
+<p style="color:#ffd700;font-size:13px">Ideal si eres paciente y te gusta ayudar.</p>
+</div>
+
+<div class="rolBox" id="rolResenas" onclick="elegirRol('Reseñas')">
+<h2>⭐ ENCARGADO DE RESEÑAS</h2>
+<p>Revisar reseñas, responder comentarios, pedir opiniones y hacer que la Tienda se vea confiable.</p>
+<p style="color:#ffd700;font-size:13px">NUEVO ROL - Ideal si te gusta hablar con la gente.</p>
+</div>
+
+<div class="rolBox" id="rolModerador" onclick="elegirRol('Moderador')">
+<h2>🛡️ MODERADOR</h2>
+<p>Cuidar el grupo, quitar spam, ayudar a mantener el orden y apoyar al Admin.</p>
+<p style="color:#ffd700;font-size:13px">Ideal si estás muy activo.</p>
+</div>
+
+<p id="rolElegido" style="color:#00ff88;font-weight:900;text-align:center"></p>
+<button class="btn-dark" onclick="volverPaso1()">⬅️ Volver</button>
+<button class="btn-green" onclick="enviarTodo()">✅ ENVIAR TODO COMPLETO</button>
+<p id="msgPaso2" style="color:#ffcc00"></p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
+  authDomain: "akim-mods.firebaseapp.com",
+  projectId: "akim-mods",
+  storageBucket: "akim-mods.firebasestorage.app",
+  messagingSenderId: "1038400568277",
+  appId: "1:1038400568277:web:103029336774c075a29b5c",
+  measurementId: "G-5Y8JCL7G79"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let userActual = null;
+let datosUsuario = null;
+let rolElegido = "";
+let yaPostulado = null;
+
+async function entrar(){
+  const e = document.getElementById('email').value;
+  const p = document.getElementById('pass').value;
+  try{
+    await auth.signInWithEmailAndPassword(e,p);
+  }catch(err){
+    document.getElementById('msgLogin').innerText = err.message;
+  }
+}
+async function loginGoogle(){
+  const prov = new firebase.auth.GoogleAuthProvider();
+  try{
+    await auth.signInWithPopup(prov);
+  }catch(err){
+    document.getElementById('msgLogin').innerText = err.message;
+  }
+}
+async function salir(){
+  await auth.signOut();
+  location.reload();
+}
+
+auth.onAuthStateChanged(async (user)=>{
+  if(user){
+    userActual = user;
+    document.getElementById('loginBox').classList.add('hidden');
+    // Cargar datos de la Tienda para auto-llenar
+    const doc = await db.collection('usuarios').doc(user.uid).get();
+    if(doc.exists){
+      datosUsuario = doc.data();
+    } else {
+      datosUsuario = {diamantes:0, vip:false, admin:false};
+    }
+    // Auto-llenar correo y datos
+    document.getElementById('fCorreo').value = user.email || "";
+    if(datosUsuario.nombre){
+      document.getElementById('fNombre').value = datosUsuario.nombre;
+      document.getElementById('autoNombre').innerText = "SE PUSO SOLO";
+    }
+    if(datosUsuario.whatsapp){
+      document.getElementById('fWhats').value = datosUsuario.whatsapp;
+      document.getElementById('autoWhats').innerText = "SE PUSO SOLO";
+    }
+    if(datosUsuario.ciudad){
+      document.getElementById('fCiudad').value = datosUsuario.ciudad;
+    }
+    if(datosUsuario.edad){
+      document.getElementById('fEdad').value = datosUsuario.edad;
+    }
+    let textoAuto = "📧 Correo: " + user.email + "<br>";
+    textoAuto += "💎 Diamantes: " + (datosUsuario.diamantes || 0) + "<br>";
+    textoAuto += "👑 VIP: " + (datosUsuario.vip ? "SÍ" : "NO") + "<br>";
+    textoAuto += "🛡️ Admin: " + (datosUsuario.admin ? "SÍ" : "NO");
+    document.getElementById('textoAuto').innerHTML = textoAuto;
+
+    // Ver SOLO MI postulación - nadie más ve la de los demás
+    const snap = await db.collection('postulaciones').where('uid','==',user.uid).orderBy('fecha','desc').limit(1).get();
+    if(!snap.empty){
+      yaPostulado = snap.docs[0].data();
+      yaPostulado.id = snap.docs[0].id;
+      mostrarMiEstado();
+    } else {
+      document.getElementById('paso1Box').classList.remove('hidden');
+    }
+    // YA NO HAY PANEL ADMIN AQUÍ - ESO SOLO ESTÁ EN correo.html
+  }
+});
+
+function mostrarMiEstado(){
+  document.getElementById('miEstadoBox').classList.remove('hidden');
+  let estado = yaPostulado.estado || "Pendiente";
+  let clase = "estadoPendiente";
+  let texto = "⏳ PENDIENTE - Estamos revisando tu postulación";
+  if(estado === "Aceptado"){
+    clase = "estadoAceptado";
+    texto = "✅ ¡ACEPTADO! ¡Felicidades! El Moderador te aceptó. Escríbele para que te dé tu rol.";
+  }
+  if(estado === "Rechazado"){
+    clase = "estadoRechazado";
+    texto = "❌ NO ACEPTADO - Esta vez no fuiste aceptado. Puedes volver a postularte en otro momento.";
+  }
+  document.getElementById('miEstado').innerHTML = `
+    <div class="infoBox">
+    <b>Rol al que te postulaste:</b> ${yaPostulado.rol}<br>
+    <b>Nombre:</b> ${yaPostulado.nombre}<br>
+    <b>Estado:</b> <span class="${clase}">${texto}</span><br>
+    <b>Fecha:</b> ${new Date(yaPostulado.fecha).toLocaleString()}<br>
+    ${yaPostulado.mensajeAdmin ? "<b>Mensaje del Moderador:</b> " + yaPostulado.mensajeAdmin + "<br>" : ""}
+    </div>
+    <p style="font-size:13px;color:#aaa">Cuando te acepten o no, te va a aparecer aquí mismo. Solo tú ves esto.</p>
+  `;
+  if(estado === "Pendiente"){
+    document.getElementById('miEstado').innerHTML += `<button class="btn-dark" onclick="editarPostulacion()">✏️ Editar mi postulación</button>`;
+  }
+}
+
+function editarPostulacion(){
+  document.getElementById('miEstadoBox').classList.add('hidden');
+  document.getElementById('paso1Box').classList.remove('hidden');
+  document.getElementById('fNombre').value = yaPostulado.nombre || "";
+  document.getElementById('fEdad').value = yaPostulado.edad || "";
+  document.getElementById('fCorreo').value = yaPostulado.correo || "";
+  document.getElementById('fWhats').value = yaPostulado.whatsapp || "";
+  document.getElementById('fCiudad').value = yaPostulado.ciudad || "";
+  document.getElementById('fExperiencia').value = yaPostulado.experiencia || "";
+  document.getElementById('fMotivo').value = yaPostulado.motivo || "";
+  document.getElementById('fHoras').value = yaPostulado.horas || "";
+  elegirRol(yaPostulado.rol);
+}
+
+function irPaso2(){
+  let nombre = document.getElementById('fNombre').value.trim();
+  let edad = document.getElementById('fEdad').value.trim();
+  let correo = document.getElementById('fCorreo').value.trim();
+  let whats = document.getElementById('fWhats').value.trim();
+  if(!nombre || !edad || !correo || !whats){
+    document.getElementById('msgPaso1').innerText = "❌ Te falta llenar: Nombre, Edad, Correo y WhatsApp son obligatorios";
+    alert("❌ Te falta llenar Nombre, Edad, Correo y WhatsApp");
+    return;
+  }
+  document.getElementById('paso1Box').classList.add('hidden');
+  document.getElementById('paso2Box').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+function volverPaso1(){
+  document.getElementById('paso2Box').classList.add('hidden');
+  document.getElementById('paso1Box').classList.remove('hidden');
+}
+function elegirRol(rol){
+  rolElegido = rol;
+  document.getElementById('rolSoporte').classList.remove('seleccionado');
+  document.getElementById('rolResenas').classList.remove('seleccionado');
+  document.getElementById('rolModerador').classList.remove('seleccionado');
+  if(rol === "Soporte") document.getElementById('rolSoporte').classList.add('seleccionado');
+  if(rol === "Reseñas") document.getElementById('rolResenas').classList.add('seleccionado');
+  if(rol === "Moderador") document.getElementById('rolModerador').classList.add('seleccionado');
+  document.getElementById('rolElegido').innerText = "✅ Elegiste: " + rol;
+}
+
+async function enviarTodo(){
+  if(!rolElegido){
+    alert("❌ Primero escoge qué quieres ser: Soporte, Reseñas o Moderador");
+    return;
+  }
+  let datos = {
+    uid: userActual.uid,
+    nombre: document.getElementById('fNombre').value.trim(),
+    edad: document.getElementById('fEdad').value.trim(),
+    correo: document.getElementById('fCorreo').value.trim(),
+    whatsapp: document.getElementById('fWhats').value.trim(),
+    ciudad: document.getElementById('fCiudad').value.trim(),
+    experiencia: document.getElementById('fExperiencia').value.trim(),
+    motivo: document.getElementById('fMotivo').value.trim(),
+    horas: document.getElementById('fHoras').value,
+    rol: rolElegido,
+    diamantes: datosUsuario ? (datosUsuario.diamantes || 0) : 0,
+    vip: datosUsuario ? !!datosUsuario.vip : false,
+    estado: "Pendiente",
+    mensajeAdmin: "",
+    fecha: Date.now()
+  };
+  if(!confirm("¿Seguro que quieres enviar todo?\n\nNombre: " + datos.nombre + "\nRol: " + datos.rol + "\nCorreo: " + datos.correo)){
+    return;
+  }
+  // Guardar nombre/whatsapp para la próxima vez que se auto-llene
+  await db.collection('usuarios').doc(userActual.uid).set({
+    nombre: datos.nombre,
+    whatsapp: datos.whatsapp,
+    ciudad: datos.ciudad,
+    edad: datos.edad
+  }, {merge:true});
+
+  if(yaPostulado && yaPostulado.id){
+    await db.collection('postulaciones').doc(yaPostulado.id).set(datos);
+  } else {
+    await db.collection('postulaciones').add(datos);
+  }
+
+  // YA NO ABRE GMAIL - Solo se guarda privado y le llega SOLO a correo.html de Moderadores
+  alert("✅ ¡Enviado todo completo!\n\nTu hoja de vida se envió privada.\nSolo los Moderadores la pueden ver en su Correo Privado.\nCuando te acepten o no, te va a aparecer aquí.");
+  location.reload();
+}
+</script>
+</body>
+  </html>
