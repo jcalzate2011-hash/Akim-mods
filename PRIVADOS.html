@@ -50,8 +50,8 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 </div>
 
 <div class="card" id="panelEnviar" style="display:none">
-<h3>✉️ ENVIAR MENSAJE PRIVADO - SOLO TÚ</h3>
-<p style="font-size:12px;color:#bbb;margin:0 0 8px">Busca a la persona, dale a ESCRIBIRLE, escribe y envía. Le llega al instante a su correo. Ellos NO pueden contestarte.</p>
+<h3>✉️ ENVIAR MENSAJE PRIVADO - SOLO TÚ Y MODERADORES</h3>
+<p style="font-size:12px;color:#bbb;margin:0 0 8px">Busca a la persona, dale a ESCRIBIRLE, escribe y envía. Le llega al instante a su correo. Le puedes enviar a CUALQUIER persona, sea usuario, moderador o admin. Ellos NO pueden contestarte.</p>
 <input id="buscarUserPriv" placeholder="🔍 Buscar por nombre, correo o ID..." oninput="filtrarPriv()">
 <div id="seleccionadoBox" style="display:none" class="seleccionado">Para: <span id="paraNombre">---</span></div>
 <textarea id="textoPrivado" placeholder="Escribe tu mensaje privado aquí... Ej: Hola, ganaste el sorteo, habla conmigo..." rows="3"></textarea>
@@ -90,14 +90,21 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let userActual = null;
-let misDatos = {nombre:"", admin:false};
+let misDatos = {nombre:"", admin:false, moderador:false};
 let todosUsuarios = [];
 let usuarioSeleccionado = null;
+
 function irACorreo(){
   document.getElementById('cardCorreo').scrollIntoView({behavior:'smooth'});
   if(!userActual) return;
-  db.collection('mensajes_privados').where('paraUid','==',userActual.uid).where('leido','==',false).get().then(snap=>{
-    snap.forEach(d=>{ db.collection('mensajes_privados').doc(d.id).update({leido:true}); });
+  // CORREGIDO: sin doble where, así sí marca como leído
+  db.collection('mensajes_privados').where('paraUid','==',userActual.uid).get().then(snap=>{
+    snap.forEach(d=>{
+      let m = d.data();
+      if(m.leido === false){
+        db.collection('mensajes_privados').doc(d.id).update({leido:true});
+      }
+    });
   });
 }
 function seleccionarUsuario(uid, nombre){
@@ -122,7 +129,11 @@ function mostrarParaEnviar(lista){
     let div=document.createElement('div');
     div.className="userRow"; div.id="row-"+u.id;
     let badge = u.verificado ? ' <span class="verificado">✓</span>' : '';
-    div.innerHTML='<div class="nombreU">'+(u.nombre||"Sin nombre")+badge+'</div><div class="emailU">'+(u.email||"")+'</div><button class="btnAzul" onclick="seleccionarUsuario(\''+u.id+'\', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">✉️ ESCRIBIRLE PRIVADO</button>';
+    let rol = "";
+    if(u.admin) rol = " 👑 ADMIN";
+    else if(u.moderador) rol = " 🛡️ MODERADOR";
+    else rol = " 👤 Usuario";
+    div.innerHTML='<div class="nombreU">'+(u.nombre||"Sin nombre")+badge+rol+'</div><div class="emailU">'+(u.email||"")+'</div><button class="btnAzul" onclick="seleccionarUsuario(\''+u.id+'\', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">✉️ ESCRIBIRLE PRIVADO</button>';
     box.appendChild(div);
   });
 }
@@ -145,17 +156,25 @@ async function enviarPrivado(){
     document.getElementById('textoPrivado').value="";
     document.getElementById('msgEnviado').style.color="#00ff88";
     document.getElementById('msgEnviado').innerText="✅ ¡Mensaje enviado a "+usuarioSeleccionado.nombre+"! Ya le llegó a su correo.";
-  }catch(e){ alert("Error: "+e.message); }
+  }catch(e){ alert("Error al enviar: "+e.message); }
 }
 function cargarInbox(){
-  db.collection('mensajes_privados').where('paraUid','==',userActual.uid).orderBy('fecha','desc').onSnapshot((snap)=>{
+  // CORREGIDO: sin orderBy, para que Firebase no pida índice y sí lleguen en vivo
+  db.collection('mensajes_privados').where('paraUid','==',userActual.uid).onSnapshot((snap)=>{
     let box=document.getElementById('listaMensajes');
     let badge=document.getElementById('badgeCorreo');
     let noLeidos=0;
     if(snap.empty){ box.innerHTML='<p class="noMsg">📩 No tienes mensajes todavía...</p>'; badge.style.display="none"; return; }
+    let lista = [];
+    snap.forEach(doc=>{ let m=doc.data(); m.id=doc.id; lista.push(m); });
+    // Ordenamos aquí mismo, del más nuevo al más viejo
+    lista.sort((a,b)=>{
+      let fa = a.fecha ? a.fecha.toMillis() : 0;
+      let fb = b.fecha ? b.fecha.toMillis() : 0;
+      return fb - fa;
+    });
     box.innerHTML="";
-    snap.forEach(doc=>{
-      let m=doc.data();
+    lista.forEach(m=>{
       if(!m.leido) noLeidos++;
       let fechaTxt="Ahora mismo";
       if(m.fecha && m.fecha.toDate){ fechaTxt=m.fecha.toDate().toLocaleString(); }
@@ -166,6 +185,8 @@ function cargarInbox(){
     });
     if(noLeidos>0){ badge.style.display="flex"; badge.innerText=noLeidos; }
     else { badge.style.display="none"; }
+  }, (error)=>{
+    document.getElementById('listaMensajes').innerHTML='<p class="noMsg">Error: '+error.message+'</p>';
   });
 }
 function cargarUsuariosParaEnviar(){
@@ -175,16 +196,19 @@ function cargarUsuariosParaEnviar(){
     filtrarPriv();
   });
 }
+function puedeEnviar(){
+  return misDatos.admin === true || misDatos.moderador === true;
+}
 auth.onAuthStateChanged((user)=>{
   if(user){
     userActual=user;
     db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
       if(doc.exists){
         misDatos=doc.data();
-        if(misDatos.admin){
+        if(puedeEnviar()){
           document.getElementById('panelEnviar').style.display="block";
           document.getElementById('tituloPrincipal').innerText="✉️ ENVIAR PRIVADOS + 📩 MI CORREO";
-          document.getElementById('subTitulo').innerText="Tú eres el único que puede enviar. Ellos solo reciben.";
+          document.getElementById('subTitulo').innerText="Tú eres moderador/admin, eres el único que puede enviar. Ellos solo reciben. Les puedes enviar a CUALQUIER persona.";
           cargarUsuariosParaEnviar();
         } else {
           document.getElementById('panelEnviar').style.display="none";
