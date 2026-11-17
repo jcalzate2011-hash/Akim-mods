@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AKIM MODS - Ranking</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800&display=swap');*{box-sizing:border-box}body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}.topbar{background:#000;border-bottom:3px solid #ff6b00;padding:10px 12px;display:flex;justify-content:space-between}.logo{font-family:'Orbitron';font-weight:900}.logo span{color:#ff6b00}.card{margin:14px;background:#1f1f2e;border:1px solid #333;padding:16px}.card h3{font-family:'Orbitron';color:#ffd700;margin:0 0 10px;text-align:center;font-size:22px}.row{display:flex;justify-content:space-between;align-items:center;background:#1c1c26;border:1px solid #333;padding:12px;margin-bottom:8px}.row.top1{border:2px solid #ffd700;background:#2a2300}.row.yo{border:2px solid #00e5ff;background:#002a33}.btns{display:flex;gap:8px;padding:0 14px 20px;flex-wrap:wrap}.btns button{flex:1;padding:12px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer}.miBox{background:#2a2300;border:2px solid #ffd700;padding:14px;margin:14px;text-align:center}.miBox b{font-size:18px}.vipActivo{color:#00ff88}.vipNo{color:#ff4444}</style></head>
+<body>
+<div class="topbar"><div class="logo">AKIM<span> MODS</span> - RANKING</div><div id="miNombreTop">👤</div></div>
+
+<div class="miBox" id="miBox">
+<div>👤 <b id="miNombre2">Cargando...</b></div>
+<div style="margin-top:8px">💎 <b id="misDiamantes">0</b> diamantes</div>
+<div style="margin-top:6px" id="miVipTexto">VIP: Cargando...</div>
+<div style="margin-top:6px;font-size:12px;color:#bbb" id="miPuestoTexto">Tu puesto: Cargando...</div>
+</div>
+
+<div class="card"><h3>🏆 RANKING</h3><div id="listaTop">Cargando ranking...</div></div>
+<div class="btns"><button onclick="location.href='index.html'">🏠 Principal</button><button onclick="location.href='tienda.html'">🛒 Tienda</button><button onclick="location.href='ANUNCIOS.html'">📢 Anuncios</button><button onclick="location.href='SOPORTE.html'">🆘 Soporte</button></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c"};
+firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.firestore();
+let userActual=null, misDatos={};
+function textoVip(){
+if(!misDatos.vip) return '<span class="vipNo">❌ VIP: NO ACTIVO</span>';
+if(!misDatos.vipHasta||misDatos.vipHasta==0) return '<span class="vipActivo">👑 VIP: ACTIVO - PERMANENTE</span>';
+let d=misDatos.vipHasta-Date.now();
+if(d<=0) return '<span class="vipNo">❌ VIP: VENCIDO</span>';
+return '<span class="vipActivo">👑 VIP: ACTIVO - Te quedan '+Math.floor(d/86400000)+' días</span>';
+}
+function cargarRanking(){
+db.collection('usuarios').onSnapshot(s=>{
+let l=[];s.forEach(d=>{let x=d.data();x.id=d.id;if(!x.baneado) l.push(x)});
+l.sort((a,b)=>(b.diamantes||0)-(a.diamantes||0));
+let box=document.getElementById('listaTop');box.innerHTML="";
+l.slice(0,50).forEach((u,i)=>{
+let medalla=i==0?"🥇":i==1?"🥈":i==2?"🥉":"#"+(i+1);
+let rol=u.admin?" 👑 ADMIN":u.moderador?" 🛡️ MOD":u.vip?" 👑 VIP":"";
+let esYo=u.id==userActual.uid?" yo":"";
+let vipMini=u.vip?" <span style='font-size:11px;color:#00ff88'>• VIP ACTIVO</span>":" <span style='font-size:11px;color:#ff4444'>• Sin VIP</span>";
+box.innerHTML+=`<div class="row ${i==0?"top1":""}${esYo}"><div><b>${medalla} ${u.nombre||"Jugador"}${rol}</b><br><span style="font-size:11px;color:#999">${vipMini}</span></div><div><b>💎 ${u.diamantes||0}</b></div></div>`;
+});
+let miIndex=l.findIndex(u=>u.id==userActual.uid);
+if(miIndex>=0){document.getElementById('miPuestoTexto').innerHTML="Tu puesto: <b>#"+(miIndex+1)+"</b> de "+l.length+" usuarios";}
+});
+}
+auth.onAuthStateChanged(u=>{if(u){userActual=u;db.collection('usuarios').doc(u.uid).onSnapshot(d=>{if(d.exists){misDatos=d.data();
+document.getElementById('miNombreTop').innerText="👤 "+(misDatos.nombre||"");
+document.getElementById('miNombre2').innerText=misDatos.nombre||"Jugador";
+document.getElementById('misDiamantes').innerText=misDatos.diamantes||0;
+document.getElementById('miVipTexto').innerHTML=textoVip();
+cargarRanking();
+}});}else{document.getElementById('miBox').innerHTML="Inicia sesión para ver tu ranking.";}});
+</script></body></html>
