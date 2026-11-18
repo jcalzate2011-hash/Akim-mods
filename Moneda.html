@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM - Ganaste una moneda</title>
+<style>
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center;padding:20px;padding-top:60px}
+.card{background:#15151f;margin:0 auto;max-width:400px;border-radius:20px;padding:25px;border:1px solid #ffd700}
+.monedaGrande{width:110px;height:110px;border-radius:50%;background:#ffd700;color:#000;display:flex;align-items:center;justify-content:center;font-size:65px;margin:15px auto;border:5px solid #fff;box-shadow:0 0 25px #ffd700}
+h1{margin:10px 0}
+p{color:#ccc;font-size:15px;line-height:1.5}
+.btn{width:100%;padding:15px;margin:10px 0 0;border:none;border-radius:14px;font-weight:900;cursor:pointer;font-size:17px}
+.btn-gold{background:#ffd700;color:#000}
+.btn-dark{background:#2a2a3a;color:#fff}
+.saldo{background:#222231;padding:12px;border-radius:12px;margin:15px 0;font-size:16px}
+.saldo b{color:#ffd700;font-size:20px}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="monedaGrande">🪙</div>
+<h1 id="titulo">Cargando...</h1>
+<p id="mensaje">Espera un momento, estamos dando tu moneda...</p>
+<div class="saldo" id="saldoBox" style="display:none">Tienes ahora: <b id="totalMonedas">0</b> 🪙</div>
+<button class="btn btn-gold" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PÁGINA PRINSIPAL.html'">⬅️ Volver a Página Principal</button>
+<button class="btn btn-dark" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PÁGINA PRINSIPAL.html'">🏠 Ir a Inicio</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c",measurementId:"G-5Y8JCL7G79"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.firestore();
+
+auth.onAuthStateChanged(async(user)=>{
+  if(!user){
+    document.getElementById('titulo').innerText="Tienes que entrar primero";
+    document.getElementById('mensaje').innerText="Inicia sesión en la Página Principal y luego vuelve a entrar por el link para que te den tu 🪙.";
+    return;
+  }
+  // Para que no le den 2 veces si recarga la página en la misma entrada
+  if(sessionStorage.getItem('monedaYaDada')==='si'){
+    document.getElementById('titulo').innerText="Ya te dimos tu 🪙";
+    document.getElementById('mensaje').innerText="En esta entrada ya te dimos tu moneda. Vuelve a la Página Principal.";
+    try{
+      let doc=await db.collection('usuarios').doc(user.uid).get();
+      if(doc.exists){
+        let total=doc.data().monedas||0;
+        document.getElementById('saldoBox').style.display='block';
+        document.getElementById('totalMonedas').innerText=total;
+      }
+    }catch(e){}
+    return;
+  }
+
+  try{
+    let ref=db.collection('usuarios').doc(user.uid);
+    await ref.set({monedas: firebase.firestore.FieldValue.increment(1)}, {merge:true});
+    sessionStorage.setItem('monedaYaDada','si');
+    let doc=await ref.get();
+    let total=doc.data().monedas||1;
+    document.getElementById('titulo').innerText="¡Conseguiste un 🪙!";
+    document.getElementById('mensaje').innerText="Te dimos 1 🪙 solo por entrar. Ya se sumó a tu cuenta.";
+    document.getElementById('saldoBox').style.display='block';
+    document.getElementById('totalMonedas').innerText=total;
+  }catch(e){
+    document.getElementById('titulo').innerText="Error";
+    document.getElementById('mensaje').innerText="No se pudo dar la moneda: "+e.message;
+  }
+});
+</script>
+</body>
+</html>
