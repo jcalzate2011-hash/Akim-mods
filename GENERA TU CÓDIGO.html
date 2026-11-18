@@ -23,17 +23,11 @@ body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center;
 <div style="font-size:40px">🎁</div>
 <h1 class="titulo">GENERA TU CÓDIGO</h1>
 <p class="sub" id="textoEstado">Entraste y ya te damos tu código. Sin escribir nada.</p>
-
-<div id="cajaCodigo" class="codigoBox">
-<b id="codigoTexto">Cargando...</b>
-<span id="premioTexto">...</span>
-</div>
-
+<div class="codigoBox"><b id="codigoTexto">Cargando...</b><span id="premioTexto">...</span></div>
 <button class="btn btn-gold" id="btnCopiar" onclick="copiarCodigo()">📋 Copiar código</button>
 <button class="btn btn-pink" onclick="location.href='PÁGINA PRINSIPAL.html'">Ir a canjearlo en la Principal ➡️</button>
 <button class="btn btn-dark" onclick="location.href='PÁGINA PRINSIPAL.html'">🏠 Volver a Inicio</button>
 </div>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -43,64 +37,67 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();const db=firebase.firestore();
 const TODOS=[
 {id:"AKIM15",texto:"Akim - 15",premio:"300 diamantes",peso:4},
+{id:"AKIM12",texto:"Akim - 12",premio:"300 diamantes",peso:4},
+{id:"AKIMDOMINA",texto:"Akim - domina",premio:"500 diamantes",peso:2},
 {id:"AKIMELMEJOR",texto:"Akim - el mejor",premio:"250 diamantes",peso:4},
 {id:"SEXY",texto:"Sexy",premio:"100 diamantes",peso:4},
-{id:"AKIMDOMINA",texto:"Akim - domina",premio:"500 diamantes",peso:2},
-{id:"TXT",texto:"TXT",premio:"1 cripto",peso:1}
+{id:"TXT",texto:"TXT",premio:"1 cripto",peso:1},
+{id:"AKIMFUEGO",texto:"Akim - Fuego",premio:"100 diamantes",peso:4},
+{id:"AKIMLEYENDA",texto:"Akim - Leyenda",premio:"500 diamantes",peso:2},
+{id:"AKIMREY",texto:"Akim - Rey",premio:"300 diamantes",peso:4},
+{id:"AKIMGOLD",texto:"Akim - Gold",premio:"250 diamantes",peso:4},
+{id:"AKIMSTAR",texto:"Akim - Star",premio:"150 diamantes",peso:4},
+{id:"AKIMTOP",texto:"Akim - Top",premio:"200 diamantes",peso:4},
+{id:"AKIMPRO",texto:"Akim - Pro",premio:"400 diamantes",peso:3},
+{id:"AKIMVIP",texto:"Akim - Vip",premio:"350 diamantes",peso:3},
+{id:"AKIMLOCO",texto:"Akim - Loco",premio:"50 diamantes",peso:4},
+{id:"AKIMCRACK",texto:"Akim - Crack",premio:"600 diamantes",peso:2},
+{id:"AKIMBOSS",texto:"Akim - Boss",premio:"450 diamantes",peso:2},
+{id:"AKIMNUBE",texto:"Akim - Nube",premio:"80 diamantes",peso:4},
+{id:"AKIMRAYO",texto:"Akim - Rayo",premio:"120 diamantes",peso:4},
+{id:"AKIMDIAMANTE",texto:"Akim - Diamante",premio:"1000 diamantes",peso:1},
+{id:"AKIMORO",texto:"Akim - Oro",premio:"180 diamantes",peso:4},
+{id:"AKIMPLATA",texto:"Akim - Plata",premio:"90 diamantes",peso:4},
+{id:"AKIMBRONCE",texto:"Akim - Bronce",premio:"60 diamantes",peso:4},
+{id:"AKIMFANTASMA",texto:"Akim - Fantasma",premio:"700 diamantes",peso:2},
+{id:"AKIMSOMBRA",texto:"Akim - Sombra",premio:"550 diamantes",peso:2},
+{id:"AKIMLUZ",texto:"Akim - Luz",premio:"130 diamantes",peso:4},
+{id:"AKIMOSCURO",texto:"Akim - Oscuro",premio:"380 diamantes",peso:3},
+{id:"AKIMFURIA",texto:"Akim - Furia",premio:"420 diamantes",peso:3},
+{id:"AKIMTRUENO",texto:"Akim - Trueno",premio:"220 diamantes",peso:4},
+{id:"AKIMTORMENTA",texto:"Akim - Tormenta",premio:"480 diamantes",peso:2},
+{id:"AKIMGIGANTE",texto:"Akim - Gigante",premio:"800 diamantes",peso:1},
+{id:"AKIMMINI",texto:"Akim - Mini",premio:"40 diamantes",peso:4},
+{id:"AKIMMAX",texto:"Akim - Max",premio:"650 diamantes",peso:2},
+{id:"AKIMULTRA",texto:"Akim - Ultra",premio:"900 diamantes",peso:1},
+{id:"AKIMMEGA",texto:"Akim - Mega",premio:"750 diamantes",peso:2},
+{id:"AKIMSUPER",texto:"Akim - Super",premio:"280 diamantes",peso:4},
+{id:"AKIMHEROE",texto:"Akim - Heroe",premio:"320 diamantes",peso:3},
+{id:"AKIMGUERRERO",texto:"Akim - Guerrero",premio:"360 diamantes",peso:3},
+{id:"AKIMCAZADOR",texto:"Akim - Cazador",premio:"200 diamantes",peso:4},
+{id:"AKIMNINJA",texto:"Akim - Ninja",premio:"500 diamantes",peso:2},
+{id:"AKIMPIRATA",texto:"Akim - Pirata",premio:"150 diamantes",peso:4},
+{id:"AKIMMAGO",texto:"Akim - Mago",premio:"300 diamantes",peso:4},
+{id:"AKIMDRAGON",texto:"Akim - Dragon",premio:"1200 diamantes",peso:1},
+{id:"AKIMFENIX",texto:"Akim - Fenix",premio:"1000 diamantes",peso:1},
+{id:"AKIMAGUILA",texto:"Akim - Aguila",premio:"260 diamantes",peso:4},
+{id:"AKIMLEON",texto:"Akim - Leon",premio:"400 diamantes",peso:3},
+{id:"AKIMTIGRE",texto:"Akim - Tigre",premio:"340 diamantes",peso:3},
+{id:"AKIMLOBO",texto:"Akim - Lobo",premio:"290 diamantes",peso:4},
+{id:"AKIMZORRO",texto:"Akim - Zorro",premio:"110 diamantes",peso:4},
+{id:"AKIMGATO",texto:"Akim - Gato",premio:"70 diamantes",peso:4},
+{id:"AKIMPERRO",texto:"Akim - Perro",premio:"70 diamantes",peso:4},
+{id:"AKIMFIESTA",texto:"Akim - Fiesta",premio:"180 diamantes",peso:4},
+{id:"AKIMVERANO",texto:"Akim - Verano",premio:"160 diamantes",peso:4},
+{id:"AKIMINVIERNO",texto:"Akim - Invierno",premio:"190 diamantes",peso:4},
+{id:"AKIM2026",texto:"Akim - 2026",premio:"50 diamantes",peso:4},
+{id:"DTXT",texto:"DTXT",premio:"1 cripto",peso:1}
 ];
 let codigoActual="";
-function elegirAlAzar(disponibles){
-  let total=0;
-  disponibles.forEach(c=> total+=c.peso);
-  let r=Math.random()*total;
-  for(let c of disponibles){
-    if(r < c.peso) return c;
-    r-=c.peso;
-  }
-  return disponibles[disponibles.length-1];
-}
-async function generar(){
-  let user=auth.currentUser;
-  if(!user){document.getElementById('codigoTexto').innerText="Inicia sesión primero";document.getElementById('premioTexto').innerText="Entra a la Principal e inicia sesión";return;}
-  let ref=db.collection('usuarios').doc(user.uid);
-  let doc=await ref.get();
-  let data=doc.exists?doc.data():{};
-  let generados=data.codigosGenerados||[];
-  let usados=data.codigosUsados||[];
-  if(generados.length>=TODOS.length){
-    document.getElementById('textoEstado').innerText="Códigos promocionales completados, ya no hay más códigos promocionales.";
-    document.getElementById('codigoTexto').innerText="✅ COMPLETADO";
-    document.getElementById('premioTexto').innerText="Ya te salieron todos los códigos";
-    document.getElementById('btnCopiar').style.display="none";
-    return;
-  }
-  let pendientes=generados.filter(id=>!usados.includes(id));
-  let elegido=null;
-  if(pendientes.length>0){
-    let ultimoId=pendientes[pendientes.length-1];
-    elegido=TODOS.find(c=>c.id===ultimoId);
-    document.getElementById('textoEstado').innerText="Este es tu código pendiente. Canjéalo primero.";
-  }else{
-    let disponibles=TODOS.filter(c=>!generados.includes(c.id));
-    elegido=elegirAlAzar(disponibles);
-    generados.push(elegido.id);
-    await ref.set({codigosGenerados:firebase.firestore.FieldValue.arrayUnion(elegido.id)},{merge:true});
-    document.getElementById('textoEstado').innerText="¡Te salió un código! Cópialo y canjéalo.";
-  }
-  codigoActual=elegido.texto;
-  document.getElementById('codigoTexto').innerText=elegido.texto;
-  document.getElementById('premioTexto').innerText="Premio: "+elegido.premio;
-}
-async function copiarCodigo(){
-  if(!codigoActual){return;}
-  try{await navigator.clipboard.writeText(codigoActual);alert("✅ Código copiado: "+codigoActual);}catch(e){
-    let ta=document.createElement("textarea");ta.value=codigoActual;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();alert("✅ Código copiado: "+codigoActual);
-  }
-}
-auth.onAuthStateChanged(async(user)=>{
-  if(!user){document.getElementById('codigoTexto').innerText="Inicia sesión";document.getElementById('premioTexto').innerText="Ve a la Principal e inicia sesión";return;}
-  await generar();
-});
+function elegirAlAzar(disponibles){let total=0;disponibles.forEach(c=>total+=c.peso);let r=Math.random()*total;for(let c of disponibles){if(r<c.peso) return c;r-=c.peso;}return disponibles[disponibles.length-1];}
+async function generar(){let user=auth.currentUser;if(!user){document.getElementById('codigoTexto').innerText="Inicia sesión primero";document.getElementById('premioTexto').innerText="Entra a la Principal e inicia sesión";return;}let ref=db.collection('usuarios').doc(user.uid);let doc=await ref.get();let data=doc.exists?doc.data():{};let generados=data.codigosGenerados||[];let usados=data.codigosUsados||[];if(generados.length>=TODOS.length){document.getElementById('textoEstado').innerText="Códigos promocionales completados, ya no hay más códigos promocionales.";document.getElementById('codigoTexto').innerText="✅ COMPLETADO";document.getElementById('premioTexto').innerText="Ya te salieron todos los códigos";document.getElementById('btnCopiar').style.display="none";return;}let pendientes=generados.filter(id=>!usados.includes(id));let elegido=null;if(pendientes.length>0){let ultimoId=pendientes[pendientes.length-1];elegido=TODOS.find(c=>c.id===ultimoId);document.getElementById('textoEstado').innerText="Este es tu código pendiente. Canjéalo primero.";}else{let disponibles=TODOS.filter(c=>!generados.includes(c.id));elegido=elegirAlAzar(disponibles);await ref.set({codigosGenerados:firebase.firestore.FieldValue.arrayUnion(elegido.id)},{merge:true});document.getElementById('textoEstado').innerText="¡Te salió un código! Cópialo y canjéalo.";}codigoActual=elegido.texto;document.getElementById('codigoTexto').innerText=elegido.texto;document.getElementById('premioTexto').innerText="Premio: "+elegido.premio;}
+async function copiarCodigo(){if(!codigoActual){return;}try{await navigator.clipboard.writeText(codigoActual);alert("✅ Código copiado: "+codigoActual);}catch(e){let ta=document.createElement("textarea");ta.value=codigoActual;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();alert("✅ Código copiado: "+codigoActual);}}
+auth.onAuthStateChanged(async(user)=>{if(!user){document.getElementById('codigoTexto').innerText="Inicia sesión";document.getElementById('premioTexto').innerText="Ve a la Principal e inicia sesión";return;}await generar();});
 </script>
 </body>
 </html>
