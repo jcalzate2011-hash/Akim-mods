@@ -81,6 +81,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 
 <div class="vipPanel">
 <p><b>Correo:</b> <span id="userEmail">---</span></p>
+<p><b>🆔 ID:</b> <span id="idCortoBar" style="color:#ffd700;font-weight:900;font-size:16px">---</span></p>
 <p><b>VIP:</b> <span id="userVip" class="vipNo">NO VIP</span> <span id="verificadoBar" style="display:none;color:#0095F6;font-weight:900">• ✅ VERIFICADO</span></p>
 <p class="vipTime" id="vipTiempo">Cargando...</p>
 <p><b>💎 Diamantes:</b> <span id="diamantesBar" style="color:#ffd700">0</span></p>
@@ -160,6 +161,7 @@ let datos = {diamantes:0, vip:false, vipHasta:0, admin:false, nombre:"", bio:"",
 let colorElegido = "#ff6b00";
 let todosUsuarios = [];
 let usuariosCargados = false;
+let miIDcorto = null;
 function elegirColor(el){
   document.querySelectorAll('.colorOpt').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
@@ -204,6 +206,34 @@ function actualizarUI(){
     else document.getElementById('vipTiempo').innerText = "⏳ Te quedan " + horas + "h " + minutos + "m de VIP";
   } else {
     document.getElementById('vipTiempo').innerText = "Sin VIP - Ve a la tienda a conseguirlo";
+  }
+}
+// === ID CORTO 1001, 1002, 1003... ===
+async function asignarID(uid){
+  try{
+    let ref = db.collection('usuarios').doc(uid);
+    let doc = await ref.get();
+    let d = doc.exists ? doc.data() : {};
+    if(d.idNumero){ miIDcorto = d.idNumero; return d.idNumero; }
+    let nuevoID = 1001;
+    await db.runTransaction(async(tx)=>{
+      let contadorRef = db.collection('contadores').doc('usuarios');
+      let contadorDoc = await tx.get(contadorRef);
+      let total = 0;
+      if(contadorDoc.exists){ total = contadorDoc.data().total || 0; }
+      total = total + 1;
+      nuevoID = 1000 + total;
+      tx.set(contadorRef, {total: total}, {merge:true});
+      tx.set(ref, {idNumero: nuevoID}, {merge:true});
+    });
+    miIDcorto = nuevoID;
+    return nuevoID;
+  }catch(e){ return miIDcorto || null; }
+}
+function mostrarMiID(){
+  if(miIDcorto){
+    document.getElementById('miIdTexto').innerText = miIDcorto;
+    document.getElementById('idCortoBar').innerText = miIDcorto;
   }
 }
 async function guardarPerfil(){
@@ -269,13 +299,13 @@ async function desbanearUsuario(uid, nombre){
   }catch(e){ alert("Error: " + e.message); }
 }
 function copiarId(id){
-  if(navigator.clipboard){ navigator.clipboard.writeText(id).then(()=>alert("✅ ID copiado: " + id)); }
+  if(navigator.clipboard){ navigator.clipboard.writeText(String(id)).then(()=>alert("✅ ID copiado: " + id)); }
   else { let t = document.createElement('textarea'); t.value = id; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); alert("✅ ID copiado"); }
 }
-function copiarMiId(){ if(userActual) copiarId(userActual.uid); }
+function copiarMiId(){ if(miIDcorto) copiarId(miIDcorto); else if(userActual) copiarId(userActual.uid); }
 function filtrarUsuarios(){
   let texto = document.getElementById('buscarUser').value.toLowerCase();
-  let filtrados = todosUsuarios.filter(u => (u.nombre||"").toLowerCase().includes(texto) || (u.email||"").toLowerCase().includes(texto) || (u.id||"").toLowerCase().includes(texto));
+  let filtrados = todosUsuarios.filter(u => (u.nombre||"").toLowerCase().includes(texto) || (u.email||"").toLowerCase().includes(texto) || (u.id||"").toLowerCase().includes(texto) || String(u.idNumero||"").includes(texto));
   mostrarLista(filtrados);
 }
 function mostrarLista(lista){
@@ -291,7 +321,8 @@ function mostrarLista(lista){
     let badge = esVerif ? '<span class="verificado verificado-peq">✓</span>' : '';
     let badgeBan = esBan ? '<span style="background:#ff0000;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px">🚫 BANEADO</span>' : '';
     let btnBan = esBan ? '<button class="btnUnban" onclick="desbanearUsuario(\''+u.id+'\', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">✅ DESBANEAR</button>' : '<button class="btnBan" onclick="banearUsuario(\''+u.id+'\', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">🚫 BANEAR</button>';
-    div.innerHTML = '<div class="nombreU">'+ (u.nombre||"Sin nombre") +' '+ badge +' '+ badgeBan +'</div><div class="emailU">'+ (u.email||"") +'</div><div class="tags">'+ esVip +' • 💎 '+(u.diamantes||0)+' • '+(esVerif?"✅ VERIFICADO":"Sin verificar")+' • '+(esBan?"🚫 BANEADO":"Sin ban")+'</div><div class="idBox"><code>'+u.id+'</code><button class="btnCopy" onclick="copiarId(\''+u.id+'\')">📋 COPIAR ID</button></div><button class="btnV '+(esVerif?"no":"si")+'" onclick="cambiarVerificado(\''+u.id+'\', '+esVerif+', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">'+ (esVerif?"❌ Quitar verificado":"✅ Verificar") +'</button>' + btnBan;
+    let idMostrar = u.idNumero ? u.idNumero : u.id;
+    div.innerHTML = '<div class="nombreU">'+ (u.nombre||"Sin nombre") +' '+ badge +' '+ badgeBan +'</div><div class="emailU">'+ (u.email||"") +'</div><div class="tags">🆔 ID: ' + idMostrar + ' • '+ esVip +' • 💎 '+(u.diamantes||0)+' • '+(esVerif?"✅ VERIFICADO":"Sin verificar")+' • '+(esBan?"🚫 BANEADO":"Sin ban")+'</div><div class="idBox"><code>🆔 '+idMostrar+'</code><button class="btnCopy" onclick="copiarId(\''+idMostrar+'\')">📋 COPIAR ID</button></div><button class="btnV '+(esVerif?"no":"si")+'" onclick="cambiarVerificado(\''+u.id+'\', '+esVerif+', \''+(u.nombre||"Jugador").replace(/\'/g,"")+'\')">'+ (esVerif?"❌ Quitar verificado":"✅ Verificar") +'</button>' + btnBan;
     box.appendChild(div);
   });
 }
@@ -319,12 +350,15 @@ auth.onAuthStateChanged(async (user)=>{
     userActual = user;
     document.getElementById('userEmail').innerText = user.email;
     document.getElementById('emailPreview').innerText = user.email;
-    document.getElementById('miIdTexto').innerText = user.uid;
     document.getElementById('msgNoLogin').innerText = "";
     escucharCorreito();
+    // Asignar ID corto 1001, 1002...
+    await asignarID(user.uid);
+    mostrarMiID();
     db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
       if(doc.exists){
         datos = doc.data();
+        if(datos.idNumero){ miIDcorto = datos.idNumero; mostrarMiID(); }
         if(datos.vipHasta===undefined) datos.vipHasta=0;
         if(datos.diamantes===undefined) datos.diamantes=0;
         if(!datos.nombre) datos.nombre = user.email.split('@')[0];
