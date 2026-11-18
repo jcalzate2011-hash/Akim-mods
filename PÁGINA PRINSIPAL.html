@@ -15,6 +15,9 @@ header{position:fixed;top:0;left:0;right:0;padding:16px;background:linear-gradie
 .nombre small{font-size:13px;color:#eee;display:block;margin-top:2px}
 .nombre span{font-size:11px;background:#fff;color:#000;padding:3px 8px;border-radius:20px;font-weight:800;display:inline-block;margin-top:4px}
 .cargando{font-size:12px;color:#ddd;flex-shrink:0;text-align:right}
+.activosTop{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.35);padding:5px 10px;border-radius:999px;margin-top:4px;justify-content:flex-end}
+.puntoVerde{width:10px;height:10px;border-radius:50%;background:#00ff88;box-shadow:0 0 8px #00ff88;flex-shrink:0}
+.activosTop b{font-size:14px;color:#fff;white-space:nowrap}
 .monedasTop{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.35);padding:5px 10px;border-radius:999px;margin-top:4px}
 .monedaCirculo{width:24px;height:24px;border-radius:50%;background:#ffd700;color:#000;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;border:2px solid #fff}
 .monedasTop b{font-size:15px;color:#fff}
@@ -73,6 +76,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 </div>
 <div class="cargando">
 <div id="textoCargando">Cargando...</div>
+<div class="activosTop"><span class="puntoVerde"></span><b id="activosTop">🟢 1 en línea</b></div>
 <div class="monedasTop"><span class="monedaCirculo">🪙</span><b id="monedasTop">0</b></div>
 </div>
 </div>
@@ -158,17 +162,35 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <script>
 const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c",measurementId:"G-5Y8JCL7G79"};
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();const db=firebase.firestore();let datosUsuario=null;
+const auth=firebase.auth();const db=firebase.firestore();let datosUsuario=null;let intervaloPresencia=null;
 async function entrar(){const e=document.getElementById('email').value;const p=document.getElementById('pass').value;try{await auth.signInWithEmailAndPassword(e,p);}catch(err){document.getElementById('msgLogin').innerText=err.message;}}
 async function loginGoogle(){const prov=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(prov);}catch(err){document.getElementById('msgLogin').innerText=err.message;}}
-async function salir(){await auth.signOut();location.reload();}
+async function salir(){try{let u=auth.currentUser;if(u){await db.collection('activos').doc(u.uid).delete();}}catch(e){}await auth.signOut();location.reload();}
 function mostrarVerTodos(btn){document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo');let caja=document.getElementById('verTodosBox');caja.classList.remove('hidden');caja.scrollIntoView({behavior:'smooth'});}
 function cerrarVerTodos(){document.getElementById('verTodosBox').classList.add('hidden');document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));document.getElementById('btnVerTodos').classList.add('activo');}
 function irA(pagina,btn){document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo');document.getElementById('verTodosBox').classList.add('hidden');location.href=pagina;}
 function nombreBonitoRol(rol){if(rol==="Reseñas")return "Reseñero";if(rol==="Moderador")return "Moderador";if(rol==="Soporte")return "Soporte";return rol||"";}
+async function marcarActivo(uid){
+  try{await db.collection('activos').doc(uid).set({ultimo:Date.now(),fecha:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}catch(e){}
+}
+function escucharActivos(){
+  db.collection('activos').onSnapshot(snap=>{
+    let ahora=Date.now();
+    let count=0;
+    snap.forEach(d=>{let data=d.data();if(data.ultimo && (ahora - data.ultimo) < 120000){count++;}});
+    if(count<1) count=1;
+    document.getElementById('activosTop').innerText="🟢 "+count+" en línea";
+  },err=>{});
+}
+escucharActivos();
 auth.onAuthStateChanged(async(user)=>{
 if(!user){document.getElementById('textoCargando').innerText="Sin sesión";document.getElementById('monedasTop').innerText="0";document.getElementById('loginBox').classList.remove('hidden');document.getElementById('nombreHeader').innerText="CREADOR AKIM";document.getElementById('subHeader').innerText="Creador de AKIM 👑";document.getElementById('etiquetaRol').innerText="AKIM";cargarAnuncios();return;}
 document.getElementById('textoCargando').innerText="";document.getElementById('loginBox').classList.add('hidden');document.getElementById('inicioBox').classList.remove('hidden');
+marcarActivo(user.uid);
+if(intervaloPresencia) clearInterval(intervaloPresencia);
+intervaloPresencia=setInterval(()=>{marcarActivo(user.uid);},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden) marcarActivo(user.uid);});
+window.addEventListener('beforeunload',()=>{db.collection('activos').doc(user.uid).delete();});
 try{const doc=await db.collection('usuarios').doc(user.uid).get();if(doc.exists){datosUsuario=doc.data();}else{datosUsuario={diamantes:0,monedas:0,vip:false,admin:false};}}catch(e){datosUsuario={diamantes:0,monedas:0,vip:false,admin:false};}
 let nombre=datosUsuario.nombre||"AKIM OFICIAL";let titulo="CREADOR "+nombre.toUpperCase();if(datosUsuario.admin)titulo="CREADOR "+nombre.toUpperCase();else if(datosUsuario.rolEquipo)titulo=datosUsuario.rolEquipo.toUpperCase()+" "+nombre.toUpperCase();
 document.getElementById('nombreHeader').innerText=titulo;
