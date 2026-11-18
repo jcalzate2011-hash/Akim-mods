@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM - Beneficios VIP</title>
+<style>
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center;padding-bottom:30px;padding-top:95px}
+header{position:fixed;top:0;left:0;right:0;padding:14px 16px;background:linear-gradient(90deg,#ff0055,#7b00ff);z-index:100;display:flex;align-items:center;gap:12px;text-align:left}
+header b{font-size:20px;display:block}
+header small{font-size:13px;color:#eee}
+.btnCerrar{margin-left:auto;background:#fff;color:#000;border:none;border-radius:999px;padding:10px 18px;font-weight:900;font-size:15px;cursor:pointer;flex-shrink:0}
+.btnCerrar:active{transform:scale(0.95)}
+.card{background:#15151f;margin:14px;border-radius:16px;padding:18px;text-align:left}
+.beneficio{display:flex;gap:12px;background:#222231;padding:14px;border-radius:14px;margin:10px 0;align-items:center}
+.beneficio span{font-size:28px;flex-shrink:0}
+.beneficio b{font-size:16px;display:block}
+.beneficio small{color:#aaa;font-size:13px}
+.btn{width:100%;padding:14px;margin:7px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer;font-size:16px}
+.btn-rosa{background:#ff0055;color:#fff}
+.btn-oscuro{background:#2a2a3a;color:#fff}
+.nota{background:#2a1a00;border:1px solid #ffd700;border-radius:12px;padding:12px;font-size:13px;color:#ffdd88;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+<div style="flex:1">
+<b>👑 BENEFICIOS VIP</b>
+<small>Esto es lo que trae ser VIP en AKIM</small>
+</div>
+<button class="btnCerrar" onclick="cerrar()">❌ Cerrar</button>
+</header>
+
+<div class="card">
+<h2 style="text-align:center;margin:5px 0">👑 ¿Qué trae el VIP?</h2>
+<p style="text-align:center;color:#aaa;font-size:14px;margin:5px 0">Solo mira, no tienes que escribir nada aquí:</p>
+
+<div class="beneficio"><span>👑</span><div><b>Placa VIP en tu perfil</b><small>Todos ven que eres VIP en AKIM</small></div></div>
+<div class="beneficio"><span>💎</span><div><b>Más diamantes</b><small>Ganas más diamantes que un usuario normal</small></div></div>
+<div class="beneficio"><span>⚡</span><div><b>Prioridad en todo</b><small>Tus postulaciones y mensajes se revisan primero</small></div></div>
+<div class="beneficio"><span>🎨</span><div><b>Iconos exclusivos</b><small>Solo los VIP pueden usar los iconos especiales</small></div></div>
+<div class="beneficio"><span>🏆</span><div><b>Subes más rápido en el Ranking</b><small>Apareces arriba en el Top</small></div></div>
+<div class="beneficio"><span>📢</span><div><b>Acceso antes que todos</b><small>Ves los anuncios y votaciones antes</small></div></div>
+<div class="beneficio"><span>🛡️</span><div><b>Soporte VIP</b><small>Te atendemos más rápido en AKIM</small></div></div>
+
+<div class="nota">Si ya tienes PRO activo, todos estos beneficios ya son tuyos.</div>
+
+<button class="btn btn-rosa" onclick="cerrar()">❌ Cerrar y volver</button>
+</div>
+
+<script>
+// BOTON CERRAR - VUELVE EXACTO A DONDE ESTABAS ANTES
+function cerrar(){
+  // 1. Si veniste de otra página de AKIM, vuelve a esa misma página
+  if(document.referrer && document.referrer.indexOf("Akim-mods") !== -1){
+    location.href = document.referrer;
+    return;
+  }
+  // 2. Si el navegador tiene para atrás, vuelve para atrás
+  if(window.history.length > 1){
+    window.history.back();
+    return;
+  }
+  // 3. Si no hay para atrás, va a la PÁGINA PRINSIPAL
+  location.href = "PÁGINA PRINSIPAL.html";
+}
+</script>
+</body>
+</html>
