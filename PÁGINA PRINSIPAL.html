@@ -63,54 +63,28 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 .btnFlotante{position:fixed;bottom:82px;right:16px;width:64px;height:64px;border-radius:50%;background:#ffd700;border:3px solid #fff;box-shadow:0 5px 20px rgba(255,215,0,0.7);cursor:pointer;z-index:200;font-size:32px;display:flex;align-items:center;justify-content:center}
 .btnFlotante .mas{position:absolute;top:-4px;right:-4px;background:#ff0055;color:#fff;width:24px;height:24px;border-radius:50%;font-size:17px;font-weight:900;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
 .btnFlotanteTienda{position:fixed;bottom:162px;right:16px;width:64px;height:64px;border-radius:50%;background:#ff0055;border:3px solid #fff;box-shadow:0 5px 20px rgba(255,0,85,0.7);cursor:pointer;z-index:200;font-size:32px;display:flex;align-items:center;justify-content:center}
+.modalPromo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+.cajaPromo{background:#15151f;border:2px solid #ffd700;border-radius:20px;padding:20px;width:100%;max-width:360px;text-align:center}
 </style>
 </head>
 <body>
 <header>
 <div class="top">
 <div class="avatar" id="avatar" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">A</div>
-<div class="nombre">
-<b id="nombreHeader">CREADOR AKIM</b>
-<small id="subHeader">Creador de AKIM 👑</small>
-<span id="etiquetaRol">USUARIO</span>
-<div class="perfilMini" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">⚙️ Toca tu foto para configurar tu perfil</div>
-</div>
-<div class="cargando">
-<div id="textoCargando">Cargando...</div>
-<div class="activosTop"><span class="puntoVerde"></span><b id="activosTop">🟢 1 en línea</b></div>
-<div class="monedasTop"><span class="monedaCirculo">🪙</span><b id="monedasTop">0</b></div>
-</div>
+<div class="nombre"><b id="nombreHeader">CREADOR AKIM</b><small id="subHeader">Creador de AKIM 👑</small><span id="etiquetaRol">USUARIO</span><div class="perfilMini" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">⚙️ Toca tu foto para configurar tu perfil</div></div>
+<div class="cargando"><div id="textoCargando">Cargando...</div><div class="activosTop"><span class="puntoVerde"></span><b id="activosTop">🟢 1 en línea</b></div><div class="monedasTop"><span class="monedaCirculo">🪙</span><b id="monedasTop">0</b></div></div>
 </div>
 </header>
-<div id="loginBox" class="card hidden">
-<h2>👋 Bienvenido a AKIM</h2>
-<input id="email" type="email" placeholder="Tu correo">
-<input id="pass" type="password" placeholder="Contraseña">
-<button class="btn btn-pink" onclick="entrar()">Iniciar Sesión</button>
-<button class="btn btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button>
-<p id="msgLogin" style="color:#ffcc00"></p>
-</div>
+<div id="loginBox" class="card hidden"><h2>👋 Bienvenido a AKIM</h2><input id="email" type="email" placeholder="Tu correo"><input id="pass" type="password" placeholder="Contraseña"><button class="btn btn-pink" onclick="entrar()">Iniciar Sesión</button><button class="btn btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button><p id="msgLogin" style="color:#ffcc00"></p></div>
 <div id="inicioBox" class="hidden">
-<div class="proBox" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html'">
-<span>👑</span>
-<div style="flex:1"><b id="textoPro">PRO activo · abrir beneficios</b><br><small id="textoDiamantes" style="color:#aaa">💎 0 diamantes</small></div>
-<span>⚡</span>
-</div>
+<div class="proBox" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html'"><span>👑</span><div style="flex:1"><b id="textoPro">PRO activo · abrir beneficios</b><br><small id="textoDiamantes" style="color:#aaa">💎 0 diamantes</small></div><span>⚡</span></div>
 <div id="vipBox" class="vipBox hidden">🔥 <b>PRO · VIP Activo</b><br><span style="font-size:13px;color:#ccc">Tienes VIP activo.</span></div>
-<div class="tabs">
-<button class="tabBtn activo" id="btnVerTodos" onclick="mostrarVerTodos(this)">☰ Ver todos</button>
-<button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/RANKING.html',this)">🏆 Ranking</button>
-<button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/CHAT.html',this)">💬 Chat Global</button>
-<button class="tabBtn" onclick="irA('postulaciones.html',this)">🔥 Votaciones</button>
-<button class="tabBtn" onclick="irA('ANUNCIOS.html',this)">⚡ Anuncios</button>
-<button class="tabBtn" onclick="irA('tienda.html',this)">🛒 Tienda</button>
-<button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html',this)">👤 Perfil</button>
-<button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html',this)">👑 Beneficios</button>
-</div>
+<div class="tabs"><button class="tabBtn activo" id="btnVerTodos" onclick="mostrarVerTodos(this)">☰ Ver todos</button><button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/RANKING.html',this)">🏆 Ranking</button><button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/CHAT.html',this)">💬 Chat Global</button><button class="tabBtn" onclick="irA('postulaciones.html',this)">🔥 Votaciones</button><button class="tabBtn" onclick="irA('ANUNCIOS.html',this)">⚡ Anuncios</button><button class="tabBtn" onclick="irA('tienda.html',this)">🛒 Tienda</button><button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html',this)">👤 Perfil</button><button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html',this)">👑 Beneficios</button></div>
 <div class="aviso">Primero elige qué quieres hacer en AKIM y entra desde aquí. Todo está en un solo lugar.</div>
 <div id="verTodosBox" class="verTodosBox hidden">
 <h2 style="margin:5px 0">☰ Todos los links de AKIM</h2>
 <button class="linkBtn" onclick="location.href='PÁGINA PRINSIPAL.html'">🏠 <span>PÁGINA PRINSIPAL<small>Página principal de AKIM</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn gold" onclick="abrirPromo()">🎁 <span>Código Promocional<small>Escribe tu código y canjéalo</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">👤 <span>Perfil<small>Configura tu nombre y tu foto</small></span><span class="flecha">⚙️</span></button>
 <button class="linkBtn gold" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html'">👑 <span>Beneficios VIP<small>Qué trae ser VIP en AKIM</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn" onclick="location.href='tienda.html'">🛒 <span>Tienda<small>Compra VIP, diamantes y más</small></span><span class="flecha">➡️</span></button>
@@ -131,6 +105,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <div class="card">
 <h2 style="margin:5px 0">🚀 ¿Qué quieres hacer hoy?</h2>
 <button class="menuBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'"><span class="icono">👤</span><div style="flex:1"><b>Mi Perfil</b><br><small id="miNombreCard">Configura tu nombre y tu foto</small></div><span class="badge">⚙️ EDITAR</span></button>
+<button class="menuBtn" onclick="abrirPromo()"><span class="icono">🎁</span><div style="flex:1"><b>Código Promocional</b><br><small>Escribe tu código y canjéalo</small></div><span class="badge badge-gold">CANJEAR</span></button>
 <button class="menuBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html'"><span class="icono">👑</span><div style="flex:1"><b>Beneficios VIP</b><br><small>Qué trae ser VIP en AKIM</small></div><span class="badge badge-gold">VER</span></button>
 <button class="menuBtn" onclick="location.href='tienda.html'"><span class="icono">🛒</span><div style="flex:1"><b>Tienda AKIM</b><br><small>Compra VIP, diamantes y más</small></div><span class="badge">ENTRAR ➡️</span></button>
 <button class="menuBtn" onclick="location.href='postulaciones.html'"><span class="icono">📋</span><div style="flex:1"><b>Postularme para trabajar</b><br><small>Soporte, Reseñero o Moderador</small></div><span class="badge badge-green">NUEVO</span></button>
@@ -139,14 +114,20 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <div class="infoRow"><span>👤 Tu cuenta</span><b id="miCorreo">-</b></div>
 <div class="infoRow"><span>🛡️ Tu rol</span><b id="miRol2" style="color:#ffd700">-</b></div>
 <div class="infoRow"><span>💎 Diamantes</span><b id="misDiamantes">0</b></div>
-<div class="infoRow"><span>🪙</span><b id="misMonedas" style="color:#ffd700">0</b></div>
+<div class="infoRow"><span>🪙 Cripto</span><b id="misCripto" style="color:#ffd700">0</b></div>
 <div class="infoRow"><span>👑 VIP</span><b id="miVip">NO</b></div>
 <button class="btn btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
-<div class="card">
-<h2 style="margin:5px 0">📢 Últimos Anuncios</h2>
-<div id="listaAnuncios"><p style="color:#aaa">Cargando anuncios...</p></div>
-<button class="btn btn-white" onclick="location.href='ANUNCIOS.html'">Ver todos los anuncios ➡️</button>
+<div class="card"><h2 style="margin:5px 0">📢 Últimos Anuncios</h2><div id="listaAnuncios"><p style="color:#aaa">Cargando anuncios...</p></div><button class="btn btn-white" onclick="location.href='ANUNCIOS.html'">Ver todos los anuncios ➡️</button></div>
+</div>
+<div id="modalPromo" class="modalPromo hidden">
+<div class="cajaPromo">
+<h2>🎁 Código Promocional</h2>
+<p>Escribe tu código</p>
+<input id="inputCodigo" placeholder="Escribe tu código aquí" autocomplete="off">
+<p id="msgPromo" style="color:#ffcc00;min-height:20px"></p>
+<button class="btn btn-gold" onclick="canjearCodigo()">Canjear</button>
+<button class="btn btn-dark" onclick="cerrarPromo()">Cerrar</button>
 </div>
 </div>
 <div class="bottomNav">
@@ -164,6 +145,49 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c",measurementId:"G-5Y8JCL7G79"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();const db=firebase.firestore();let datosUsuario=null;let intervaloPresencia=null;
+// --- CODIGOS PROMOCIONALES ---
+// Se normaliza: mayusculas, sin espacios ni guiones, para que no falle si escriben "Akim-15" o "akim 15"
+function normalizarCodigo(t){return (t||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
+const CODIGOS={
+  "AKIM15":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
+  "AKIM12":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
+  "AKIMDOMINA":{diamantes:500,cripto:0,etiqueta:"500 diamantes"},
+  "AKIMELMEJOR":{diamantes:250,cripto:0,etiqueta:"250 diamantes"},
+  "SEXY":{diamantes:100,cripto:0,etiqueta:"100 diamantes"},
+  "TXT":{diamantes:0,cripto:1,etiqueta:"1 cripto"}
+};
+function abrirPromo(){document.getElementById('modalPromo').classList.remove('hidden');document.getElementById('msgPromo').innerText="";}
+function cerrarPromo(){document.getElementById('modalPromo').classList.add('hidden');}
+async function canjearCodigo(){
+  let user=auth.currentUser;
+  if(!user){document.getElementById('msgPromo').innerText="Inicia sesión primero";return;}
+  let raw=document.getElementById('inputCodigo').value;
+  let codigo=normalizarCodigo(raw);
+  if(!codigo){document.getElementById('msgPromo').innerText="Escribe un código";return;}
+  let premio=CODIGOS[codigo];
+  if(!premio){document.getElementById('msgPromo').innerText="❌ Código no válido";return;}
+  document.getElementById('msgPromo').innerText="Verificando...";
+  try{
+    let ref=db.collection('usuarios').doc(user.uid);
+    let doc=await ref.get();
+    let data=doc.exists?doc.data():{};
+    let usados=data.codigosUsados||[];
+    // REGLA: 1 SOLO USO POR CUENTA POR CODIGO
+    if(usados.includes(codigo)){document.getElementById('msgPromo').innerText="❌ Ya usaste este código, no se puede volver a usar";return;}
+    let update={codigosUsados:firebase.firestore.FieldValue.arrayUnion(codigo)};
+    if(premio.diamantes>0) update.diamantes=firebase.firestore.FieldValue.increment(premio.diamantes);
+    if(premio.cripto>0) update.cripto=firebase.firestore.FieldValue.increment(premio.cripto);
+    await ref.set(update,{merge:true});
+    // Actualizar pantalla
+    let nuevosDiam=(data.diamantes||0)+premio.diamantes;
+    let nuevaCripto=(data.cripto||data.monedas||0)+premio.cripto;
+    document.getElementById('misDiamantes').innerText=nuevosDiam;
+    document.getElementById('misCripto').innerText=nuevaCripto;
+    document.getElementById('textoDiamantes').innerText="💎 "+nuevosDiam+" diamantes";
+    document.getElementById('msgPromo').innerText="✅ ¡Canjeado! Ganaste "+premio.etiqueta;
+    document.getElementById('inputCodigo').value="";
+  }catch(e){document.getElementById('msgPromo').innerText="Error: "+e.message;}
+}
 async function entrar(){const e=document.getElementById('email').value;const p=document.getElementById('pass').value;try{await auth.signInWithEmailAndPassword(e,p);}catch(err){document.getElementById('msgLogin').innerText=err.message;}}
 async function loginGoogle(){const prov=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(prov);}catch(err){document.getElementById('msgLogin').innerText=err.message;}}
 async function salir(){try{let u=auth.currentUser;if(u){await db.collection('activos').doc(u.uid).delete();}}catch(e){}await auth.signOut();location.reload();}
@@ -171,18 +195,8 @@ function mostrarVerTodos(btn){document.querySelectorAll('.tabBtn').forEach(b=>b.
 function cerrarVerTodos(){document.getElementById('verTodosBox').classList.add('hidden');document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));document.getElementById('btnVerTodos').classList.add('activo');}
 function irA(pagina,btn){document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo');document.getElementById('verTodosBox').classList.add('hidden');location.href=pagina;}
 function nombreBonitoRol(rol){if(rol==="Reseñas")return "Reseñero";if(rol==="Moderador")return "Moderador";if(rol==="Soporte")return "Soporte";return rol||"";}
-async function marcarActivo(uid){
-  try{await db.collection('activos').doc(uid).set({ultimo:Date.now(),fecha:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}catch(e){}
-}
-function escucharActivos(){
-  db.collection('activos').onSnapshot(snap=>{
-    let ahora=Date.now();
-    let count=0;
-    snap.forEach(d=>{let data=d.data();if(data.ultimo && (ahora - data.ultimo) < 120000){count++;}});
-    if(count<1) count=1;
-    document.getElementById('activosTop').innerText="🟢 "+count+" en línea";
-  },err=>{});
-}
+async function marcarActivo(uid){try{await db.collection('activos').doc(uid).set({ultimo:Date.now(),fecha:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}catch(e){}}
+function escucharActivos(){db.collection('activos').onSnapshot(snap=>{let ahora=Date.now();let count=0;snap.forEach(d=>{let data=d.data();if(data.ultimo && (ahora - data.ultimo) < 120000){count++;}});if(count<1) count=1;document.getElementById('activosTop').innerText="🟢 "+count+" en línea";},err=>{});}
 escucharActivos();
 auth.onAuthStateChanged(async(user)=>{
 if(!user){document.getElementById('textoCargando').innerText="Sin sesión";document.getElementById('monedasTop').innerText="0";document.getElementById('loginBox').classList.remove('hidden');document.getElementById('nombreHeader').innerText="CREADOR AKIM";document.getElementById('subHeader').innerText="Creador de AKIM 👑";document.getElementById('etiquetaRol').innerText="AKIM";cargarAnuncios();return;}
@@ -192,7 +206,7 @@ if(intervaloPresencia) clearInterval(intervaloPresencia);
 intervaloPresencia=setInterval(()=>{marcarActivo(user.uid);},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden) marcarActivo(user.uid);});
 window.addEventListener('beforeunload',()=>{db.collection('activos').doc(user.uid).delete();});
-try{const doc=await db.collection('usuarios').doc(user.uid).get();if(doc.exists){datosUsuario=doc.data();}else{datosUsuario={diamantes:0,monedas:0,vip:false,admin:false};}}catch(e){datosUsuario={diamantes:0,monedas:0,vip:false,admin:false};}
+try{const doc=await db.collection('usuarios').doc(user.uid).get();if(doc.exists){datosUsuario=doc.data();}else{datosUsuario={diamantes:0,monedas:0,cripto:0,vip:false,admin:false};}}catch(e){datosUsuario={diamantes:0,monedas:0,cripto:0,vip:false,admin:false};}
 let nombre=datosUsuario.nombre||"AKIM OFICIAL";let titulo="CREADOR "+nombre.toUpperCase();if(datosUsuario.admin)titulo="CREADOR "+nombre.toUpperCase();else if(datosUsuario.rolEquipo)titulo=datosUsuario.rolEquipo.toUpperCase()+" "+nombre.toUpperCase();
 document.getElementById('nombreHeader').innerText=titulo;
 document.getElementById('subHeader').innerText=datosUsuario.admin?"Creador de AKIM 👑":(datosUsuario.rolEquipo?"Equipo AKIM - "+datosUsuario.rolEquipo:"Miembro de AKIM");
@@ -203,8 +217,8 @@ let avatar=document.getElementById('avatar');if(datosUsuario.foto){avatar.innerH
 document.getElementById('miCorreo').innerText=user.email;
 document.getElementById('miRol2').innerText=datosUsuario.admin?"Admin":(datosUsuario.rolEquipo||"Usuario");
 document.getElementById('misDiamantes').innerText=datosUsuario.diamantes||0;
-document.getElementById('misMonedas').innerText=datosUsuario.monedas||0;
-document.getElementById('monedasTop').innerText=datosUsuario.monedas||0;
+document.getElementById('misCripto').innerText=datosUsuario.cripto||datosUsuario.monedas||0;
+document.getElementById('monedasTop').innerText=datosUsuario.cripto||datosUsuario.monedas||0;
 document.getElementById('miVip').innerText=datosUsuario.vip?"SÍ 👑":"NO";
 document.getElementById('textoPro').innerText=datosUsuario.vip?"👑 PRO activo · abrir beneficios":"PRO · Activar PRO en la Tienda";
 document.getElementById('textoDiamantes').innerText="💎 "+(datosUsuario.diamantes||0)+" diamantes";
@@ -219,4 +233,4 @@ document.getElementById('listaAnuncios').innerHTML=html;document.getElementById(
 }
 </script>
 </body>
-  </html>
+                                                                                                                                                </html>
