@@ -145,48 +145,38 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c",measurementId:"G-5Y8JCL7G79"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();const db=firebase.firestore();let datosUsuario=null;let intervaloPresencia=null;
-// --- CODIGOS PROMOCIONALES ---
-// Se normaliza: mayusculas, sin espacios ni guiones, para que no falle si escriben "Akim-15" o "akim 15"
 function normalizarCodigo(t){return (t||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
-const CODIGOS={
-  "AKIM15":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
-  "AKIM12":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
-  "AKIMDOMINA":{diamantes:500,cripto:0,etiqueta:"500 diamantes"},
-  "AKIMELMEJOR":{diamantes:250,cripto:0,etiqueta:"250 diamantes"},
-  "SEXY":{diamantes:100,cripto:0,etiqueta:"100 diamantes"},
-  "TXT":{diamantes:0,cripto:1,etiqueta:"1 cripto"}
-};
+const CODIGOS={"AKIM15":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},"AKIM12":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},"AKIMDOMINA":{diamantes:500,cripto:0,etiqueta:"500 diamantes"},"AKIMELMEJOR":{diamantes:250,cripto:0,etiqueta:"250 diamantes"},"SEXY":{diamantes:100,cripto:0,etiqueta:"100 diamantes"},"TXT":{diamantes:0,cripto:1,etiqueta:"1 cripto"}};
 function abrirPromo(){document.getElementById('modalPromo').classList.remove('hidden');document.getElementById('msgPromo').innerText="";}
 function cerrarPromo(){document.getElementById('modalPromo').classList.add('hidden');}
 async function canjearCodigo(){
-  let user=auth.currentUser;
-  if(!user){document.getElementById('msgPromo').innerText="Inicia sesión primero";return;}
-  let raw=document.getElementById('inputCodigo').value;
-  let codigo=normalizarCodigo(raw);
-  if(!codigo){document.getElementById('msgPromo').innerText="Escribe un código";return;}
-  let premio=CODIGOS[codigo];
-  if(!premio){document.getElementById('msgPromo').innerText="❌ Código no válido";return;}
-  document.getElementById('msgPromo').innerText="Verificando...";
-  try{
-    let ref=db.collection('usuarios').doc(user.uid);
-    let doc=await ref.get();
-    let data=doc.exists?doc.data():{};
-    let usados=data.codigosUsados||[];
-    // REGLA: 1 SOLO USO POR CUENTA POR CODIGO
-    if(usados.includes(codigo)){document.getElementById('msgPromo').innerText="❌ Ya usaste este código, no se puede volver a usar";return;}
-    let update={codigosUsados:firebase.firestore.FieldValue.arrayUnion(codigo)};
-    if(premio.diamantes>0) update.diamantes=firebase.firestore.FieldValue.increment(premio.diamantes);
-    if(premio.cripto>0) update.cripto=firebase.firestore.FieldValue.increment(premio.cripto);
-    await ref.set(update,{merge:true});
-    // Actualizar pantalla
-    let nuevosDiam=(data.diamantes||0)+premio.diamantes;
-    let nuevaCripto=(data.cripto||data.monedas||0)+premio.cripto;
-    document.getElementById('misDiamantes').innerText=nuevosDiam;
-    document.getElementById('misCripto').innerText=nuevaCripto;
-    document.getElementById('textoDiamantes').innerText="💎 "+nuevosDiam+" diamantes";
-    document.getElementById('msgPromo').innerText="✅ ¡Canjeado! Ganaste "+premio.etiqueta;
-    document.getElementById('inputCodigo').value="";
-  }catch(e){document.getElementById('msgPromo').innerText="Error: "+e.message;}
+let user=auth.currentUser;
+if(!user){document.getElementById('msgPromo').innerText="Inicia sesión primero";return;}
+let codigo=normalizarCodigo(document.getElementById('inputCodigo').value);
+if(!codigo){document.getElementById('msgPromo').innerText="Escribe un código";return;}
+let premio=CODIGOS[codigo];
+if(!premio){document.getElementById('msgPromo').innerText="❌ Código no válido";return;}
+document.getElementById('msgPromo').innerText="Verificando...";
+try{
+let ref=db.collection('usuarios').doc(user.uid);
+let doc=await ref.get();
+let data=doc.exists?doc.data():{};
+let usados=data.codigosUsados||[];
+if(usados.includes(codigo)){document.getElementById('msgPromo').innerText="❌ Ya usaste este código, no se puede volver a usar";return;}
+let update={codigosUsados:firebase.firestore.FieldValue.arrayUnion(codigo)};
+if(premio.diamantes>0) update.diamantes=firebase.firestore.FieldValue.increment(premio.diamantes);
+if(premio.cripto>0) update.monedas=firebase.firestore.FieldValue.increment(premio.cripto);
+await ref.set(update,{merge:true});
+let nuevosDiam=(data.diamantes||0)+premio.diamantes;
+let totalAntes=(data.monedas||0)+(data.cripto||0);
+let nuevaCripto=totalAntes+premio.cripto;
+document.getElementById('misDiamantes').innerText=nuevosDiam;
+document.getElementById('misCripto').innerText=nuevaCripto;
+document.getElementById('monedasTop').innerText=nuevaCripto;
+document.getElementById('textoDiamantes').innerText="💎 "+nuevosDiam+" diamantes";
+document.getElementById('msgPromo').innerText="✅ ¡Canjeado! Ganaste "+premio.etiqueta;
+document.getElementById('inputCodigo').value="";
+}catch(e){document.getElementById('msgPromo').innerText="Error: "+e.message;}
 }
 async function entrar(){const e=document.getElementById('email').value;const p=document.getElementById('pass').value;try{await auth.signInWithEmailAndPassword(e,p);}catch(err){document.getElementById('msgLogin').innerText=err.message;}}
 async function loginGoogle(){const prov=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(prov);}catch(err){document.getElementById('msgLogin').innerText=err.message;}}
@@ -217,8 +207,9 @@ let avatar=document.getElementById('avatar');if(datosUsuario.foto){avatar.innerH
 document.getElementById('miCorreo').innerText=user.email;
 document.getElementById('miRol2').innerText=datosUsuario.admin?"Admin":(datosUsuario.rolEquipo||"Usuario");
 document.getElementById('misDiamantes').innerText=datosUsuario.diamantes||0;
-document.getElementById('misCripto').innerText=datosUsuario.cripto||datosUsuario.monedas||0;
-document.getElementById('monedasTop').innerText=datosUsuario.cripto||datosUsuario.monedas||0;
+let totalCripto=(datosUsuario.monedas||0)+(datosUsuario.cripto||0);
+document.getElementById('misCripto').innerText=totalCripto;
+document.getElementById('monedasTop').innerText=totalCripto;
 document.getElementById('miVip').innerText=datosUsuario.vip?"SÍ 👑":"NO";
 document.getElementById('textoPro').innerText=datosUsuario.vip?"👑 PRO activo · abrir beneficios":"PRO · Activar PRO en la Tienda";
 document.getElementById('textoDiamantes').innerText="💎 "+(datosUsuario.diamantes||0)+" diamantes";
@@ -233,4 +224,4 @@ document.getElementById('listaAnuncios').innerHTML=html;document.getElementById(
 }
 </script>
 </body>
-                                                                                                                                                </html>
+  </html>
