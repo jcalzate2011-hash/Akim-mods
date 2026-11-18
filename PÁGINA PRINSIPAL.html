@@ -3,19 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AKIM - Inicio</title>
+<title>AKIM - PÁGINA PRINSIPAL</title>
 <style>
-body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;padding-bottom:80px}
-header{padding:16px;background:linear-gradient(90deg,#ff0055,#7b00ff);position:sticky;top:0;z-index:10}
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;padding-bottom:80px;padding-top:105px}
+/* HEADER FIJO ARRIBA - NO BAJA CUANDO BAJAS */
+header{position:fixed;top:0;left:0;right:0;padding:16px;background:linear-gradient(90deg,#ff0055,#7b00ff);z-index:100}
 .top{display:flex;align-items:center;gap:12px}
 .avatar{width:58px;height:58px;border-radius:50%;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;flex-shrink:0;overflow:hidden;border:3px solid #fff;cursor:pointer;box-shadow:0 0 12px rgba(255,255,255,0.5)}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .avatar:active{transform:scale(0.92)}
-.nombre{flex:1;text-align:left}
-.nombre b{font-size:19px;letter-spacing:1px;display:block;text-transform:uppercase}
+.nombre{flex:1;text-align:left;min-width:0}
+.nombre b{font-size:19px;letter-spacing:1px;display:block;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nombre small{font-size:13px;color:#eee;display:block;margin-top:2px}
 .nombre span{font-size:11px;background:#fff;color:#000;padding:3px 8px;border-radius:20px;font-weight:800;display:inline-block;margin-top:4px}
-.cargando{font-size:12px;color:#ddd}
+.cargando{font-size:12px;color:#ddd;flex-shrink:0}
 .card{background:#15151f;margin:14px;border-radius:16px;padding:16px;text-align:left}
 .btn{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
 .btn-pink{background:#ff0055;color:#fff}
@@ -30,13 +31,13 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 .vipBox{background:#1a0a0a;border:1px solid #ff5555;border-radius:14px;padding:12px;margin:12px 14px;text-align:left}
 .tabs{display:flex;gap:10px;overflow-x:auto;padding:12px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
-.tabBtn{white-space:nowrap;padding:11px 18px;border-radius:999px;background:#1e1b3a;color:#fff;border:1px solid #2e2a5a;font-weight:800;cursor:pointer;font-size:15px;box-shadow:0 4px 10px rgba(0,0,0,0.3);display:flex;align-items:center;gap:6px;flex-shrink:0}
-.tabBtn.activo{background:#0f0e2e;border:1px solid #fff;color:#fff}
+.tabBtn{white-space:nowrap;padding:11px 18px;border-radius:999px;background:#1e1b3a;color:#fff;border:1px solid #2e2a5a;font-weight:800;cursor:pointer;font-size:15px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tabBtn.activo{background:#0f0e2e;border:1px solid #fff}
 .aviso{background:#3a1a1a;border:1px solid #ff5555;border-radius:14px;padding:12px;margin:12px 14px;text-align:left;color:#ffaaaa;font-size:14px}
 .verTodosBox{background:#15151f;margin:12px 14px;border-radius:16px;padding:14px;text-align:left;border:1px solid #444}
 .linkBtn{width:100%;padding:14px;margin:7px 0;border:none;border-radius:14px;font-weight:800;cursor:pointer;font-size:16px;text-align:left;display:flex;align-items:center;gap:12px;background:#222231;color:#fff}
 .linkBtn small{display:block;color:#aaa;font-weight:400;font-size:12px}
-.linkBtn .flecha{margin-left:auto;font-size:18px}
+.linkBtn .flecha{margin-left:auto;font-size:18px;flex-shrink:0}
 .linkBtn.pink{background:#ff0055}
 .linkBtn.gold{background:#ffd700;color:#000}
 .linkBtn.gold small{color:#333}
@@ -46,14 +47,15 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 .menuBtn{display:flex;align-items:center;gap:12px;background:#222231;border:1px solid #444;border-radius:16px;padding:16px;margin:12px 0;cursor:pointer;text-align:left;width:100%;color:#fff}
 .menuBtn b{font-size:17px;display:block}
 .menuBtn small{color:#aaa;font-size:13px}
-.menuBtn .icono{font-size:28px}
-.badge{background:#ff0055;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px;font-weight:900}
+.menuBtn .icono{font-size:28px;flex-shrink:0}
+.badge{background:#ff0055;color:#fff;font-size:11px;padding:3px 8px;border-radius:20px;font-weight:900;flex-shrink:0}
 .badge-green{background:#00c853}
 .badge-gold{background:#ffd700;color:#000}
-.infoRow{display:flex;justify-content:space-between;background:#222231;padding:12px;border-radius:12px;margin:8px 0;font-size:14px}
+.infoRow{display:flex;justify-content:space-between;background:#222231;padding:12px;border-radius:12px;margin:8px 0;font-size:14px;gap:10px}
+.infoRow b{text-align:right;word-break:break-all}
 .anuncioBox{background:#222231;padding:14px;margin:10px 0;border-radius:14px;border:1px solid #444;text-align:left}
 .anuncioBox.aceptado{border:2px solid #00ff88;background:#002a12}
-.bottomNav{position:fixed;bottom:0;left:0;right:0;background:#15151f;display:flex;border-top:1px solid #333;padding:8px 0;z-index:20}
+.bottomNav{position:fixed;bottom:0;left:0;right:0;background:#15151f;display:flex;border-top:1px solid #333;padding:8px 0;z-index:100}
 .bottomNav button{flex:1;background:none;border:none;color:#aaa;font-size:12px;cursor:pointer}
 .bottomNav button.activo{color:#fff;font-weight:900}
 .bottomNav span{display:block;font-size:20px}
@@ -64,8 +66,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 
 <header>
 <div class="top">
-<!-- CIRCULO DEL PERFIL - TOCA Y VA A TU LINK DE PERFIL -->
-<div class="avatar" id="avatar" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'" title="Toca para configurar tu perfil">A</div>
+<div class="avatar" id="avatar" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">A</div>
 <div class="nombre">
 <b id="nombreHeader">CREADOR AKIM</b>
 <small id="subHeader">Creador de AKIM 👑</small>
@@ -88,15 +89,15 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 </div>
 
 <div id="inicioBox" class="hidden">
-<div class="proBox" onclick="location.href='tienda.html'">
+<div class="proBox" onclick="location.href='BENEFICIOS.html'">
 <span>👑</span>
 <div style="flex:1"><b id="textoPro">PRO activo · abrir beneficios</b><br><small id="textoDiamantes" style="color:#aaa">💎 0 diamantes</small></div>
 <span>⚡</span>
 </div>
 
 <div id="vipBox" class="vipBox hidden">
-🔥 <b id="textoVip">PRO · 0 días restantes</b><br>
-<span style="font-size:13px;color:#ccc" id="textoVip2">Tu VIP termina pronto. Renueva para conservar tus beneficios.</span>
+🔥 <b id="textoVip">PRO · VIP Activo</b><br>
+<span style="font-size:13px;color:#ccc" id="textoVip2">Tienes VIP activo. Disfruta tus beneficios en la Tienda.</span>
 </div>
 
 <div class="tabs">
@@ -107,6 +108,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <button class="tabBtn" onclick="irA('ANUNCIOS.html',this)">⚡ Anuncios</button>
 <button class="tabBtn" onclick="irA('tienda.html',this)">🛒 Tienda</button>
 <button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html',this)">👤 Perfil</button>
+<button class="tabBtn" onclick="irA('BENEFICIOS.html',this)">👑 Beneficios</button>
 </div>
 
 <div class="aviso">Primero elige qué quieres hacer en AKIM y entra desde aquí. Todo está en un solo lugar.</div>
@@ -114,12 +116,9 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <div id="verTodosBox" class="verTodosBox hidden">
 <h2 style="margin:5px 0">☰ Todos los links de AKIM</h2>
 <p style="color:#aaa;font-size:13px;margin:5px 0">Toca cualquiera y te lleva directo:</p>
-
-<button class="linkBtn pink" onclick="location.href='index.html'">🏠 <span>Inicio<small>Página principal de AKIM</small></span><span class="flecha">➡️</span></button>
-
-<!-- NUEVO - BOTON PERFIL EN VER TODOS -->
+<button class="linkBtn pink" onclick="location.href='PÁGINA PRINSIPAL.html'">🏠 <span>PÁGINA PRINSIPAL<small>Página principal de AKIM</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn purple" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">👤 <span>Perfil<small>Configura tu nombre y tu foto</small></span><span class="flecha">⚙️</span></button>
-
+<button class="linkBtn gold" onclick="location.href='BENEFICIOS.html'">👑 <span>Beneficios VIP<small>Qué trae ser VIP en AKIM</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn" onclick="location.href='tienda.html'">🛒 <span>Tienda<small>Compra VIP, diamantes y más</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn green" onclick="location.href='postulaciones.html'">📋 <span>Postulaciones<small>Postularme para trabajar en AKIM</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn gold" onclick="location.href='ANUNCIOS.html'">📢 <span>Anuncios<small>Mira quién fue aceptado</small></span><span class="flecha">➡️</span></button>
@@ -127,13 +126,13 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <button class="linkBtn blue" onclick="location.href='tienda.html'">🏆 <span>Ranking<small>Ver quién tiene más diamantes</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn blue" onclick="location.href='tienda.html'">🥇 <span>Top 3<small>Los 3 mejores de AKIM</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn" onclick="location.href='postulaciones.html'">🔥 <span>Votaciones<small>Vota y postúlate</small></span><span class="flecha">➡️</span></button>
-
 <button class="btn btn-dark" onclick="cerrarVerTodos()">❌ Cerrar</button>
 </div>
 
 <div class="card">
 <h2 style="margin:5px 0">🚀 ¿Qué quieres hacer hoy?</h2>
 <button class="menuBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'"><span class="icono">👤</span><div style="flex:1"><b>Mi Perfil</b><br><small id="miNombreCard">Configura tu nombre y tu foto</small></div><span class="badge">⚙️ EDITAR</span></button>
+<button class="menuBtn" onclick="location.href='BENEFICIOS.html'"><span class="icono">👑</span><div style="flex:1"><b>Beneficios VIP</b><br><small>Qué trae ser VIP en AKIM</small></div><span class="badge badge-gold">VER</span></button>
 <button class="menuBtn" onclick="location.href='tienda.html'"><span class="icono">🛒</span><div style="flex:1"><b>Tienda AKIM</b><br><small>Compra VIP, diamantes y más</small></div><span class="badge">ENTRAR ➡️</span></button>
 <button class="menuBtn" onclick="location.href='postulaciones.html'"><span class="icono">📋</span><div style="flex:1"><b>Postularme para trabajar</b><br><small>Soporte, Reseñero o Moderador</small></div><span class="badge badge-green">NUEVO</span></button>
 <button class="menuBtn" onclick="location.href='ANUNCIOS.html'"><span class="icono">📢</span><div style="flex:1"><b>Anuncios</b><br><small>Mira quién fue aceptado en AKIM</small></div><span class="badge badge-gold" id="badgeAnuncios">VER</span></button>
@@ -153,7 +152,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 </div>
 
 <div class="bottomNav">
-<button class="activo" onclick="location.href='index.html'"><span>🏠</span>Inicio</button>
+<button class="activo" onclick="location.href='PÁGINA PRINSIPAL.html'"><span>🏠</span>Inicio</button>
 <button onclick="location.href='tienda.html'"><span>🛒</span>Tienda</button>
 <button onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'"><span>👤</span>Perfil</button>
 <button onclick="location.href='ANUNCIOS.html'"><span>📢</span>Anuncios</button>
@@ -176,6 +175,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let datosUsuario = null;
+
 async function entrar(){
   const e = document.getElementById('email').value;
   const p = document.getElementById('pass').value;
@@ -186,6 +186,7 @@ async function loginGoogle(){
   try{ await auth.signInWithPopup(prov); }catch(err){ document.getElementById('msgLogin').innerText = err.message; }
 }
 async function salir(){ await auth.signOut(); location.reload(); }
+
 function mostrarVerTodos(btn){
   document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));
   btn.classList.add('activo');
@@ -223,9 +224,11 @@ auth.onAuthStateChanged(async (user)=>{
   document.getElementById('textoCargando').innerText = "";
   document.getElementById('loginBox').classList.add('hidden');
   document.getElementById('inicioBox').classList.remove('hidden');
-  const doc = await db.collection('usuarios').doc(user.uid).get();
-  if(doc.exists){ datosUsuario = doc.data(); } else { datosUsuario = {diamantes:0, vip:false, admin:false}; }
-  let nombre = datosUsuario.nombre || "CREADOR AKIM";
+  try{
+    const doc = await db.collection('usuarios').doc(user.uid).get();
+    if(doc.exists){ datosUsuario = doc.data(); } else { datosUsuario = {diamantes:0, vip:false, admin:false}; }
+  }catch(e){ datosUsuario = {diamantes:0, vip:false, admin:false}; }
+  let nombre = datosUsuario.nombre || "AKIM OFICIAL";
   let titulo = "CREADOR " + nombre.toUpperCase();
   if(datosUsuario.admin) titulo = "CREADOR " + nombre.toUpperCase();
   else if(datosUsuario.rolEquipo) titulo = datosUsuario.rolEquipo.toUpperCase() + " " + nombre.toUpperCase();
@@ -237,7 +240,7 @@ auth.onAuthStateChanged(async (user)=>{
   document.getElementById('etiquetaRol').innerText = rol;
   let avatar = document.getElementById('avatar');
   if(datosUsuario.foto){
-    avatar.innerHTML = `<img src="${datosUsuario.foto}" alt="Mi foto">`;
+    avatar.innerHTML = '<img src="' + datosUsuario.foto + '" alt="Mi foto">';
   } else {
     avatar.innerText = nombre.charAt(0).toUpperCase();
   }
@@ -249,8 +252,6 @@ auth.onAuthStateChanged(async (user)=>{
   document.getElementById('textoDiamantes').innerText = "💎 " + (datosUsuario.diamantes || 0) + " diamantes";
   if(datosUsuario.vip){
     document.getElementById('vipBox').classList.remove('hidden');
-    document.getElementById('textoVip').innerText = "PRO · VIP Activo";
-    document.getElementById('textoVip2').innerText = "Tienes VIP activo. Disfruta tus beneficios en la Tienda.";
   }
   cargarAnuncios();
 });
@@ -263,7 +264,7 @@ async function cargarAnuncios(){
     docs.forEach(doc=>{
       let d = doc.data();
       let esAceptado = d.tipo === "aceptado";
-      html += `<div class="anuncioBox ${esAceptado ? "aceptado" : ""}"><b>${d.titulo || "📢 Anuncio"}</b><br><span style="font-size:14px;color:#ddd">${d.mensaje || ""}</span><br>${d.nombre ? "<small>👤 " + d.nombre + (d.rol ? " - " + nombreBonitoRol(d.rol) : "") + "</small>" : ""}</div>`;
+      html += '<div class="anuncioBox ' + (esAceptado ? "aceptado" : "") + '"><b>' + (d.titulo || "📢 Anuncio") + '</b><br><span style="font-size:14px;color:#ddd">' + (d.mensaje || "") + '</span><br>' + (d.nombre ? "<small>👤 " + d.nombre + (d.rol ? " - " + nombreBonitoRol(d.rol) : "") + "</small>" : "") + '</div>';
     });
     document.getElementById('listaAnuncios').innerHTML = html;
     document.getElementById('badgeAnuncios').innerText = snap.size + " NUEVOS";
@@ -271,4 +272,4 @@ async function cargarAnuncios(){
 }
 </script>
 </body>
-</html>
+                                                                                                                                                                                                                                                      </html>
