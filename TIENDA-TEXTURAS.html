@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKIM MODS - Tienda de Texturas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff;padding-bottom:30px}
+.topbar{background:#000;border-bottom:3px solid #ffd700;padding:12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo{font-family:'Orbitron';font-weight:900;font-size:18px}
+.logo span{color:#ffd700}
+.saldo{background:#1c1c26;border:2px solid #ffd700;border-radius:999px;padding:7px 14px;font-weight:900;font-size:15px}
+.saldo b{color:#ffd700}
+.hero{text-align:center;padding:20px 14px 5px}
+.hero h1{font-family:'Orbitron';margin:5px 0;font-size:24px}
+.hero h1 span{color:#ffd700}
+.hero p{color:#bbb;font-size:14px;margin:4px 0}
+.aviso{background:#2a1a00;border:1px solid #ffd700;border-radius:12px;padding:12px;margin:14px;text-align:center;font-size:14px}
+.aviso b{color:#ffd700}
+.lista{padding:0 14px;display:flex;flex-direction:column;gap:14px}
+.card{background:#1f1f2e;border:1px solid #333;border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center}
+.card.comprada{border:2px solid #00ff88;background:#0a1a12}
+.numero{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#ffd700,#ff6b00);color:#000;font-family:'Orbitron';font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.info{flex:1;min-width:0}
+.info b{font-size:16px;display:block}
+.info small{color:#aaa;font-size:12px}
+.precio{color:#ffd700;font-weight:900;font-size:15px;margin-top:4px}
+.precio span{font-size:18px}
+.btn{border:none;padding:12px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px;white-space:nowrap;flex-shrink:0}
+.btn-comprar{background:#ffd700;color:#000}
+.btn-descargar{background:#00ff88;color:#000}
+.btn-agotado{background:#333;color:#aaa}
+.msg{text-align:center;font-weight:800;padding:10px;font-size:14px;min-height:22px}
+.msg.error{color:#ff4d4d}
+.msg.ok{color:#00ff88}
+.btns{display:flex;gap:8px;padding:14px;flex-wrap:wrap}
+.btns button{flex:1;padding:12px;background:#222;color:#fff;border:1px solid #555;font-weight:800;cursor:pointer;border-radius:10px}
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="logo">AKIM<span> MODS</span> - TEXTURAS</div>
+<div class="saldo">🪙 <b id="misCoinsTop">0</b></div>
+</div>
+
+<div class="hero">
+<h1>🛒 TIENDA DE <span>TEXTURAS</span></h1>
+<p>Solo con 🪙 Coins - Sin diamantes, sin dinero</p>
+<p>Tu saldo: 🪙 <b id="misCoinsHero" style="color:#ffd700">0</b> | ID: <b id="miIdHero" style="color:#00e5ff">---</b></p>
+</div>
+
+<div class="aviso">💡 <b>¿Cómo conseguir Coins?</b><br>Ve a Página Principal y dale al botón flotante 🪙+ o a Apoya a AKIM.<br>Si no tienes suficientes coins, te saldrá <b>❌ SALDO INSUFICIENTE</b>.</div>
+
+<div id="msg" class="msg"></div>
+<div class="lista" id="listaTexturas"></div>
+
+<div class="btns">
+<button onclick="location.href='PÁGINA PRINSIPAL.html'">🏠 Página Principal</button>
+<button onclick="location.href='PERFIL.html'">👤 Mi Perfil</button>
+<button onclick="location.href='tienda.html'">💎 Tienda VIP</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c",measurementId:"G-5Y8JCL7G79"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();const db=firebase.firestore();
+let userActual=null;let misCoins=0;let misCompradas=[];let miId=0;
+
+// === TUS 7 TEXTURAS ENUMERADAS ===
+const TEXTURAS=[
+{num:1,nombre:"VEGETA",precio:10,emoji:"🔥",desc:"Textura VEGETA completa",link:"https://www.mediafire.com/file/pv7r3ykyso6fyvj/VEGETA.zip/file"},
+{num:2,nombre:"SKIN DE TITAN 2022",precio:12,emoji:"👹",desc:"Skin de Titan 2022",link:"https://www.mediafire.com/file/d3ql3i39g8nwqrf/SKIN_DE_TITAN_2022.zip/file"},
+{num:3,nombre:"SAKURA ANGELICALES",precio:15,emoji:"😇",desc:"Sakura Angelicales",link:"https://www.mediafire.com/file/v9btyfsji4j7u9z/SAKURI%25C3%2591A%252BANGELICALES.zip/file"},
+{num:4,nombre:"SAKURA DORADO",precio:12,emoji:"👑",desc:"Sakura Dorado",link:"https://www.mediafire.com/file/gldaphdk56a5chw/SACURA_DORADO.zip/file"},
+{num:5,nombre:"EL HOMBRE ARAÑA",precio:10,emoji:"🕷️",desc:"El Hombre Araña",link:"https://www.mediafire.com/file/m2xobrd0f5qvmys/EL_HOMBRE_ARA%25C3%2591A.zip/file"},
+{num:6,nombre:"HIP HOP DORADO",precio:8,emoji:"🎤",desc:"De Hip Hop Dorado",link:"https://www.mediafire.com/file/wdc0o2v1v8ph3n2/DE_HIP_HOP_DORADO.zip/file"},
+{num:7,nombre:"TXT FRESTYLE",precio:5,emoji:"🎨",desc:"1 Txt Frestyle",link:"https://www.mediafire.com/file/5o6fowq2s6kxuzr/1_TXT_FRESTYLE_.zip/file"},
+];
+
+function mostrarMsg(texto,tipo){
+  let m=document.getElementById('msg');
+  m.innerText=texto; m.className="msg "+(tipo||"");
+  setTimeout(()=>{m.innerText="";m.className="msg";},4000);
+}
+function render(){
+  document.getElementById('misCoinsTop').innerText=misCoins;
+  document.getElementById('misCoinsHero').innerText=misCoins;
+  document.getElementById('miIdHero').innerText=miId||"---";
+  let box=document.getElementById('listaTexturas');
+  box.innerHTML="";
+  TEXTURAS.forEach(t=>{
+    let comprada=misCompradas.includes(t.num);
+    let div=document.createElement('div');
+    div.className="card"+(comprada?" comprada":"");
+    div.innerHTML='<div class="numero">'+t.num+'</div><div class="info"><b>'+t.emoji+' '+t.nombre+'</b><small>'+t.desc+'</small><div class="precio"><span>🪙</span> '+t.precio+' Coins</div>'+(comprada?'<small style="color:#00ff88;font-weight:900">✅ YA LA TIENES</small>':"")+'</div>';
+    let btn=document.createElement('button');
+    if(comprada){
+      btn.className="btn btn-descargar"; btn.innerText="⬇️ DESCARGAR";
+      btn.onclick=()=>{ window.open(t.link,'_blank'); };
+    }else{
+      btn.className="btn btn-comprar"; btn.innerText="🪙 COMPRAR";
+      btn.onclick=()=>{ comprar(t); };
+    }
+    div.appendChild(btn);
+    box.appendChild(div);
+  });
+}
+async function comprar(t){
+  if(!userActual){ alert("Inicia sesión primero"); location.href='tienda.html'; return; }
+  if(misCompradas.includes(t.num)){ window.open(t.link,'_blank'); return; }
+  if(misCoins < t.precio){
+    mostrarMsg("❌ SALDO INSUFICIENTE - Te faltan "+(t.precio-misCoins)+" 🪙 para "+t.nombre,"error");
+    alert("❌ SALDO INSUFICIENTE\n\nTienes: "+misCoins+" 🪙\nNecesitas: "+t.precio+" 🪙\nTe faltan: "+(t.precio-misCoins)+" 🪙\n\nVe a Página Principal y dale al botón 🪙+ para conseguir más coins.");
+    return;
+  }
+  if(!confirm("¿Comprar "+t.nombre+" por 🪙 "+t.precio+"?\n\nTe quedarán: "+(misCoins-t.precio)+" 🪙")) return;
+  try{
+    let nuevoSaldo=misCoins - t.precio;
+    await db.collection('usuarios').doc(userActual.uid).update({
+      monedas: nuevoSaldo,
+      texturasCompradas: firebase.firestore.FieldValue.arrayUnion(t.num)
+    });
+    misCoins=nuevoSaldo;
+    misCompradas.push(t.num);
+    mostrarMsg("✅ ¡Compraste "+t.nombre+"! Te quedan "+nuevoSaldo+" 🪙","ok");
+    render();
+    setTimeout(()=>{ window.open(t.link,'_blank'); },600);
+  }catch(e){
+    // Si el campo monedas no existe, lo crea con set merge
+    try{
+      let nuevoSaldo=misCoins - t.precio;
+      await db.collection('usuarios').doc(userActual.uid).set({monedas:nuevoSaldo,texturasCompradas:firebase.firestore.FieldValue.arrayUnion(t.num)},{merge:true});
+      misCoins=nuevoSaldo; misCompradas.push(t.num); render();
+      window.open(t.link,'_blank');
+    }catch(e2){ mostrarMsg("Error: "+e2.message,"error"); }
+  }
+}
+auth.onAuthStateChanged(async(user)=>{
+  if(!user){ document.getElementById('msg').innerText="⚠️ Inicia sesión para comprar con coins"; render(); return; }
+  userActual=user;
+  db.collection('usuarios').doc(user.uid).onSnapshot(doc=>{
+    if(doc.exists){
+      let d=doc.data();
+      misCoins=d.monedas||0;
+      misCompradas=d.texturasCompradas||[];
+      miId=d.idNumero||"---";
+    }else{
+      misCoins=0; misCompradas=[];
+    }
+    render();
+  });
+});
+render();
+</script>
+</body>
+  </html>
