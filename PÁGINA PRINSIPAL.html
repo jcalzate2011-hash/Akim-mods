@@ -8,11 +8,10 @@
 body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;padding-bottom:80px;padding-top:105px}
 header{position:fixed;top:0;left:0;right:0;padding:16px;background:linear-gradient(90deg,#ff0055,#7b00ff);z-index:100}
 .top{display:flex;align-items:center;gap:12px}
-.avatar{width:58px;height:58px;border-radius:50%;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;flex-shrink:0;overflow:hidden;border:3px solid #fff;cursor:pointer;box-shadow:0 0 12px rgba(255,255,255,0.5)}
+.avatar{width:58px;height:58px;border-radius:50%;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;flex-shrink:0;overflow:hidden;border:3px solid #fff;cursor:pointer}
 .avatar img{width:100%;height:100%;object-fit:cover}
-.avatar:active{transform:scale(0.92)}
 .nombre{flex:1;text-align:left;min-width:0}
-.nombre b{font-size:19px;letter-spacing:1px;display:block;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nombre b{font-size:19px;display:block;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nombre small{font-size:13px;color:#eee;display:block;margin-top:2px}
 .nombre span{font-size:11px;background:#fff;color:#000;padding:3px 8px;border-radius:20px;font-weight:800;display:inline-block;margin-top:4px}
 .cargando{font-size:12px;color:#ddd;flex-shrink:0}
@@ -28,7 +27,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 .proBox{background:#2a1a00;border:1px solid #ffd700;border-radius:14px;padding:12px;margin:0 14px;margin-top:14px;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer}
 .proBox span{font-size:22px}
 .vipBox{background:#1a0a0a;border:1px solid #ff5555;border-radius:14px;padding:12px;margin:12px 14px;text-align:left}
-.tabs{display:flex;gap:10px;overflow-x:auto;padding:12px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs{display:flex;gap:10px;overflow-x:auto;padding:12px 14px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tabBtn{white-space:nowrap;padding:11px 18px;border-radius:999px;background:#1e1b3a;color:#fff;border:1px solid #2e2a5a;font-weight:800;cursor:pointer;font-size:15px;display:flex;align-items:center;gap:6px;flex-shrink:0}
 .tabBtn.activo{background:#0f0e2e;border:1px solid #fff}
@@ -37,12 +36,8 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 .linkBtn{width:100%;padding:14px;margin:7px 0;border:none;border-radius:14px;font-weight:800;cursor:pointer;font-size:16px;text-align:left;display:flex;align-items:center;gap:12px;background:#222231;color:#fff}
 .linkBtn small{display:block;color:#aaa;font-weight:400;font-size:12px}
 .linkBtn .flecha{margin-left:auto;font-size:18px;flex-shrink:0}
-.linkBtn.pink{background:#ff0055}
 .linkBtn.gold{background:#ffd700;color:#000}
 .linkBtn.gold small{color:#333}
-.linkBtn.green{background:#00c853}
-.linkBtn.blue{background:#0095F6}
-.linkBtn.purple{background:#7b00ff}
 .menuBtn{display:flex;align-items:center;gap:12px;background:#222231;border:1px solid #444;border-radius:16px;padding:16px;margin:12px 0;cursor:pointer;text-align:left;width:100%;color:#fff}
 .menuBtn b{font-size:17px;display:block}
 .menuBtn small{color:#aaa;font-size:13px}
@@ -62,7 +57,6 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 </style>
 </head>
 <body>
-
 <header>
 <div class="top">
 <div class="avatar" id="avatar" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">A</div>
@@ -75,59 +69,53 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <div class="cargando" id="textoCargando">Cargando...</div>
 </div>
 </header>
-
 <div id="loginBox" class="card hidden">
 <h2>👋 Bienvenido a AKIM</h2>
-<p style="color:#aaa;font-size:14px">Entra para ver tus diamantes, tu VIP, postularte y comprar en la Tienda.</p>
 <input id="email" type="email" placeholder="Tu correo">
 <input id="pass" type="password" placeholder="Contraseña">
 <button class="btn btn-pink" onclick="entrar()">Iniciar Sesión</button>
 <button class="btn btn-dark" onclick="loginGoogle()">Entrar con Google 🔍</button>
-<p style="font-size:13px;color:#aaa">¿No tienes cuenta? <a href="tienda.html" style="color:#ffd700">Créala en la Tienda</a></p>
 <p id="msgLogin" style="color:#ffcc00"></p>
 </div>
-
 <div id="inicioBox" class="hidden">
 <div class="proBox" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html'">
 <span>👑</span>
 <div style="flex:1"><b id="textoPro">PRO activo · abrir beneficios</b><br><small id="textoDiamantes" style="color:#aaa">💎 0 diamantes</small></div>
 <span>⚡</span>
 </div>
-
-<div id="vipBox" class="vipBox hidden">
-🔥 <b id="textoVip">PRO · VIP Activo</b><br>
-<span style="font-size:13px;color:#ccc" id="textoVip2">Tienes VIP activo. Disfruta tus beneficios en la Tienda.</span>
-</div>
-
+<div id="vipBox" class="vipBox hidden">🔥 <b>PRO · VIP Activo</b><br><span style="font-size:13px;color:#ccc">Tienes VIP activo.</span></div>
 <div class="tabs">
 <button class="tabBtn activo" id="btnVerTodos" onclick="mostrarVerTodos(this)">☰ Ver todos</button>
-<button class="tabBtn" onclick="irA('tienda.html',this)">🏆 Ranking</button>
-<button class="tabBtn" onclick="irA('tienda.html',this)">🏆 Top 3</button>
+<button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/RANKING.html',this)">🏆 Ranking</button>
+<button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/CHAT.html',this)">💬 Chat Global</button>
 <button class="tabBtn" onclick="irA('postulaciones.html',this)">🔥 Votaciones</button>
 <button class="tabBtn" onclick="irA('ANUNCIOS.html',this)">⚡ Anuncios</button>
 <button class="tabBtn" onclick="irA('tienda.html',this)">🛒 Tienda</button>
 <button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html',this)">👤 Perfil</button>
 <button class="tabBtn" onclick="irA('https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html',this)">👑 Beneficios</button>
 </div>
-
 <div class="aviso">Primero elige qué quieres hacer en AKIM y entra desde aquí. Todo está en un solo lugar.</div>
-
 <div id="verTodosBox" class="verTodosBox hidden">
 <h2 style="margin:5px 0">☰ Todos los links de AKIM</h2>
-<p style="color:#aaa;font-size:13px;margin:5px 0">Toca cualquiera y te lleva directo:</p>
-<button class="linkBtn pink" onclick="location.href='PÁGINA PRINSIPAL.html'">🏠 <span>PÁGINA PRINSIPAL<small>Página principal de AKIM</small></span><span class="flecha">➡️</span></button>
-<button class="linkBtn purple" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">👤 <span>Perfil<small>Configura tu nombre y tu foto</small></span><span class="flecha">⚙️</span></button>
+<button class="linkBtn" onclick="location.href='PÁGINA PRINSIPAL.html'">🏠 <span>PÁGINA PRINSIPAL<small>Página principal de AKIM</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">👤 <span>Perfil<small>Configura tu nombre y tu foto</small></span><span class="flecha">⚙️</span></button>
 <button class="linkBtn gold" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html'">👑 <span>Beneficios VIP<small>Qué trae ser VIP en AKIM</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn" onclick="location.href='tienda.html'">🛒 <span>Tienda<small>Compra VIP, diamantes y más</small></span><span class="flecha">➡️</span></button>
-<button class="linkBtn green" onclick="location.href='postulaciones.html'">📋 <span>Postulaciones<small>Postularme para trabajar en AKIM</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='postulaciones.html'">📋 <span>Postulaciones<small>Postularme para trabajar en AKIM</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn gold" onclick="location.href='ANUNCIOS.html'">📢 <span>Anuncios<small>Mira quién fue aceptado</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn" onclick="location.href='correo.html'">📩 <span>Correo Privado<small>Solo Moderadores y Admin</small></span><span class="flecha">🔒</span></button>
-<button class="linkBtn blue" onclick="location.href='tienda.html'">🏆 <span>Ranking<small>Ver quién tiene más diamantes</small></span><span class="flecha">➡️</span></button>
-<button class="linkBtn blue" onclick="location.href='tienda.html'">🥇 <span>Top 3<small>Los 3 mejores de AKIM</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/RANKING.html'">🏆 <span>Ranking<small>Ver quién tiene más diamantes</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/CHAT.html'">💬 <span>Chat Global<small>Habla con todos en AKIM</small></span><span class="flecha">➡️</span></button>
 <button class="linkBtn" onclick="location.href='postulaciones.html'">🔥 <span>Votaciones<small>Vota y postúlate</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/CHAT-MOD.html'">🛡️ <span>Chat Mod<small>Solo para moderadores</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/Baneados.html'">🚫 <span>Baneados<small>Lista de usuarios baneados</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://alpharede.com/hgVzJkKjCzd'">❤️ <span>Apoya a AKIM<small>Apoya a AKIM con un clic</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='http://jcalzate2011-hash.github.io/Akim-mods/PRIVADOS.html'">💬 <span>Mensajes<small>Tus mensajes privados</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/postulaciones.html'">📋 <span>Postulate<small>Postularme para trabajar en AKIM</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PAREDES.html'">🧱 <span>Pared invert<small>Ver la pared invert</small></span><span class="flecha">➡️</span></button>
+<button class="linkBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/TXT.html'">📄 <span>Descarga txt<small>Descargar archivos txt</small></span><span class="flecha">➡️</span></button>
 <button class="btn btn-dark" onclick="cerrarVerTodos()">❌ Cerrar</button>
 </div>
-
 <div class="card">
 <h2 style="margin:5px 0">🚀 ¿Qué quieres hacer hoy?</h2>
 <button class="menuBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'"><span class="icono">👤</span><div style="flex:1"><b>Mi Perfil</b><br><small id="miNombreCard">Configura tu nombre y tu foto</small></div><span class="badge">⚙️ EDITAR</span></button>
@@ -142,133 +130,58 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <div class="infoRow"><span>👑 VIP</span><b id="miVip">NO</b></div>
 <button class="btn btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
-
 <div class="card">
 <h2 style="margin:5px 0">📢 Últimos Anuncios</h2>
 <div id="listaAnuncios"><p style="color:#aaa">Cargando anuncios...</p></div>
 <button class="btn btn-white" onclick="location.href='ANUNCIOS.html'">Ver todos los anuncios ➡️</button>
 </div>
 </div>
-
 <div class="bottomNav">
 <button class="activo" onclick="location.href='PÁGINA PRINSIPAL.html'"><span>🏠</span>Inicio</button>
 <button onclick="location.href='tienda.html'"><span>🛒</span>Tienda</button>
 <button onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'"><span>👤</span>Perfil</button>
 <button onclick="location.href='ANUNCIOS.html'"><span>📢</span>Anuncios</button>
 </div>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",
-  authDomain: "akim-mods.firebaseapp.com",
-  projectId: "akim-mods",
-  storageBucket: "akim-mods.firebasestorage.app",
-  messagingSenderId: "1038400568277",
-  appId: "1:1038400568277:web:103029336774c075a29b5c",
-  measurementId: "G-5Y8JCL7G79"
-};
+const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c",measurementId:"G-5Y8JCL7G79"};
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-let datosUsuario = null;
-
-async function entrar(){
-  const e = document.getElementById('email').value;
-  const p = document.getElementById('pass').value;
-  try{ await auth.signInWithEmailAndPassword(e,p); }catch(err){ document.getElementById('msgLogin').innerText = err.message; }
-}
-async function loginGoogle(){
-  const prov = new firebase.auth.GoogleAuthProvider();
-  try{ await auth.signInWithPopup(prov); }catch(err){ document.getElementById('msgLogin').innerText = err.message; }
-}
-async function salir(){ await auth.signOut(); location.reload(); }
-
-function mostrarVerTodos(btn){
-  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));
-  btn.classList.add('activo');
-  let caja = document.getElementById('verTodosBox');
-  caja.classList.remove('hidden');
-  caja.scrollIntoView({behavior:'smooth'});
-}
-function cerrarVerTodos(){
-  document.getElementById('verTodosBox').classList.add('hidden');
-  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));
-  document.getElementById('btnVerTodos').classList.add('activo');
-}
-function irA(pagina, btn){
-  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));
-  btn.classList.add('activo');
-  document.getElementById('verTodosBox').classList.add('hidden');
-  location.href = pagina;
-}
-function nombreBonitoRol(rol){
-  if(rol === "Reseñas") return "Reseñero";
-  if(rol === "Moderador") return "Moderador";
-  if(rol === "Soporte") return "Soporte";
-  return rol || "";
-}
-auth.onAuthStateChanged(async (user)=>{
-  if(!user){
-    document.getElementById('textoCargando').innerText = "Sin sesión";
-    document.getElementById('loginBox').classList.remove('hidden');
-    document.getElementById('nombreHeader').innerText = "CREADOR AKIM";
-    document.getElementById('subHeader').innerText = "Creador de AKIM 👑";
-    document.getElementById('etiquetaRol').innerText = "AKIM";
-    cargarAnuncios();
-    return;
-  }
-  document.getElementById('textoCargando').innerText = "";
-  document.getElementById('loginBox').classList.add('hidden');
-  document.getElementById('inicioBox').classList.remove('hidden');
-  try{
-    const doc = await db.collection('usuarios').doc(user.uid).get();
-    if(doc.exists){ datosUsuario = doc.data(); } else { datosUsuario = {diamantes:0, vip:false, admin:false}; }
-  }catch(e){ datosUsuario = {diamantes:0, vip:false, admin:false}; }
-  let nombre = datosUsuario.nombre || "AKIM OFICIAL";
-  let titulo = "CREADOR " + nombre.toUpperCase();
-  if(datosUsuario.admin) titulo = "CREADOR " + nombre.toUpperCase();
-  else if(datosUsuario.rolEquipo) titulo = datosUsuario.rolEquipo.toUpperCase() + " " + nombre.toUpperCase();
-  document.getElementById('nombreHeader').innerText = titulo;
-  document.getElementById('subHeader').innerText = datosUsuario.admin ? "Creador de AKIM 👑" : (datosUsuario.rolEquipo ? "Equipo AKIM - " + datosUsuario.rolEquipo : "Miembro de AKIM");
-  document.getElementById('miNombreCard').innerText = nombre + " - Toca para cambiar tu foto y tu nombre";
-  let rol = datosUsuario.admin ? "ADMIN" : (datosUsuario.rolEquipo ? datosUsuario.rolEquipo.toUpperCase() : "USUARIO");
-  if(datosUsuario.vip) rol = "VIP · " + rol;
-  document.getElementById('etiquetaRol').innerText = rol;
-  let avatar = document.getElementById('avatar');
-  if(datosUsuario.foto){
-    avatar.innerHTML = '<img src="' + datosUsuario.foto + '" alt="Mi foto">';
-  } else {
-    avatar.innerText = nombre.charAt(0).toUpperCase();
-  }
-  document.getElementById('miCorreo').innerText = user.email;
-  document.getElementById('miRol2').innerText = datosUsuario.admin ? "Admin" : (datosUsuario.rolEquipo || "Usuario");
-  document.getElementById('misDiamantes').innerText = datosUsuario.diamantes || 0;
-  document.getElementById('miVip').innerText = datosUsuario.vip ? "SÍ 👑" : "NO";
-  document.getElementById('textoPro').innerText = datosUsuario.vip ? "👑 PRO activo · abrir beneficios" : "PRO · Activar PRO en la Tienda";
-  document.getElementById('textoDiamantes').innerText = "💎 " + (datosUsuario.diamantes || 0) + " diamantes";
-  if(datosUsuario.vip){
-    document.getElementById('vipBox').classList.remove('hidden');
-  }
-  cargarAnuncios();
+const auth=firebase.auth();const db=firebase.firestore();let datosUsuario=null;
+async function entrar(){const e=document.getElementById('email').value;const p=document.getElementById('pass').value;try{await auth.signInWithEmailAndPassword(e,p);}catch(err){document.getElementById('msgLogin').innerText=err.message;}}
+async function loginGoogle(){const prov=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(prov);}catch(err){document.getElementById('msgLogin').innerText=err.message;}}
+async function salir(){await auth.signOut();location.reload();}
+function mostrarVerTodos(btn){document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo');let caja=document.getElementById('verTodosBox');caja.classList.remove('hidden');caja.scrollIntoView({behavior:'smooth'});}
+function cerrarVerTodos(){document.getElementById('verTodosBox').classList.add('hidden');document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));document.getElementById('btnVerTodos').classList.add('activo');}
+function irA(pagina,btn){document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo');document.getElementById('verTodosBox').classList.add('hidden');location.href=pagina;}
+function nombreBonitoRol(rol){if(rol==="Reseñas")return "Reseñero";if(rol==="Moderador")return "Moderador";if(rol==="Soporte")return "Soporte";return rol||"";}
+auth.onAuthStateChanged(async(user)=>{
+if(!user){document.getElementById('textoCargando').innerText="Sin sesión";document.getElementById('loginBox').classList.remove('hidden');document.getElementById('nombreHeader').innerText="CREADOR AKIM";document.getElementById('subHeader').innerText="Creador de AKIM 👑";document.getElementById('etiquetaRol').innerText="AKIM";cargarAnuncios();return;}
+document.getElementById('textoCargando').innerText="";document.getElementById('loginBox').classList.add('hidden');document.getElementById('inicioBox').classList.remove('hidden');
+try{const doc=await db.collection('usuarios').doc(user.uid).get();if(doc.exists){datosUsuario=doc.data();}else{datosUsuario={diamantes:0,vip:false,admin:false};}}catch(e){datosUsuario={diamantes:0,vip:false,admin:false};}
+let nombre=datosUsuario.nombre||"AKIM OFICIAL";let titulo="CREADOR "+nombre.toUpperCase();if(datosUsuario.admin)titulo="CREADOR "+nombre.toUpperCase();else if(datosUsuario.rolEquipo)titulo=datosUsuario.rolEquipo.toUpperCase()+" "+nombre.toUpperCase();
+document.getElementById('nombreHeader').innerText=titulo;
+document.getElementById('subHeader').innerText=datosUsuario.admin?"Creador de AKIM 👑":(datosUsuario.rolEquipo?"Equipo AKIM - "+datosUsuario.rolEquipo:"Miembro de AKIM");
+document.getElementById('miNombreCard').innerText=nombre+" - Toca para cambiar tu foto y tu nombre";
+let rol=datosUsuario.admin?"ADMIN":(datosUsuario.rolEquipo?datosUsuario.rolEquipo.toUpperCase():"USUARIO");if(datosUsuario.vip)rol="VIP · "+rol;
+document.getElementById('etiquetaRol').innerText=rol;
+let avatar=document.getElementById('avatar');if(datosUsuario.foto){avatar.innerHTML='<img src="'+datosUsuario.foto+'" alt="Mi foto">';}else{avatar.innerText=nombre.charAt(0).toUpperCase();}
+document.getElementById('miCorreo').innerText=user.email;
+document.getElementById('miRol2').innerText=datosUsuario.admin?"Admin":(datosUsuario.rolEquipo||"Usuario");
+document.getElementById('misDiamantes').innerText=datosUsuario.diamantes||0;
+document.getElementById('miVip').innerText=datosUsuario.vip?"SÍ 👑":"NO";
+document.getElementById('textoPro').innerText=datosUsuario.vip?"👑 PRO activo · abrir beneficios":"PRO · Activar PRO en la Tienda";
+document.getElementById('textoDiamantes').innerText="💎 "+(datosUsuario.diamantes||0)+" diamantes";
+if(datosUsuario.vip){document.getElementById('vipBox').classList.remove('hidden');}
+cargarAnuncios();
 });
 async function cargarAnuncios(){
-  try{
-    let snap = await db.collection('anuncios').get();
-    if(snap.empty){ document.getElementById('listaAnuncios').innerHTML = "<p style='color:#aaa'>Aún no hay anuncios.</p>"; return; }
-    let docs = snap.docs.sort((a,b)=> (b.data().fecha||0) - (a.data().fecha||0)).slice(0,3);
-    let html = "";
-    docs.forEach(doc=>{
-      let d = doc.data();
-      let esAceptado = d.tipo === "aceptado";
-      html += '<div class="anuncioBox ' + (esAceptado ? "aceptado" : "") + '"><b>' + (d.titulo || "📢 Anuncio") + '</b><br><span style="font-size:14px;color:#ddd">' + (d.mensaje || "") + '</span><br>' + (d.nombre ? "<small>👤 " + d.nombre + (d.rol ? " - " + nombreBonitoRol(d.rol) : "") + "</small>" : "") + '</div>';
-    });
-    document.getElementById('listaAnuncios').innerHTML = html;
-    document.getElementById('badgeAnuncios').innerText = snap.size + " NUEVOS";
-  }catch(e){ document.getElementById('listaAnuncios').innerHTML = "Error: " + e.message; }
+try{let snap=await db.collection('anuncios').get();if(snap.empty){document.getElementById('listaAnuncios').innerHTML="<p style='color:#aaa'>Aún no hay anuncios.</p>";return;}
+let docs=snap.docs.sort((a,b)=>(b.data().fecha||0)-(a.data().fecha||0)).slice(0,3);let html="";
+docs.forEach(doc=>{let d=doc.data();let esAceptado=d.tipo==="aceptado";html+='<div class="anuncioBox '+(esAceptado?"aceptado":"")+'"><b>'+(d.titulo||"📢 Anuncio")+'</b><br><span style="font-size:14px;color:#ddd">'+(d.mensaje||"")+'</span><br>'+(d.nombre?"<small>👤 "+d.nombre+(d.rol?" - "+nombreBonitoRol(d.rol):"")+"</small>":"")+'</div>';});
+document.getElementById('listaAnuncios').innerHTML=html;document.getElementById('badgeAnuncios').innerText=snap.size+" NUEVOS";}catch(e){document.getElementById('listaAnuncios').innerHTML="Error: "+e.message;}
 }
 </script>
 </body>
-  </html>
+                                                                        </html>
