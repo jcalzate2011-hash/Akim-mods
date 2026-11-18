@@ -14,7 +14,10 @@ header{position:fixed;top:0;left:0;right:0;padding:16px;background:linear-gradie
 .nombre b{font-size:19px;display:block;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nombre small{font-size:13px;color:#eee;display:block;margin-top:2px}
 .nombre span{font-size:11px;background:#fff;color:#000;padding:3px 8px;border-radius:20px;font-weight:800;display:inline-block;margin-top:4px}
-.cargando{font-size:12px;color:#ddd;flex-shrink:0}
+.cargando{font-size:12px;color:#ddd;flex-shrink:0;text-align:right}
+.monedasTop{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.35);padding:5px 10px;border-radius:999px;margin-top:4px}
+.monedaCirculo{width:24px;height:24px;border-radius:50%;background:#ffd700;color:#000;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;border:2px solid #fff}
+.monedasTop b{font-size:15px;color:#fff}
 .card{background:#15151f;margin:14px;border-radius:16px;padding:16px;text-align:left}
 .btn{width:100%;padding:13px;margin:6px 0;border:none;border-radius:12px;font-weight:800;cursor:pointer}
 .btn-pink{background:#ff0055;color:#fff}
@@ -66,7 +69,10 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <span id="etiquetaRol">USUARIO</span>
 <div class="perfilMini" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'">⚙️ Toca tu foto para configurar tu perfil</div>
 </div>
-<div class="cargando" id="textoCargando">Cargando...</div>
+<div class="cargando">
+<div id="textoCargando">Cargando...</div>
+<div class="monedasTop"><span class="monedaCirculo">🪙</span><b id="monedasTop">0</b></div>
+</div>
 </div>
 </header>
 <div id="loginBox" class="card hidden">
@@ -127,6 +133,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <div class="infoRow"><span>👤 Tu cuenta</span><b id="miCorreo">-</b></div>
 <div class="infoRow"><span>🛡️ Tu rol</span><b id="miRol2" style="color:#ffd700">-</b></div>
 <div class="infoRow"><span>💎 Diamantes</span><b id="misDiamantes">0</b></div>
+<div class="infoRow"><span>🪙</span><b id="misMonedas" style="color:#ffd700">0</b></div>
 <div class="infoRow"><span>👑 VIP</span><b id="miVip">NO</b></div>
 <button class="btn btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
@@ -157,9 +164,9 @@ function cerrarVerTodos(){document.getElementById('verTodosBox').classList.add('
 function irA(pagina,btn){document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo');document.getElementById('verTodosBox').classList.add('hidden');location.href=pagina;}
 function nombreBonitoRol(rol){if(rol==="Reseñas")return "Reseñero";if(rol==="Moderador")return "Moderador";if(rol==="Soporte")return "Soporte";return rol||"";}
 auth.onAuthStateChanged(async(user)=>{
-if(!user){document.getElementById('textoCargando').innerText="Sin sesión";document.getElementById('loginBox').classList.remove('hidden');document.getElementById('nombreHeader').innerText="CREADOR AKIM";document.getElementById('subHeader').innerText="Creador de AKIM 👑";document.getElementById('etiquetaRol').innerText="AKIM";cargarAnuncios();return;}
+if(!user){document.getElementById('textoCargando').innerText="Sin sesión";document.getElementById('monedasTop').innerText="0";document.getElementById('loginBox').classList.remove('hidden');document.getElementById('nombreHeader').innerText="CREADOR AKIM";document.getElementById('subHeader').innerText="Creador de AKIM 👑";document.getElementById('etiquetaRol').innerText="AKIM";cargarAnuncios();return;}
 document.getElementById('textoCargando').innerText="";document.getElementById('loginBox').classList.add('hidden');document.getElementById('inicioBox').classList.remove('hidden');
-try{const doc=await db.collection('usuarios').doc(user.uid).get();if(doc.exists){datosUsuario=doc.data();}else{datosUsuario={diamantes:0,vip:false,admin:false};}}catch(e){datosUsuario={diamantes:0,vip:false,admin:false};}
+try{const doc=await db.collection('usuarios').doc(user.uid).get();if(doc.exists){datosUsuario=doc.data();}else{datosUsuario={diamantes:0,monedas:0,vip:false,admin:false};}}catch(e){datosUsuario={diamantes:0,monedas:0,vip:false,admin:false};}
 let nombre=datosUsuario.nombre||"AKIM OFICIAL";let titulo="CREADOR "+nombre.toUpperCase();if(datosUsuario.admin)titulo="CREADOR "+nombre.toUpperCase();else if(datosUsuario.rolEquipo)titulo=datosUsuario.rolEquipo.toUpperCase()+" "+nombre.toUpperCase();
 document.getElementById('nombreHeader').innerText=titulo;
 document.getElementById('subHeader').innerText=datosUsuario.admin?"Creador de AKIM 👑":(datosUsuario.rolEquipo?"Equipo AKIM - "+datosUsuario.rolEquipo:"Miembro de AKIM");
@@ -170,6 +177,8 @@ let avatar=document.getElementById('avatar');if(datosUsuario.foto){avatar.innerH
 document.getElementById('miCorreo').innerText=user.email;
 document.getElementById('miRol2').innerText=datosUsuario.admin?"Admin":(datosUsuario.rolEquipo||"Usuario");
 document.getElementById('misDiamantes').innerText=datosUsuario.diamantes||0;
+document.getElementById('misMonedas').innerText=datosUsuario.monedas||0;
+document.getElementById('monedasTop').innerText=datosUsuario.monedas||0;
 document.getElementById('miVip').innerText=datosUsuario.vip?"SÍ 👑":"NO";
 document.getElementById('textoPro').innerText=datosUsuario.vip?"👑 PRO activo · abrir beneficios":"PRO · Activar PRO en la Tienda";
 document.getElementById('textoDiamantes').innerText="💎 "+(datosUsuario.diamantes||0)+" diamantes";
@@ -184,4 +193,4 @@ document.getElementById('listaAnuncios').innerHTML=html;document.getElementById(
 }
 </script>
 </body>
-                                                                        </html>
+                       </html>
