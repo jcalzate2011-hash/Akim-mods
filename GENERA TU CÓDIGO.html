@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GENERA TU CÓDIGO - AKIM</title>
+<style>
+body{margin:0;font-family:Arial;background:#0a0a0f;color:#fff;text-align:center;padding:20px;padding-top:30px}
+.card{background:#15151f;border:2px solid #ffd700;border-radius:20px;padding:22px;max-width:380px;margin:0 auto}
+.titulo{font-size:24px;font-weight:900;margin:5px 0}
+.sub{color:#aaa;font-size:14px}
+.codigoBox{background:#000;border:2px dashed #ffd700;border-radius:16px;padding:20px;margin:18px 0}
+.codigoBox b{font-size:28px;letter-spacing:1px;color:#ffd700;display:block;text-transform:uppercase}
+.codigoBox span{font-size:14px;color:#fff;display:block;margin-top:6px}
+.btn{width:100%;padding:14px;margin:7px 0;border:none;border-radius:12px;font-weight:900;cursor:pointer;font-size:16px}
+.btn-gold{background:#ffd700;color:#000}
+.btn-pink{background:#ff0055;color:#fff}
+.btn-dark{background:#2a2a3a;color:#fff}
+.lista{text-align:left;background:#222231;border-radius:14px;padding:14px;margin-top:14px;font-size:14px}
+.lista b{display:block;margin-bottom:8px}
+.fila{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #333}
+.fila:last-child{border:none}
+.ok{color:#00ff88}
+.no{color:#aaa}
+</style>
+</head>
+<body>
+<div class="card">
+<div style="font-size:40px">🎁</div>
+<h1 class="titulo">GENERA TU CÓDIGO</h1>
+<p class="sub" id="textoEstado">Entraste y ya te damos tu código. Sin escribir nada.</p>
+
+<div id="cajaCodigo" class="codigoBox">
+<b id="codigoTexto">Cargando...</b>
+<span id="premioTexto">...</span>
+</div>
+
+<button class="btn btn-gold" id="btnCopiar" onclick="copiarCodigo()">📋 Copiar código</button>
+<button class="btn btn-pink" onclick="location.href='PÁGINA PRINSIPAL.html'">Ir a canjearlo en la Principal ➡️</button>
+<button class="btn btn-dark" onclick="location.href='PÁGINA PRINSIPAL.html'">🏠 Volver a Inicio</button>
+
+<div class="lista">
+<b>📦 Tus códigos:</b>
+<div id="listaCodigos">Cargando...</div>
+</div>
+<p style="color:#aaa;font-size:12px">Los códigos difíciles salen menos. TXT es 75% más difícil, Domina es 50% más difícil. Y un código que ya te salió, no vuelve a salir.</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c",measurementId:"G-5Y8JCL7G79"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();const db=firebase.firestore();
+
+// CODIGOS CON PROBABILIDAD
+// Peso = que tan fácil sale. Más peso = sale más.
+// Normales peso 4, Domina peso 2 = 50% más difícil, TXT peso 1 = 75% más difícil
+const TODOS=[
+{id:"AKIM15",texto:"Akim - 15",premio:"300 diamantes",peso:4},
+{id:"AKIMELMEJOR",texto:"Akim - el mejor",premio:"250 diamantes",peso:4},
+{id:"SEXY",texto:"Sexy",premio:"100 diamantes",peso:4},
+{id:"AKIMDOMINA",texto:"Akim - domina",premio:"500 diamantes",peso:2},
+{id:"TXT",texto:"TXT",premio:"1 cripto",peso:1}
+];
+let codigoActual="";
+
+function elegirAlAzar(disponibles){
+  let total=0;
+  disponibles.forEach(c=> total+=c.peso);
+  let r=Math.random()*total;
+  for(let c of disponibles){
+    if(r < c.peso) return c;
+    r-=c.peso;
+  }
+  return disponibles[disponibles.length-1];
+}
+
+function pintarLista(generados,usados){
+  let html="";
+  TODOS.forEach(c=>{
+    let yaGen=generados.includes(c.id);
+    let yaUso=usados.includes(c.id);
+    let estado=yaUso?"✅ Canjeado":(yaGen?"🎁 Te salió - falta canjear":"🔒 Aún no te sale");
+    let clase=yaGen?"ok":"no";
+    html+='<div class="fila"><span>'+c.texto+'</span><span class="'+clase+'">'+estado+'</span></div>';
+  });
+  document.getElementById('listaCodigos').innerHTML=html;
+}
+
+async function generar(){
+  let user=auth.currentUser;
+  if(!user){document.getElementById('codigoTexto').innerText="Inicia sesión primero";document.getElementById('premioTexto').innerText="Entra a la Principal e inicia sesión";return;}
+  let ref=db.collection('usuarios').doc(user.uid);
+  let doc=await ref.get();
+  let data=doc.exists?doc.data():{};
+  let generados=data.codigosGenerados||[];
+  let usados=data.codigosUsados||[];
+
+  // Si ya tiene todos generados
+  if(generados.length>=TODOS.length){
+    document.getElementById('textoEstado').innerText="Códigos promocionales completados, ya no hay más códigos promocionales.";
+    document.getElementById('codigoTexto').innerText="✅ COMPLETADO";
+    document.getElementById('premioTexto').innerText="Ya te salieron todos los códigos";
+    document.getElementById('btnCopiar').style.display="none";
+    pintarLista(generados,usados);
+    return;
+  }
+
+  // Si tiene uno pendiente sin canjear, mostrar ese, no generar otro
+  let pendientes=generados.filter(id=>!usados.includes(id));
+  let elegido=null;
+  if(pendientes.length>0){
+    let ultimoId=pendientes[pendientes.length-1];
+    elegido=TODOS.find(c=>c.id===ultimoId);
+    document.getElementById('textoEstado').innerText="Este es tu código pendiente. Canjéalo primero.";
+  }else{
+    // Elegir solo entre los que NUNCA le han salido, con probabilidad
+    let disponibles=TODOS.filter(c=>!generados.includes(c.id));
+    elegido=elegirAlAzar(disponibles);
+    generados.push(elegido.id);
+    await ref.set({codigosGenerados:firebase.firestore.FieldValue.arrayUnion(elegido.id)},{merge:true});
+    document.getElementById('textoEstado').innerText="¡Te salió un código! Cópialo y canjéalo.";
+  }
+
+  codigoActual=elegido.texto;
+  document.getElementById('codigoTexto').innerText=elegido.texto;
+  document.getElementById('premioTexto').innerText="Premio: "+elegido.premio;
+  pintarLista(generados,usados);
+}
+
+async function copiarCodigo(){
+  if(!codigoActual){return;}
+  try{await navigator.clipboard.writeText(codigoActual);alert("✅ Código copiado: "+codigoActual);}catch(e){
+    let ta=document.createElement("textarea");ta.value=codigoActual;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();alert("✅ Código copiado: "+codigoActual);
+  }
+}
+
+auth.onAuthStateChanged(async(user)=>{
+  if(!user){document.getElementById('codigoTexto').innerText="Inicia sesión";document.getElementById('premioTexto').innerText="Ve a la Principal e inicia sesión";return;}
+  await generar();
+});
+</script>
+</body>
+</html>
