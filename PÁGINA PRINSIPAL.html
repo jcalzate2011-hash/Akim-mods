@@ -151,7 +151,64 @@ const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomai
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();const db=firebase.firestore();let datosUsuario=null;let intervaloPresencia=null;
 function normalizarCodigo(t){return (t||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
-const CODIGOS={"AKIM15":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},"AKIM12":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},"AKIMDOMINA":{diamantes:500,cripto:0,etiqueta:"500 diamantes"},"AKIMELMEJOR":{diamantes:250,cripto:0,etiqueta:"250 diamantes"},"SEXY":{diamantes:100,cripto:0,etiqueta:"100 diamantes"},"TXT":{diamantes:0,cripto:1,etiqueta:"1 cripto"}};
+const CODIGOS={
+"AKIM15":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
+"AKIM12":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
+"AKIMDOMINA":{diamantes:500,cripto:0,etiqueta:"500 diamantes"},
+"AKIMELMEJOR":{diamantes:250,cripto:0,etiqueta:"250 diamantes"},
+"SEXY":{diamantes:100,cripto:0,etiqueta:"100 diamantes"},
+"TXT":{diamantes:0,cripto:1,etiqueta:"1 cripto"},
+"AKIMFUEGO":{diamantes:100,cripto:0,etiqueta:"100 diamantes"},
+"AKIMLEYENDA":{diamantes:500,cripto:0,etiqueta:"500 diamantes"},
+"AKIMREY":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
+"AKIMGOLD":{diamantes:250,cripto:0,etiqueta:"250 diamantes"},
+"AKIMSTAR":{diamantes:150,cripto:0,etiqueta:"150 diamantes"},
+"AKIMTOP":{diamantes:200,cripto:0,etiqueta:"200 diamantes"},
+"AKIMPRO":{diamantes:400,cripto:0,etiqueta:"400 diamantes"},
+"AKIMVIP":{diamantes:350,cripto:0,etiqueta:"350 diamantes"},
+"AKIMLOCO":{diamantes:50,cripto:0,etiqueta:"50 diamantes"},
+"AKIMCRACK":{diamantes:600,cripto:0,etiqueta:"600 diamantes"},
+"AKIMBOSS":{diamantes:450,cripto:0,etiqueta:"450 diamantes"},
+"AKIMNUBE":{diamantes:80,cripto:0,etiqueta:"80 diamantes"},
+"AKIMRAYO":{diamantes:120,cripto:0,etiqueta:"120 diamantes"},
+"AKIMDIAMANTE":{diamantes:1000,cripto:0,etiqueta:"1000 diamantes"},
+"AKIMORO":{diamantes:180,cripto:0,etiqueta:"180 diamantes"},
+"AKIMPLATA":{diamantes:90,cripto:0,etiqueta:"90 diamantes"},
+"AKIMBRONCE":{diamantes:60,cripto:0,etiqueta:"60 diamantes"},
+"AKIMFANTASMA":{diamantes:700,cripto:0,etiqueta:"700 diamantes"},
+"AKIMSOMBRA":{diamantes:550,cripto:0,etiqueta:"550 diamantes"},
+"AKIMLUZ":{diamantes:130,cripto:0,etiqueta:"130 diamantes"},
+"AKIMOSCURO":{diamantes:380,cripto:0,etiqueta:"380 diamantes"},
+"AKIMFURIA":{diamantes:420,cripto:0,etiqueta:"420 diamantes"},
+"AKIMTRUENO":{diamantes:220,cripto:0,etiqueta:"220 diamantes"},
+"AKIMTORMENTA":{diamantes:480,cripto:0,etiqueta:"480 diamantes"},
+"AKIMGIGANTE":{diamantes:800,cripto:0,etiqueta:"800 diamantes"},
+"AKIMMINI":{diamantes:40,cripto:0,etiqueta:"40 diamantes"},
+"AKIMMAX":{diamantes:650,cripto:0,etiqueta:"650 diamantes"},
+"AKIMULTRA":{diamantes:900,cripto:0,etiqueta:"900 diamantes"},
+"AKIMMEGA":{diamantes:750,cripto:0,etiqueta:"750 diamantes"},
+"AKIMSUPER":{diamantes:280,cripto:0,etiqueta:"280 diamantes"},
+"AKIMHEROE":{diamantes:320,cripto:0,etiqueta:"320 diamantes"},
+"AKIMGUERRERO":{diamantes:360,cripto:0,etiqueta:"360 diamantes"},
+"AKIMCAZADOR":{diamantes:200,cripto:0,etiqueta:"200 diamantes"},
+"AKIMNINJA":{diamantes:500,cripto:0,etiqueta:"500 diamantes"},
+"AKIMPIRATA":{diamantes:150,cripto:0,etiqueta:"150 diamantes"},
+"AKIMMAGO":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
+"AKIMDRAGON":{diamantes:1200,cripto:0,etiqueta:"1200 diamantes"},
+"AKIMFENIX":{diamantes:1000,cripto:0,etiqueta:"1000 diamantes"},
+"AKIMAGUILA":{diamantes:260,cripto:0,etiqueta:"260 diamantes"},
+"AKIMLEON":{diamantes:400,cripto:0,etiqueta:"400 diamantes"},
+"AKIMTIGRE":{diamantes:340,cripto:0,etiqueta:"340 diamantes"},
+"AKIMLOBO":{diamantes:290,cripto:0,etiqueta:"290 diamantes"},
+"AKIMZORRO":{diamantes:110,cripto:0,etiqueta:"110 diamantes"},
+"AKIMGATO":{diamantes:70,cripto:0,etiqueta:"70 diamantes"},
+"AKIMPERRO":{diamantes:70,cripto:0,etiqueta:"70 diamantes"},
+"AKIMFIESTA":{diamantes:180,cripto:0,etiqueta:"180 diamantes"},
+"AKIMVERANO":{diamantes:160,cripto:0,etiqueta:"160 diamantes"},
+"AKIMINVIERNO":{diamantes:190,cripto:0,etiqueta:"190 diamantes"},
+"AKIM2026":{diamantes:50,cripto:0,etiqueta:"50 diamantes"},
+"DTXT":{diamantes:0,cripto:1,etiqueta:"1 cripto"}
+};
 function abrirPromo(){document.getElementById('modalPromo').classList.remove('hidden');document.getElementById('msgPromo').innerText="";}
 function cerrarPromo(){document.getElementById('modalPromo').classList.add('hidden');}
 async function canjearCodigo(){
@@ -229,4 +286,4 @@ document.getElementById('listaAnuncios').innerHTML=html;document.getElementById(
 }
 </script>
 </body>
-  </html>
+                                                                                                                                                                            </html>
