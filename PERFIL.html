@@ -40,6 +40,7 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 .panelAdmin h3{font-family:'Orbitron';color:#0095F6;margin:0 0 6px;font-size:17px}
 .panelAdmin .sub{color:#bbb;font-size:12px;margin:0 0 12px}
 .btn-verificarme{width:100%;background:#0095F6;color:#fff;font-family:'Orbitron';font-weight:900;padding:12px;border:none;cursor:pointer;margin-bottom:12px}
+.btn-enumerar{width:100%;background:#ffd700;color:#000;font-family:'Orbitron';font-weight:900;padding:12px;border:none;cursor:pointer;margin-bottom:12px}
 .userRow{background:#1c1c26;border:1px solid #333;padding:10px;margin-bottom:8px}
 .userRow.baneado{border:2px solid #ff0000;background:#2a0000}
 .userRow .nombreU{font-weight:900;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -125,6 +126,8 @@ body{margin:0;font-family:'Inter',Arial;background:#0b0b12;color:#fff}
 <h3>🛡️ PANEL DE MODERADOR / ADMIN</h3>
 <p class="sub">Aquí puedes verificar y banear a cualquier persona. Solo aquí aparece el botón de banear.</p>
 <button class="btn-verificarme" onclick="verificarmeYo()">✅ VERIFICARME A MI MISMO</button>
+<button class="btn-enumerar" onclick="enumerarTodos()">🔢 ENUMERAR A TODOS - Dar ID 1001, 1002...</button>
+<p id="msgEnumerar" style="font-size:13px;color:#00ff88;font-weight:800;text-align:center"></p>
 <input class="buscarInput" id="buscarUser" placeholder="🔍 Buscar por nombre, correo o ID..." oninput="filtrarUsuarios()">
 <p style="font-size:13px"><b>Total:</b> <span id="totalUsuarios" style="color:#0095F6">0</span> | <b>Verificados:</b> <span id="totalVerificados" style="color:#00ff88">0</span> | <b>Baneados:</b> <span id="totalBaneados" style="color:#ff0000">0</span></p>
 <div id="listaUsuarios"><p style="color:#888">Cargando personas...</p></div>
@@ -208,7 +211,6 @@ function actualizarUI(){
     document.getElementById('vipTiempo').innerText = "Sin VIP - Ve a la tienda a conseguirlo";
   }
 }
-// === ID CORTO 1001, 1002, 1003... ===
 async function asignarID(uid){
   try{
     let ref = db.collection('usuarios').doc(uid);
@@ -235,6 +237,45 @@ function mostrarMiID(){
     document.getElementById('miIdTexto').innerText = miIDcorto;
     document.getElementById('idCortoBar').innerText = miIDcorto;
   }
+}
+// === ENUMERAR A TODOS LOS QUE YA ESTAN REGISTRADOS ===
+async function enumerarTodos(){
+  if(!esAdmin()){ alert("Solo el admin puede hacer esto"); return; }
+  if(!confirm("¿Quieres darle ID a TODOS los que ya están registrados?\n\nA los que ya tienen ID no se les cambia.\nA los que no tienen, se les da 1002, 1003... en orden.")){ return; }
+  document.getElementById('msgEnumerar').innerText = "Enumerando... espera...";
+  try{
+    let snap = await db.collection('usuarios').get();
+    let lista = [];
+    snap.forEach(doc=>{ let d=doc.data(); d._uid=doc.id; lista.push(d); });
+    // 1. Los que ya tienen ID se quedan como están
+    // 2. Tu (admin) primero, para que te quede el 1001 si aún no lo tienes
+    // 3. Los demás en orden
+    lista.sort((a,b)=>{
+      if(a._uid===userActual.uid) return -1;
+      if(b._uid===userActual.uid) return 1;
+      if(a.idNumero && !b.idNumero) return -1;
+      if(!a.idNumero && b.idNumero) return 1;
+      return (a.idNumero||999999) - (b.idNumero||999999);
+    });
+    let maxID = 1000;
+    lista.forEach(u=>{ if(u.idNumero && u.idNumero>maxID) maxID=u.idNumero; });
+    // Si el contador está más bajo que el max, lo subimos
+    let contadorDoc = await db.collection('contadores').doc('usuarios').get();
+    let totalContador = contadorDoc.exists ? (contadorDoc.data().total||0) : 0;
+    if(totalContador < (maxID-1000)) totalContador = maxID-1000;
+    let asignados = 0;
+    for(let u of lista){
+      if(u.idNumero) continue;
+      totalContador = totalContador + 1;
+      let nuevo = 1000 + totalContador;
+      await db.collection('usuarios').doc(u._uid).set({idNumero:nuevo},{merge:true});
+      if(u._uid===userActual.uid){ miIDcorto=nuevo; mostrarMiID(); }
+      asignados++;
+    }
+    await db.collection('contadores').doc('usuarios').set({total:totalContador},{merge:true});
+    document.getElementById('msgEnumerar').innerText = "✅ Listo! Se les dio ID a "+asignados+" personas. Ya todos tienen 1001, 1002...";
+    alert("✅ Listo! Ya todos tienen su ID.\nSe enumeraron "+asignados+" personas.");
+  }catch(e){ document.getElementById('msgEnumerar').innerText = "Error: "+e.message; alert("Error: "+e.message); }
 }
 async function guardarPerfil(){
   if(!userActual){ alert("Inicia sesión primero en la tienda"); window.location.href='tienda.html'; return; }
@@ -352,7 +393,6 @@ auth.onAuthStateChanged(async (user)=>{
     document.getElementById('emailPreview').innerText = user.email;
     document.getElementById('msgNoLogin').innerText = "";
     escucharCorreito();
-    // Asignar ID corto 1001, 1002...
     await asignarID(user.uid);
     mostrarMiID();
     db.collection('usuarios').doc(user.uid).onSnapshot((doc)=>{
