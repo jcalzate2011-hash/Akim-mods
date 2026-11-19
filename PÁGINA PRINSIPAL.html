@@ -60,11 +60,13 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 .bottomNav button.activo{color:#fff;font-weight:900}
 .bottomNav span{display:block;font-size:20px}
 .perfilMini{font-size:11px;color:#fff;background:rgba(0,0,0,0.3);padding:3px 8px;border-radius:20px;display:inline-block;margin-top:4px;cursor:pointer}
-.btnFlotante{position:fixed;bottom:82px;right:16px;width:64px;height:64px;border-radius:50%;background:#ffd700;border:3px solid #fff;box-shadow:0 5px 20px rgba(255,215,0,0.7);cursor:pointer;z-index:200;font-size:32px;display:flex;align-items:center;justify-content:center}
+.btnFlotante{position:fixed;bottom:322px;right:16px;width:64px;height:64px;border-radius:50%;background:#ffd700;border:3px solid #fff;box-shadow:0 5px 20px rgba(255,215,0,0.7);cursor:pointer;z-index:200;font-size:32px;display:flex;align-items:center;justify-content:center}
 .btnFlotante .mas{position:absolute;top:-4px;right:-4px;background:#ff0055;color:#fff;width:24px;height:24px;border-radius:50%;font-size:17px;font-weight:900;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
-.btnFlotanteTienda{position:fixed;bottom:162px;right:16px;width:64px;height:64px;border-radius:50%;background:#ff0055;border:3px solid #fff;box-shadow:0 5px 20px rgba(255,0,85,0.7);cursor:pointer;z-index:200;font-size:32px;display:flex;align-items:center;justify-content:center}
-.btnFlotanteCodigo{position:fixed;bottom:242px;right:16px;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#7b00ff,#ff0055);border:3px solid #ffd700;box-shadow:0 5px 20px rgba(123,0,255,0.8);cursor:pointer;z-index:200;font-size:32px;display:flex;align-items:center;justify-content:center}
+.btnFlotanteTienda{position:fixed;bottom:242px;right:16px;width:64px;height:64px;border-radius:50%;background:#ff0055;border:3px solid #fff;box-shadow:0 5px 20px rgba(255,0,85,0.7);cursor:pointer;z-index:200;font-size:32px;display:flex;align-items:center;justify-content:center}
+.btnFlotanteCodigo{position:fixed;bottom:162px;right:16px;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#7b00ff,#ff0055);border:3px solid #ffd700;box-shadow:0 5px 20px rgba(123,0,255,0.8);cursor:pointer;z-index:200;font-size:32px;display:flex;align-items:center;justify-content:center}
 .btnFlotanteCodigo .mas{position:absolute;top:-4px;right:-4px;background:#ffd700;color:#000;width:24px;height:24px;border-radius:50%;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.btnFlotanteMenu{position:fixed;bottom:82px;right:16px;width:64px;height:64px;border-radius:50%;background:#1e1b3a;border:3px solid #fff;box-shadow:0 5px 20px rgba(0,0,0,0.7);cursor:pointer;z-index:210;font-size:28px;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center}
+.fabOculto{display:none !important}
 .modalPromo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
 .cajaPromo{background:#15151f;border:2px solid #ffd700;border-radius:20px;padding:20px;width:100%;max-width:360px;text-align:center}
 </style>
@@ -140,9 +142,10 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <button onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'"><span>👤</span>Perfil</button>
 <button onclick="location.href='ANUNCIOS.html'"><span>📢</span>Anuncios</button>
 </div>
-<button class="btnFlotanteCodigo" onclick="location.href='GENERA TU CÓDIGO.html'" title="Genera tu Código">🎁<span class="mas">🎲</span></button>
-<button class="btnFlotanteTienda" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/TIENDA-TEXTURAS.html'" title="Tienda de Texturas">🛍️</button>
-<button class="btnFlotante" onclick="location.href='https://alpharede.com/3Y69ArzMPiB'">🪙<span class="mas">+</span></button>
+<button class="btnFlotanteCodigo fabHijo fabOculto" onclick="location.href='GENERA TU CÓDIGO.html'" title="Genera tu Código">🎁<span class="mas">🎲</span></button>
+<button class="btnFlotanteTienda fabHijo fabOculto" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/TIENDA-TEXTURAS.html'" title="Tienda de Texturas">🛍️</button>
+<button class="btnFlotante fabHijo fabOculto" onclick="location.href='https://alpharede.com/3Y69ArzMPiB'">🪙<span class="mas">+</span></button>
+<button class="btnFlotanteMenu" onclick="toggleMenuFlotante()"><span id="iconoMenu">☰</span></button>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -150,6 +153,8 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 const firebaseConfig={apiKey:"AIzaSyCx4pzzblnDbcK1aXnoIj7AIgMOpge_0ao",authDomain:"akim-mods.firebaseapp.com",projectId:"akim-mods",storageBucket:"akim-mods.firebasestorage.app",messagingSenderId:"1038400568277",appId:"1:1038400568277:web:103029336774c075a29b5c",measurementId:"G-5Y8JCL7G79"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();const db=firebase.firestore();let datosUsuario=null;let intervaloPresencia=null;
+let menuFlotanteAbierto=false;
+function toggleMenuFlotante(){menuFlotanteAbierto=!menuFlotanteAbierto;document.querySelectorAll('.fabHijo').forEach(b=>{b.classList.toggle('fabOculto',!menuFlotanteAbierto);});}
 function normalizarCodigo(t){return (t||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
 const CODIGOS={
 "AKIM15":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
@@ -286,4 +291,4 @@ document.getElementById('listaAnuncios').innerHTML=html;document.getElementById(
 }
 </script>
 </body>
-                                                                                                                                                                            </html>
+  </html>
