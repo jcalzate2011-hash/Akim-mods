@@ -69,6 +69,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 .fabOculto{display:none !important}
 .modalPromo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
 .cajaPromo{background:#15151f;border:2px solid #ffd700;border-radius:20px;padding:20px;width:100%;max-width:360px;text-align:center}
+.limiteBox{background:#222231;border:1px solid #ffd700;border-radius:12px;padding:10px;margin:8px 0;font-size:13px;color:#ffcc00}
 </style>
 </head>
 <body>
@@ -111,7 +112,6 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <h2 style="margin:5px 0">🚀 ¿Qué quieres hacer hoy?</h2>
 <button class="menuBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/PERFIL.html'"><span class="icono">👤</span><div style="flex:1"><b>Mi Perfil</b><br><small id="miNombreCard">Configura tu nombre y tu foto</small></div><span class="badge">⚙️ EDITAR</span></button>
 <button class="menuBtn" onclick="abrirPromo()"><span class="icono">🎁</span><div style="flex:1"><b>Código Promocional</b><br><small>Escribe tu código y canjéalo</small></div><span class="badge badge-gold">CANJEAR</span></button>
-<button class="menuBtn" onclick="location.href='GENERA TU CÓDIGO.html'"><span class="icono">🎲</span><div style="flex:1"><b>Genera tu Código</b><br><small>Entra y te damos un código al azar</small></div><span class="badge badge-gold">GENERAR</span></button>
 <button class="menuBtn" onclick="location.href='https://jcalzate2011-hash.github.io/Akim-mods/BENEFICIOS.html'"><span class="icono">👑</span><div style="flex:1"><b>Beneficios VIP</b><br><small>Qué trae ser VIP en AKIM</small></div><span class="badge badge-gold">VER</span></button>
 <button class="menuBtn" onclick="location.href='tienda.html'"><span class="icono">🛒</span><div style="flex:1"><b>Tienda AKIM</b><br><small>Compra VIP, diamantes y más</small></div><span class="badge">ENTRAR ➡️</span></button>
 <button class="menuBtn" onclick="location.href='postulaciones.html'"><span class="icono">📋</span><div style="flex:1"><b>Postularme para trabajar</b><br><small>Soporte, Reseñero o Moderador</small></div><span class="badge badge-green">NUEVO</span></button>
@@ -122,6 +122,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <div class="infoRow"><span>💎 Diamantes</span><b id="misDiamantes">0</b></div>
 <div class="infoRow"><span>🪙 Cripto</span><b id="misCripto" style="color:#ffd700">0</b></div>
 <div class="infoRow"><span>👑 VIP</span><b id="miVip">NO</b></div>
+<div class="infoRow"><span>🎁 Canjes hoy</span><b id="misCanjesHoy">0 / 5</b></div>
 <button class="btn btn-dark" onclick="salir()">Cerrar Sesión</button>
 </div>
 <div class="card"><h2 style="margin:5px 0">📢 Últimos Anuncios</h2><div id="listaAnuncios"><p style="color:#aaa">Cargando anuncios...</p></div><button class="btn btn-white" onclick="location.href='ANUNCIOS.html'">Ver todos los anuncios ➡️</button></div>
@@ -130,6 +131,7 @@ input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;backgr
 <div class="cajaPromo">
 <h2>🎁 Código Promocional</h2>
 <p>Escribe tu código</p>
+<div class="limiteBox" id="textoLimite">Cargando límite...</div>
 <input id="inputCodigo" placeholder="Escribe tu código aquí" autocomplete="off">
 <p id="msgPromo" style="color:#ffcc00;min-height:20px"></p>
 <button class="btn btn-gold" onclick="canjearCodigo()">Canjear</button>
@@ -155,6 +157,10 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();const db=firebase.firestore();let datosUsuario=null;let intervaloPresencia=null;
 let menuFlotanteAbierto=false;
 function toggleMenuFlotante(){menuFlotanteAbierto=!menuFlotanteAbierto;document.querySelectorAll('.fabHijo').forEach(b=>{b.classList.toggle('fabOculto',!menuFlotanteAbierto);});}
+function hoyStr(){let d=new Date();let m=""+(d.getMonth()+1);if(m.length==1)m="0"+m;let dia=""+d.getDate();if(dia.length==1)dia="0"+dia;return d.getFullYear()+"-"+m+"-"+dia;}
+function getLimite(){let esVip=datosUsuario && datosUsuario.vip;return esVip?10:5;}
+function getCanjesHoy(data){if(!data) return 0;if(data.canjesFecha!==hoyStr()) return 0;return data.canjesHoy||0;}
+function actualizarTextoLimite(){let limite=getLimite();let usados=getCanjesHoy(datosUsuario);let quedan=limite-usados;if(quedan<0)quedan=0;let el=document.getElementById('textoLimite');if(el){if(quedan==0){el.innerText="⛔ Ya llegaste a tu límite de hoy ("+limite+"/"+limite+"). Vuelve mañana.";}else{el.innerText="🎁 Te quedan "+quedan+" canjes hoy de "+limite+" "+(limite==10?"(VIP)":"");}}let el2=document.getElementById('misCanjesHoy');if(el2){el2.innerText=usados+" / "+limite;}}
 function normalizarCodigo(t){return (t||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
 const CODIGOS={
 "AKIM15":{diamantes:300,cripto:0,etiqueta:"300 diamantes"},
@@ -214,7 +220,7 @@ const CODIGOS={
 "AKIM2026":{diamantes:50,cripto:0,etiqueta:"50 diamantes"},
 "DTXT":{diamantes:0,cripto:1,etiqueta:"1 cripto"}
 };
-function abrirPromo(){document.getElementById('modalPromo').classList.remove('hidden');document.getElementById('msgPromo').innerText="";}
+function abrirPromo(){document.getElementById('modalPromo').classList.remove('hidden');actualizarTextoLimite();document.getElementById('msgPromo').innerText="";}
 function cerrarPromo(){document.getElementById('modalPromo').classList.add('hidden');}
 async function canjearCodigo(){
 let user=auth.currentUser;
@@ -228,12 +234,17 @@ try{
 let ref=db.collection('usuarios').doc(user.uid);
 let doc=await ref.get();
 let data=doc.exists?doc.data():{};
+datosUsuario=data;
 let usados=data.codigosUsados||[];
 if(usados.includes(codigo)){document.getElementById('msgPromo').innerText="❌ Ya usaste este código, no se puede volver a usar";return;}
-let update={codigosUsados:firebase.firestore.FieldValue.arrayUnion(codigo)};
+let limite=getLimite();
+let canjesHoy=getCanjesHoy(data);
+if(canjesHoy>=limite){document.getElementById('msgPromo').innerText="⛔ Ya llegaste a tu límite de hoy ("+limite+" códigos). Espera hasta mañana para seguir canjeando.";actualizarTextoLimite();return;}
+let update={codigosUsados:firebase.firestore.FieldValue.arrayUnion(codigo),canjesHoy:canjesHoy+1,canjesFecha:hoyStr()};
 if(premio.diamantes>0) update.diamantes=firebase.firestore.FieldValue.increment(premio.diamantes);
 if(premio.cripto>0) update.monedas=firebase.firestore.FieldValue.increment(premio.cripto);
 await ref.set(update,{merge:true});
+datosUsuario={...data,...update};
 let nuevosDiam=(data.diamantes||0)+premio.diamantes;
 let totalAntes=(data.monedas||0)+(data.cripto||0);
 let nuevaCripto=totalAntes+premio.cripto;
@@ -241,7 +252,9 @@ document.getElementById('misDiamantes').innerText=nuevosDiam;
 document.getElementById('misCripto').innerText=nuevaCripto;
 document.getElementById('monedasTop').innerText=nuevaCripto;
 document.getElementById('textoDiamantes').innerText="💎 "+nuevosDiam+" diamantes";
-document.getElementById('msgPromo').innerText="✅ ¡Canjeado! Ganaste "+premio.etiqueta;
+actualizarTextoLimite();
+let quedan=limite-(canjesHoy+1);
+if(quedan==0){document.getElementById('msgPromo').innerText="✅ ¡Canjeado! Ganaste "+premio.etiqueta+". Ya llegaste a tu límite de hoy, vuelve mañana.";}else{document.getElementById('msgPromo').innerText="✅ ¡Canjeado! Ganaste "+premio.etiqueta+". Te quedan "+quedan+" canjes hoy.";}
 document.getElementById('inputCodigo').value="";
 }catch(e){document.getElementById('msgPromo').innerText="Error: "+e.message;}
 }
@@ -281,6 +294,7 @@ document.getElementById('miVip').innerText=datosUsuario.vip?"SÍ 👑":"NO";
 document.getElementById('textoPro').innerText=datosUsuario.vip?"👑 PRO activo · abrir beneficios":"PRO · Activar PRO en la Tienda";
 document.getElementById('textoDiamantes').innerText="💎 "+(datosUsuario.diamantes||0)+" diamantes";
 if(datosUsuario.vip){document.getElementById('vipBox').classList.remove('hidden');}
+actualizarTextoLimite();
 cargarAnuncios();
 });
 async function cargarAnuncios(){
@@ -291,4 +305,4 @@ document.getElementById('listaAnuncios').innerHTML=html;document.getElementById(
 }
 </script>
 </body>
-  </html>
+                                                                                                   </html>
